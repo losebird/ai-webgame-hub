@@ -1,0 +1,130 @@
+
+> test
+> tsx --test src/publish/gate.test.ts src/links/validate.test.ts src/play/inline.test.ts test/app.test.ts
+
+TAP version 13
+# Subtest: the shipped seed accepts 16 homepage cards and hides 6 alternates
+ok 1 - the shipped seed accepts 16 homepage cards and hides 6 alternates
+  ---
+  duration_ms: 1.552384
+  type: 'test'
+  ...
+# Subtest: missing fields and non-https urls are rejected without being filled in
+ok 2 - missing fields and non-https urls are rejected without being filled in
+  ---
+  duration_ms: 0.269649
+  type: 'test'
+  ...
+# Subtest: local script and css are inlined and remote urls stay put
+ok 3 - local script and css are inlined and remote urls stay put
+  ---
+  duration_ms: 1.51897
+  type: 'test'
+  ...
+# Subtest: single html accepted as index.html
+ok 4 - single html accepted as index.html
+  ---
+  duration_ms: 1.440216
+  type: 'test'
+  ...
+# Subtest: zip with root index.html accepted
+ok 5 - zip with root index.html accepted
+  ---
+  duration_ms: 2.064339
+  type: 'test'
+  ...
+# Subtest: zip with one folder containing index.html plus js/app.js
+ok 6 - zip with one folder containing index.html plus js/app.js
+  ---
+  duration_ms: 1.092309
+  type: 'test'
+  ...
+# Subtest: root index.html plus nested css and js is accepted
+ok 7 - root index.html plus nested css and js is accepted
+  ---
+  duration_ms: 1.019863
+  type: 'test'
+  ...
+# Subtest: missing index.html
+ok 8 - missing index.html
+  ---
+  duration_ms: 0.431947
+  type: 'test'
+  ...
+# Subtest: two different top-level folders and no root index.html
+ok 9 - two different top-level folders and no root index.html
+  ---
+  duration_ms: 0.737852
+  type: 'test'
+  ...
+# Subtest: entry named ../x → path_traversal
+ok 10 - entry named ../x → path_traversal
+  ---
+  duration_ms: 0.513767
+  type: 'test'
+  ...
+# Subtest: entry named /etc/passwd → absolute_path
+ok 11 - entry named /etc/passwd → absolute_path
+  ---
+  duration_ms: 0.201096
+  type: 'test'
+  ...
+# Subtest: symlink entry
+ok 12 - symlink entry
+  ---
+  duration_ms: 0.577816
+  type: 'test'
+  ...
+# Subtest: declared uncompressed size over the cap → compression_bomb
+ok 13 - declared uncompressed size over the cap → compression_bomb
+  ---
+  duration_ms: 0.486566
+  type: 'test'
+  ...
+# Subtest: too many files
+ok 14 - too many files
+  ---
+  duration_ms: 0.738929
+  type: 'test'
+  ...
+# Subtest: bad html filename
+ok 15 - bad html filename
+  ---
+  duration_ms: 0.150207
+  type: 'test'
+  ...
+# Subtest: oversized html
+ok 16 - oversized html
+  ---
+  duration_ms: 0.125277
+  type: 'test'
+  ...
+# (node:5095) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: seed import is idempotent and lists bad rows
+ok 17 - seed import is idempotent and lists bad rows
+  ---
+  duration_ms: 15.256635
+  type: 'test'
+  ...
+# Subtest: import command prints rejections and exits non-zero
+ok 18 - import command prints rejections and exits non-zero
+  ---
+  duration_ms: 145.395782
+  type: 'test'
+  ...
+# Subtest: visitor can play, publish, like, and remix
+ok 19 - visitor can play, publish, like, and remix
+  ---
+  duration_ms: 146.514416
+  type: 'test'
+  ...
+1..19
+# tests 19
+# suites 0
+# pass 19
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 550.728303
