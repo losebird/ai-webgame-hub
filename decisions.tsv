@@ -1,0 +1,15 @@
+ts	phase	decision	why	evidence	result
+2026-11-12T19:01:14Z	runtime	Kept one Node process with sqlite and files on disk	A Worker port could not be run here, and the trial had to start on this machine	src/main.ts, src/db.ts	local server runs, public URL not hosted
+2026-11-12T19:01:14Z	security	Quarantine zips before writing, and inline local assets at play time	The iframe cannot have allow-same-origin, so relative scripts would be blocked	src/publish/gate.ts, src/play/inline.ts	unit tests green
+2026-11-12T19:01:16Z	links	Imported homepage rows onto the home page and stored alternates hidden	The seed splits 16 cards that belong on the home page from 6 that do not	data/seed/seed-games.json, src/links/import.ts	16 shown, 6 hidden
+2026-11-12T19:01:16Z	links	Left the example.com fixture out of the seed file	Placeholder handles must not sit in the real seed	fixtures/external-links.placeholder.json	not loaded on startup
+2026-11-12T19:04:14Z	links	Labeled off-site likes and left them out of play metrics	Those counts belong to another site and a fixed timestamp	src/text.ts, src/db.ts	external_engagement_counted_in_plays false
+2026-11-12T19:04:14Z	links	Drew solid covers instead of fetching author images	The brief forbids hotlinking those images	src/cover.ts	svg covers only
+2026-11-12T19:08:08Z	verify	Fixed the home-page id parser after it opened the wrong game	The first test run loaded Lantern Dodge while asserting Paper Bird	test/app.test.ts	19 tests passed
+2026-11-12T19:12:00Z	verify	Pointed the browser Publish click at the upload form	The first selector hit Log out, so the upload never left the page	scripts/evidence.ts, evidence/07-uploaded-html.png	upload reached a game page
+2026-11-12T19:12:00Z	security	Recorded cookie, parent.location, and traversal results from Chrome	The sandbox claim needed a browser, not only unit tests	evidence/security-record.md	parent URL unchanged, writes rejected
+2026-11-12T19:15:05Z	scope	Shipped the play, upload, like, and remix slice without waiting on a 14-day extension	Those paths already ran locally. Language and visual polish were allowed to follow	commit 82884dc, REPORT.md	core checks green, i18n not done
+2026-11-12T19:15:13Z	report	Left the public URL as not hosted	This run could not create a hosting account	REPORT.md, README.md	待托管
+2026-11-12T19:04:14Z	auth	Used a local handle and password instead of email or a hosted login	This round cannot send mail or open a new third-party account	src/auth.ts	register and like work locally
+2026-11-12T19:08:08Z	verify	The 19:01 security row meant the zip gate tests, not the full suite	The full suite was still red until the game-id parser was fixed	evidence/unit-tests.txt	supersedes the 19:01 result wording
+2026-11-12T18:56:51Z	samples	Wrote two original sample games instead of importing outside games	The shelf needed a single HTML file and a multi-file zip that we can host	sample-games/dodge/index.html, sample-games/zip-bird/index.html	both seed on an empty database
