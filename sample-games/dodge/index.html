@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lantern Dodge</title>
+<style>
+  * { box-sizing: border-box; margin: 0; }
+  body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    background: #0c0a14;
+    color: #e8dcc8;
+    font-family: system-ui, sans-serif;
+  }
+  h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: 0.04em; }
+  canvas {
+    display: block;
+    border: 1px solid #3a3548;
+    border-radius: 4px;
+    cursor: crosshair;
+    touch-action: none;
+  }
+  p.hint { font-size: 0.8rem; opacity: 0.65; max-width: 420px; text-align: center; }
+</style>
+</head>
+<body>
+<h1>Lantern Dodge</h1>
+<canvas id="c" width="420" height="560" tabindex="0"></canvas>
+<p class="hint">Arrows or pointer to move. Avoid the embers.</p>
+<script>
+(function () {
+  var canvas = document.getElementById("c");
+  var ctx = canvas.getContext("2d");
+  var W = canvas.width;
+  var H = canvas.height;
+
+  var keys = { left: false, right: false, up: false, down: false };
+  var pointer = { x: W * 0.5, y: H * 0.72, active: false };
+
+  var player = { x: W * 0.5, y: H * 0.72, r: 14, speed: 4.2 };
+  var embers = [];
+  var spawnTimer = 0;
+  var score = 0;
+  var alive = true;
+  var frame = 0;
+
+  function reset() {
+    player.x = W * 0.5;
+    player.y = H * 0.72;
+    pointer.x = player.x;
+    pointer.y = player.y;
+    embers.length = 0;
+    spawnTimer = 0;
+    score = 0;
+    alive = true;
+    frame = 0;
+    canvas.focus();
+  }
+
+  function spawnEmber() {
+  var w = 10 + Math.random() * 18;
+    embers.push({
+      x: Math.random() * (W - w * 2) + w,
+      y: -w - 4,
+      vy: 2.2 + Math.random() * 2.8,
+      w: w,
+      phase: Math.random() * 6.28
+    });
+  }
+
+  function movePlayer() {
+    var dx = 0;
+    var dy = 0;
+    if (keys.left) dx -= 1;
+    if (keys.right) dx += 1;
+    if (keys.up) dy -= 1;
+    if (keys.down) dy += 1;
+    if (dx !== 0 || dy !== 0) {
+      var len = Math.hypot(dx, dy) || 1;
+      player.x += (dx / len) * player.speed;
+      player.y += (dy / len) * player.speed;
+    }
+    if (pointer.active) {
+      player.x += (pointer.x - player.x) * 0.18;
+      player.y += (pointer.y - player.y) * 0.18;
+    }
+    var pad = player.r + 4;
+    player.x = Math.max(pad, Math.min(W - pad, player.x));
+    player.y = Math.max(pad, Math.min(H - pad, player.y));
+  }
+
+  function hits(em) {
+    var dx = player.x - em.x;
+    var dy = player.y - em.y;
+    var hit = em.w * 0.55;
+    return dx * dx + dy * dy < (player.r + hit) * (player.r + hit);
+  }
+
+  function tick() {
+    frame++;
+    if (alive) {
+      score += 1;
+      movePlayer();
+      spawnTimer--;
+      if (spawnTimer <= 0) {
+        spawnEmber();
+        spawnTimer = Math.max(12, 42 - Math.floor(score / 180));
+      }
+      for (var i = embers.length - 1; i >= 0; i--) {
+        var e = embers[i];
+        e.y += e.vy;
+        e.x += Math.sin(frame * 0.06 + e.phase) * 0.35;
+        if (e.y > H + e.w) embers.splice(i, 1);
+        else if (hits(e)) alive = false;
+      }
+    }
+  }
+
+  function drawBg() {
+    var g = ctx.createLinearGradient(0, 0, 0, H);
+    g.addColorStop(0, "#14101f");
+    g.addColorStop(1, "#08060c");
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.strokeStyle = "rgba(80, 60, 40, 0.15)";
+    for (var y = 0; y < H; y += 28) {
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+    }
+  }
+
+  function drawLantern() {
+    ctx.save();
+    ctx.translate(player.x, player.y);
+    ctx.fillStyle = "#2a2418";
+    ctx.fillRect(-10, 6, 20, 8);
+    ctx.fillStyle = "#4a3c28";
+    ctx.beginPath();
+    ctx.arc(0, -2, 11, 0, Math.PI * 2);
+    ctx.fill();
+    var glow = ctx.createRadialGradient(0, -2, 2, 0, -2, 22);
+    glow.addColorStop(0, "rgba(255, 200, 90, 0.95)");
+    glow.addColorStop(0.45, "rgba(255, 140, 40, 0.35)");
+    glow.addColorStop(1, "rgba(255, 80, 20, 0)");
+    ctx.fillStyle = glow;
+    ctx.beginPath();
+    ctx.arc(0, -2, 24, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = "#ffe4a8";
+    ctx.beginPath();
+    ctx.arc(0, -2, 6, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawEmber(e) {
+    var flicker = 0.85 + Math.sin(frame * 0.2 + e.phase) * 0.15;
+    ctx.save();
+    ctx.translate(e.x, e.y);
+    var g = ctx.createRadialGradient(0, 0, 0, 0, 0, e.w);
+    g.addColorStop(0, "rgba(255, 220, 120, " + (0.9 * flicker) + ")");
+    g.addColorStop(0.5, "rgba(255, 90, 30, " + (0.6 * flicker) + ")");
+    g.addColorStop(1, "rgba(120, 30, 10, 0)");
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(0, 0, e.w, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawHud() {
+    ctx.fillStyle = "rgba(232, 220, 200, 0.85)";
+    ctx.font = "16px system-ui, sans-serif";
+    ctx.fillText("Score: " + score, 14, 28);
+  }
+
+  function drawOver() {
+    ctx.fillStyle = "rgba(0, 0, 0, 0.55)";
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = "#f5e6c8";
+    ctx.textAlign = "center";
+    ctx.font = "22px system-ui, sans-serif";
+    ctx.fillText("The lantern went out", W / 2, H / 2 - 36);
+    ctx.font = "18px system-ui, sans-serif";
+    ctx.fillText("Score: " + score, W / 2, H / 2);
+    ctx.font = "14px system-ui, sans-serif";
+    ctx.fillStyle = "rgba(245, 230, 200, 0.75)";
+    ctx.fillText("Press Space or click to relight", W / 2, H / 2 + 36);
+    ctx.textAlign = "left";
+  }
+
+  function loop() {
+    tick();
+    drawBg();
+    for (var i = 0; i < embers.length; i++) drawEmber(embers[i]);
+    drawLantern();
+    drawHud();
+    if (!alive) drawOver();
+    requestAnimationFrame(loop);
+  }
+
+  canvas.addEventListener("pointerdown", function (ev) {
+    canvas.setPointerCapture(ev.pointerId);
+    if (!alive) {
+      reset();
+      return;
+    }
+    pointer.active = true;
+    var rect = canvas.getBoundingClientRect();
+    var sx = W / rect.width;
+    var sy = H / rect.height;
+    pointer.x = (ev.clientX - rect.left) * sx;
+    pointer.y = (ev.clientY - rect.top) * sy;
+  });
+
+  canvas.addEventListener("pointermove", function (ev) {
+    if (!pointer.active) return;
+    var rect = canvas.getBoundingClientRect();
+    var sx = W / rect.width;
+    var sy = H / rect.height;
+    pointer.x = (ev.clientX - rect.left) * sx;
+    pointer.y = (ev.clientY - rect.top) * sy;
+  });
+
+  canvas.addEventListener("pointerup", function () {
+    pointer.active = false;
+  });
+
+  canvas.addEventListener("pointerleave", function () {
+    pointer.active = false;
+  });
+
+  window.addEventListener("keydown", function (ev) {
+    if (ev.code === "Space") {
+      ev.preventDefault();
+      if (!alive) reset();
+      return;
+    }
+    if (ev.code === "ArrowLeft") keys.left = true;
+    if (ev.code === "ArrowRight") keys.right = true;
+    if (ev.code === "ArrowUp") keys.up = true;
+    if (ev.code === "ArrowDown") keys.down = true;
+  });
+
+  window.addEventListener("keyup", function (ev) {
+    if (ev.code === "ArrowLeft") keys.left = false;
+    if (ev.code === "ArrowRight") keys.right = false;
+    if (ev.code === "ArrowUp") keys.up = false;
+    if (ev.code === "ArrowDown") keys.down = false;
+  });
+
+  reset();
+  loop();
+})();
+</script>
+</body>
+</html>

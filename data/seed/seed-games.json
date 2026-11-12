@@ -1,0 +1,468 @@
+{
+  "generated_at": "2026-11-13 03:05 Asia/Shanghai",
+  "purpose": "Outbound-link seed cards only. Do not copy game code or assets into the repo.",
+  "model_filter": "Claude Fable 5.2",
+  "homepage": [
+    {
+      "title": "Saltline",
+      "author_handle": "@felixrieseberg",
+      "post_url": "https://x.com/felixrieseberg/status/2119925633564463609",
+      "play_url": "https://claude.ai/artifact/BGY1SztrAYcJQHSsnHHGmp",
+      "summary": "雨夜集装箱港口第一人称射击：切断三处上行中继，同时对付无人机和机器狗。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链（作者说源码在 HTML 里可查看，但未给许可证）",
+      "engagement": {
+        "likes": 14437,
+        "reposts": 1111,
+        "replies": 820,
+        "quotes": 796,
+        "bookmarks": 10012,
+        "impressions": 4272701,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 06:50 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Starry Night Rider",
+      "author_handle": "@ebbyamir",
+      "post_url": "https://x.com/ebbyamir/status/2120284261089673376",
+      "play_url": "https://starrynightrider.com/",
+      "summary": "骑车穿过梵高《星夜》里的村庄，天空、房屋和石路都是漩涡笔触。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 12936,
+        "reposts": 1571,
+        "replies": 419,
+        "quotes": 318,
+        "bookmarks": 6898,
+        "impressions": 1083482,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 06:27 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Oil Paint",
+      "author_handle": "@BlendiByl",
+      "post_url": "https://x.com/BlendiByl/status/2120341251178594532",
+      "play_url": "https://patch.gg/blendi/oil-paint",
+      "play_url_source_post": "https://x.com/BlendiByl/status/2120446623155433611",
+      "summary": "第三人称走在秋林里，每帧约 150 万笔触、约 200 fps。可玩链接由作者在后续帖发出。",
+      "model": "Claude Fable 5.2",
+      "license_status": "作者写明 open source；patch.gg 页面标注代码 MIT、艺术 CC0。首页仍建议只外链，不要拷文件进仓库。",
+      "engagement": {
+        "likes": 7608,
+        "reposts": 377,
+        "replies": 373,
+        "quotes": 65,
+        "bookmarks": 4031,
+        "impressions": 397934,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 10:22 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "CROSSTOWN",
+      "author_handle": "@mattshumer_",
+      "post_url": "https://x.com/mattshumer_/status/2120282133503820150",
+      "play_url": "https://nyc.somethingbig.ai/",
+      "play_url_source_post": "https://x.com/mattshumer_/status/2120598280761672019",
+      "summary": "开放世界曼哈顿切片的早期预览：开车、坐直升机、步行。作者称仍在制作，可按 B 给 agent 反馈。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 7408,
+        "reposts": 264,
+        "replies": 667,
+        "quotes": 165,
+        "bookmarks": 1909,
+        "impressions": 3710476,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 06:27 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "What the Water Keeps",
+      "author_handle": "@kevin_t_ngo",
+      "post_url": "https://x.com/kevin_t_ngo/status/2119868968307695818",
+      "play_url": "https://what-the-water-keeps.vercel.app/",
+      "play_url_source_post": "https://x.com/kevin_t_ngo/status/2119868970643964177",
+      "summary": "乘小船穿过 8 个梦境世界（灯笼、沉没城市、雪林等）。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 4191,
+        "reposts": 210,
+        "replies": 170,
+        "quotes": 113,
+        "bookmarks": 1754,
+        "impressions": 479866,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 03:05 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Tennis",
+      "author_handle": "@photonstorm",
+      "post_url": "https://x.com/photonstorm/status/2120330010112434313",
+      "play_url": "https://tennis.sixfingerpunch.com/",
+      "summary": "乍看像 Pong，玩起来会不断变体。作者说模型因 Atari 版权而没用「Pong」这个名字。原帖正文未贴 URL（配的是图），可玩地址为作者自有域名。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 2950,
+        "reposts": 349,
+        "replies": 365,
+        "quotes": 274,
+        "bookmarks": 1285,
+        "impressions": 376523,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 09:37 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Mirror Earth",
+      "author_handle": "@mattshumer_",
+      "post_url": "https://x.com/mattshumer_/status/2119877065701036047",
+      "play_url": "https://www.spawn.co/@mattshumer/earth?room=local",
+      "summary": "把整颗地球做成可破坏的体素世界，天气跟真实地球实时对应。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链（托管在 Spawn）",
+      "engagement": {
+        "likes": 2374,
+        "reposts": 121,
+        "replies": 91,
+        "quotes": 51,
+        "bookmarks": 1799,
+        "impressions": 406437,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 03:37 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Portals: Endless Worlds",
+      "author_handle": "@emollick",
+      "post_url": "https://x.com/emollick/status/2119918307457577163",
+      "play_url": "https://portals-endless-worlds.netlify.app/",
+      "source_repo": "https://github.com/emollick/ai-portals",
+      "summary": "双手离开也能漂过由传送门连起来的 450+ 个 3D 世界（作者称由约 2.5 万个 agent 生成）。",
+      "model": "Claude Fable 5.2",
+      "license_status": "仓库为 CC BY-NC-SA 4.0（https://github.com/emollick/ai-portals，非商用、相同方式共享）。首页仍建议只外链。",
+      "engagement": {
+        "likes": 1915,
+        "reposts": 174,
+        "replies": 223,
+        "quotes": 72,
+        "bookmarks": 1046,
+        "impressions": 106190,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 06:21 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Evensong",
+      "author_handle": "@kevin_t_ngo",
+      "post_url": "https://x.com/kevin_t_ngo/status/2120238844754923874",
+      "play_url": "https://evensong-phi.vercel.app/",
+      "play_url_source_post": "https://x.com/kevin_t_ngo/status/2120238846223040561",
+      "summary": "在被淹没的大教堂里打一场黑暗奇幻魂系 Boss。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 1723,
+        "reposts": 105,
+        "replies": 133,
+        "quotes": 55,
+        "bookmarks": 956,
+        "impressions": 134550,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 03:35 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "LANTERNFALL",
+      "author_handle": "@loktar00",
+      "post_url": "https://x.com/loktar00/status/2120192761542615271",
+      "play_url": "https://loktar00.github.io/lanternfall/",
+      "summary": "灯笼守线的自动战斗：组队、放照明弹、用战利品升级；模型与动画都由 Fable 生成。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链（GitHub 仓库 https://github.com/loktar00/lanternfall 无 LICENSE）",
+      "engagement": {
+        "likes": 1396,
+        "reposts": 102,
+        "replies": 115,
+        "quotes": 26,
+        "bookmarks": 876,
+        "impressions": 190488,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 00:32 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "雾锁山门",
+      "author_handle": "@op7418",
+      "post_url": "https://x.com/op7418/status/2120694045299327187",
+      "play_url": "https://op7418.github.io/guizang-game-skill/",
+      "source_repo": "https://github.com/op7418/guizang-game-skill",
+      "summary": "雪夜山门里的 3D 武侠动作 demo，整包打进一个约 30 MB 的 HTML。",
+      "model": "Claude Fable 5.2",
+      "license_status": "同名技能仓库为 AGPL-3.0（https://github.com/op7418/guizang-game-skill），游戏页由该仓库 GitHub Pages 托管。首页仍建议只外链。",
+      "engagement": {
+        "likes": 895,
+        "reposts": 98,
+        "replies": 229,
+        "quotes": 41,
+        "bookmarks": 775,
+        "impressions": 201366,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 09:43 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "I Would Have Gotten Away With It",
+      "author_handle": "@emollick",
+      "post_url": "https://x.com/emollick/status/2119876449494540554",
+      "play_url": "https://i-would-have-gotten-away-with-it.netlify.app/",
+      "summary": "反转版史酷比：你是鬼屋反派，要把多管闲事的孩子们吓走。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 507,
+        "reposts": 33,
+        "replies": 55,
+        "quotes": 10,
+        "bookmarks": 171,
+        "impressions": 32802,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 03:35 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Patchwork Quilt",
+      "author_handle": "@BlendiByl",
+      "post_url": "https://x.com/BlendiByl/status/2120746541636047347",
+      "play_url": "https://patch.gg/blendi/patchwork-quilt",
+      "summary": "整张地图都是代码缝出来的布艺 / 定格动画风小品，可玩。",
+      "model": "Claude Fable 5.2",
+      "license_status": "作者写明 open-source；patch.gg 页面写明代码 MIT、艺术 CC0 1.0。首页仍建议只外链。",
+      "engagement": {
+        "likes": 403,
+        "reposts": 29,
+        "replies": 19,
+        "quotes": 3,
+        "bookmarks": 284,
+        "impressions": 11446,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 13:12 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Gilt & Gutter",
+      "author_handle": "@kevin_t_ngo",
+      "post_url": "https://x.com/kevin_t_ngo/status/2119900487688622171",
+      "play_url": "https://gilt-and-gutter.vercel.app/",
+      "play_url_source_post": "https://x.com/kevin_t_ngo/status/2119900488993010147",
+      "summary": "镀金 Arcade 大厅里的 1v1 射击：子弹分金 / 青两色，同色回充、异色伤害。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 320,
+        "reposts": 11,
+        "replies": 35,
+        "quotes": 9,
+        "bookmarks": 171,
+        "impressions": 105904,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 05:10 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Dread & District",
+      "author_handle": "@emollick",
+      "post_url": "https://x.com/emollick/status/2120248525254742318",
+      "play_url": "https://dread-and-district.netlify.app/",
+      "summary": "带点心思的奇幻运输模拟：用靠谱的物流打败邪恶。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 300,
+        "reposts": null,
+        "replies": 104,
+        "quotes": 7,
+        "bookmarks": 136,
+        "impressions": 28850,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 04:13 Asia/Shanghai",
+        "notes": "本次工具结果未单独返回转帖数"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    },
+    {
+      "title": "Cayley",
+      "author_handle": "@lionel_mora",
+      "post_url": "https://x.com/lionel_mora/status/2120554787812860294",
+      "play_url": "https://lauramionel.github.io/cayley-flight-simulator/",
+      "source_repo": "https://github.com/lauramionel/cayley-flight-simulator",
+      "summary": "浏览器飞行模拟：真实机翼物理、9 架真机、全球地形和实时天气。",
+      "model": "Claude Fable 5.2",
+      "license_status": "仓库 MIT（https://github.com/lauramionel/cayley-flight-simulator），作者长文写明 open source。首页仍建议只外链。",
+      "engagement": {
+        "likes": 290,
+        "reposts": 23,
+        "replies": 25,
+        "quotes": 6,
+        "bookmarks": 256,
+        "impressions": 15755,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 00:30 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai"
+    }
+  ],
+  "alternates": [
+    {
+      "title": "Turbo Tails",
+      "author_handle": "@petergyang",
+      "post_url": "https://x.com/petergyang/status/2119901658394358005",
+      "play_url": "https://turbo-tails.vercel.app/",
+      "summary": "3D 动物卡丁车，有漂移、道具；后续更新加了沙滩 / 丛林 / 火山三条赛道和最多 6 人联机。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 138,
+        "reposts": 3,
+        "replies": 25,
+        "quotes": 9,
+        "bookmarks": 87,
+        "impressions": 32436,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 05:15 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    },
+    {
+      "title": "MAAD MAXXING",
+      "author_handle": "@Andrew_Blumson",
+      "post_url": "https://x.com/Andrew_Blumson/status/2120599812512833557",
+      "play_url": "https://maad-maxxing.vercel.app/",
+      "summary": "沙漠汽车战斗，Three.js / WebGPU，作者称纯代码、无外部资产。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 181,
+        "reposts": 13,
+        "replies": 39,
+        "quotes": 7,
+        "bookmarks": 174,
+        "impressions": 65285,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 03:29 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    },
+    {
+      "title": "Saltfire",
+      "author_handle": "@higgsfield_ai",
+      "post_url": "https://x.com/higgsfield_ai/status/2119928942178271645",
+      "play_url": "https://saltfire.higgsfield.app/",
+      "summary": "五米海况的快艇竞速，含追踪火箭和 5 个 AI 对手。可玩链接在线末帖，该条本身互动很低。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 7,
+        "reposts": 0,
+        "replies": 2,
+        "quotes": 0,
+        "bookmarks": 3,
+        "impressions": 1592,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-10 07:03 Asia/Shanghai",
+        "notes": "互动来自含 Play Saltfire 链接的线末帖，不是线头"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    },
+    {
+      "title": "The Waking River",
+      "author_handle": "@flxrnc",
+      "post_url": "https://x.com/flxrnc/status/2120494277528580110",
+      "play_url": "https://rivergame-kappa.vercel.app/",
+      "play_url_source_post": "https://x.com/flxrnc/status/2120494282566172785",
+      "summary": "金船驶过 5 个沉睡世界；作者在回复里公开了提示词 PDF。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链（提示词 PDF 也未声明可再分发）",
+      "engagement": {
+        "likes": 86,
+        "reposts": 4,
+        "replies": 10,
+        "quotes": 0,
+        "bookmarks": 70,
+        "impressions": 4090,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-11 20:30 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    },
+    {
+      "title": "Lumenvale",
+      "author_handle": "@sai0xgen",
+      "post_url": "https://x.com/sai0xgen/status/2120758436581589369",
+      "play_url": "https://claude.ai/artifact/9bekwKPUpCNDqEfgR8zwQa",
+      "play_url_source_post": "https://x.com/sai0xgen/status/2120758574255386888",
+      "summary": "开放世界幻想探索，唤醒花谷里沉睡的神龛。",
+      "model": "Claude Fable 5.2",
+      "license_status": "未授权，只能外链",
+      "engagement": {
+        "likes": 37,
+        "reposts": 1,
+        "replies": 16,
+        "quotes": 0,
+        "bookmarks": 3,
+        "impressions": 1327,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 13:59 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    },
+    {
+      "title": "鹈鹕骑单车",
+      "author_handle": "@JunquanB",
+      "post_url": "https://x.com/JunquanB/status/2120869955478683765",
+      "play_url": "https://pelicanride.vercel.app/",
+      "source_repo": "https://github.com/Xiobio/pelican-ride",
+      "summary": "把「鹈鹕骑自行车」考题做成可玩小游戏。互动极低，但仓库是 MIT。",
+      "model": "Claude Fable 5.2",
+      "license_status": "仓库 MIT（https://github.com/Xiobio/pelican-ride）。首页仍建议只外链。",
+      "engagement": {
+        "likes": 0,
+        "reposts": 0,
+        "replies": 1,
+        "quotes": 0,
+        "bookmarks": 0,
+        "impressions": 28,
+        "as_of": "2026-11-13 03:00 Asia/Shanghai",
+        "post_time_shanghai": "2026-11-12 21:22 Asia/Shanghai"
+      },
+      "link_check": "GET 200, 2026-11-13 Asia/Shanghai",
+      "tier": "alternate"
+    }
+  ]
+}

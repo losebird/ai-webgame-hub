@@ -1,0 +1,10 @@
+node_modules/
+data/*.sqlite
+data/*.sqlite-*
+data/blobs/
+data/ip.salt
+.env
+.dev.vars
+test-results/
+playwright-report/
+evidence/video/

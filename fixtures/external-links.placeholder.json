@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Placeholder Lantern Arcade",
+    "author_handle": "example_author",
+    "post_url": "https://example.com/posts/placeholder-lantern",
+    "play_url": "https://example.com/games/placeholder-lantern",
+    "summary": "This is a placeholder entry only; it is not a real social post or published game.",
+    "model": "Fable 5.2",
+    "license_status": "unknown",
+    "engagement": "example"
+  },
+  {
+    "title": "Placeholder Paper Flight Demo",
+    "author_handle": "example_player",
+    "post_url": "https://example.com/posts/placeholder-paper-flight",
+    "play_url": "https://example.com/games/placeholder-paper-flight",
+    "summary": "This is a placeholder entry only; it is not a real social post or published game.",
+    "model": "Other",
+    "license_status": "open",
+    "engagement": "example"
+  }
+]
