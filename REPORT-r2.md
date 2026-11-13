@@ -1,8 +1,9 @@
 # WebGame 第二轮报告
 
 分支：`r2/i18n-layout-workers`  
+draft PR：https://github.com/losebird/ai-webgame-hub/pull/2  
 base：`cursor/webgame-hub-mvp-aaa5`（PR #1，不往该分支推）  
-head SHA：推送后写在 PR 说明里  
+head SHA：`07a7e1903d133d8f7683de47e4a8ff1cac843131`（本报告提交后会再有一个 docs commit）  
 所用模型：Grok 4.6（委托要求 grok-4.7，本会话不可用）
 
 本轮不部署、不 `wrangler login`、不标 ready、不合 main。
