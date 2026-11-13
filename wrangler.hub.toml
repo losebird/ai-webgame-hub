@@ -1,0 +1,25 @@
+name = "webgame-hub"
+main = "src/workers/hub.ts"
+compatibility_date = "2025-10-08"
+compatibility_flags = ["nodejs_compat"]
+
+rules = [
+  { type = "Text", globs = ["**/*.html", "**/*.css", "**/site.js", "**/game.js"], fallthrough = true }
+]
+
+[vars]
+SITE_NAME = "WebGame"
+SITE_ORIGIN = "http://127.0.0.1:8787"
+GAME_ORIGIN = "http://127.0.0.1:8788"
+ADMIN_TOKEN = "dev-admin"
+IP_SALT = "local-dev-salt"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "webgame"
+database_id = "00000000-0000-0000-0000-000000000001"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "webgame-games"

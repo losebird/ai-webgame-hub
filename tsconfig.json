@@ -5,7 +5,8 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["src"]
+  "include": ["src", "test", "scripts/import-external-links.ts", "scripts/evidence-r2.ts", "scripts/dev-local.ts"]
 }

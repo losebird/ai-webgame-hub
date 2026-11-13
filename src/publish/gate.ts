@@ -29,7 +29,8 @@ export type IngestFailureCode =
   | "invalid_zip"
   | "empty_archive"
   | "html_too_large"
-  | "bad_html_name";
+  | "bad_html_name"
+  | "not_html";
 
 export type QuarantinedBundle = {
   files: { path: string; bytes: Uint8Array }[];
@@ -67,6 +68,24 @@ export function acceptUpload(
   return acceptZip(upload.bytes, limits);
 }
 
+function isZipMagic(bytes: Uint8Array): boolean {
+  return bytes.length >= 4 && bytes[0] === 0x50 && bytes[1] === 0x4b && bytes[2] === 0x03 && bytes[3] === 0x04;
+}
+
+function looksBinary(bytes: Uint8Array): boolean {
+  if (isZipMagic(bytes)) return true;
+  const n = Math.min(bytes.length, 8192);
+  for (let i = 0; i < n; i++) {
+    if (bytes[i] === 0) return true;
+  }
+  let ctrl = 0;
+  for (let i = 0; i < n; i++) {
+    const c = bytes[i]!;
+    if (c < 9 || (c > 13 && c < 32)) ctrl += 1;
+  }
+  return n > 0 && ctrl > n / 10;
+}
+
 function acceptHtml(
   filename: string,
   bytes: Uint8Array,
@@ -77,6 +96,9 @@ function acceptHtml(
   }
   if (bytes.length > limits.maxCompressedBytes) {
     return { ok: false, code: "html_too_large" };
+  }
+  if (looksBinary(bytes)) {
+    return { ok: false, code: "not_html" };
   }
   return {
     ok: true,

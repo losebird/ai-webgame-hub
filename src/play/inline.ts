@@ -1,3 +1,12 @@
+function toBase64(bytes: Uint8Array): string {
+  let binary = "";
+  const chunk = 0x8000;
+  for (let i = 0; i < bytes.length; i += chunk) {
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunk));
+  }
+  return btoa(binary);
+}
+
 export function localAssetPath(src: string): string | null {
   const trimmed = src.trim();
   if (!trimmed || trimmed.startsWith("#") || trimmed.startsWith("data:") || trimmed.startsWith("blob:")) {
@@ -64,7 +73,7 @@ export function inlineBundle(files: Map<string, Uint8Array>): string {
     if (!local) return full;
     const file = files.get(local);
     if (!file) return full;
-    const b64 = Buffer.from(file).toString("base64");
+    const b64 = toBase64(file);
     return `${pre}${quote}data:${mimeFor(local)};base64,${b64}${quote}`;
   });
 

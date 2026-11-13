@@ -1,6 +1,7 @@
+import { readFileSync } from "node:fs";
 import path from "node:path";
-import { openDb } from "../src/db.js";
-import { importSeedFile } from "../src/links/import.js";
+import { openSqlite } from "../src/store-sqlite.js";
+import { importSeedText } from "../src/links/import.js";
 
 const file = process.argv[2];
 if (!file) {
@@ -9,8 +10,9 @@ if (!file) {
 }
 
 const dataDir = process.env.DATA_DIR ?? "data";
-const db = openDb(path.join(dataDir, "hub.sqlite"));
-const result = importSeedFile(db, file);
+const db = openSqlite(path.join(dataDir, "hub.sqlite"));
+const text = readFileSync(file, "utf8");
+const result = await importSeedText(db, text);
 db.close();
 
 for (const row of result.rejected) {

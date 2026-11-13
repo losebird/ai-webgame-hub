@@ -1,4 +1,3 @@
-import { readFileSync } from "node:fs";
 import type { Db } from "../db.js";
 import { upsertExternalLink } from "../db.js";
 import { parseSeed, type LinkRejection } from "./validate.js";
@@ -11,7 +10,7 @@ export type ImportResult = {
   documentError: string | null;
 };
 
-export function importSeedText(db: Db, text: string, now = Date.now()): ImportResult {
+export async function importSeedText(db: Db, text: string, now = Date.now()): Promise<ImportResult> {
   let raw: unknown;
   try {
     raw = JSON.parse(text);
@@ -26,7 +25,7 @@ export function importSeedText(db: Db, text: string, now = Date.now()): ImportRe
   for (const link of parsed.accepted) {
     const sortOrder = order.get(link.placement) ?? 0;
     order.set(link.placement, sortOrder + 1);
-    upsertExternalLink(db, {
+    await upsertExternalLink(db, {
       title: link.title,
       authorHandle: link.author_handle,
       postUrl: link.post_url,
@@ -49,14 +48,4 @@ export function importSeedText(db: Db, text: string, now = Date.now()): ImportRe
     rejected: parsed.rejected,
     documentError: null,
   };
-}
-
-export function importSeedFile(db: Db, file: string, now = Date.now()): ImportResult {
-  let text: string;
-  try {
-    text = readFileSync(file, "utf8");
-  } catch {
-    return { imported: 0, homepage: 0, hidden: 0, rejected: [], documentError: `cannot read ${file}` };
-  }
-  return importSeedText(db, text, now);
 }

@@ -5,6 +5,7 @@ data/blobs/
 data/ip.salt
 .env
 .dev.vars
+.wrangler/
 test-results/
 playwright-report/
 evidence/video/

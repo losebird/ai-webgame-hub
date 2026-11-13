@@ -3,9 +3,12 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "tsx --test src/publish/gate.test.ts src/links/validate.test.ts src/play/inline.test.ts test/app.test.ts",
-    "start": "tsx src/main.ts",
+    "test": "tsx --test src/publish/gate.test.ts src/links/validate.test.ts src/play/inline.test.ts src/i18n/keys.test.ts src/crypto-util.test.ts test/app.test.ts test/security.test.ts",
+    "dev:hub": "wrangler dev -c wrangler.hub.toml --port 8787 --inspector-port 9230 --persist-to .wrangler/state",
+    "dev:game": "wrangler dev -c wrangler.game.toml --port 8788 --inspector-port 9231 --persist-to .wrangler/state",
+    "start": "npm run dev:hub",
     "import:links": "tsx scripts/import-external-links.ts",
+    "evidence": "tsx scripts/evidence-r2.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -15,6 +18,7 @@
     "@types/node": "^22.10.0",
     "playwright": "^1.65.0",
     "tsx": "^4.19.2",
-    "typescript": "^5.7.2"
+    "typescript": "^5.7.2",
+    "wrangler": "^4.45.0"
   }
 }

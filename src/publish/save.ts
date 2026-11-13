@@ -2,11 +2,16 @@ import { getGame, insertGame, newId, type Db } from "../db.js";
 import { removeBundle, writeBundle } from "../play/files.js";
 import { acceptUpload, DEFAULT_LIMITS, type QuarantineLimits } from "./gate.js";
 import { parseTags } from "../text.js";
+import type { BlobStore } from "../store.js";
 
 export type PublishInput = {
   authorId: string;
   title: string;
   summary: string;
+  titleEn: string;
+  titleZh: string;
+  summaryEn: string;
+  summaryZh: string;
   model: string;
   tags: string;
   promptBody: string;
@@ -17,12 +22,12 @@ export type PublishInput = {
   now: number;
 };
 
-export function publishUpload(
+export async function publishUpload(
   db: Db,
-  blobs: string,
+  blobs: BlobStore,
   input: PublishInput,
   limits: QuarantineLimits = DEFAULT_LIMITS,
-): { ok: true; id: string } | { ok: false; code: string } {
+): Promise<{ ok: true; id: string } | { ok: false; code: string }> {
   const title = input.title.trim();
   const summary = input.summary.trim();
   const model = input.model.trim();
@@ -31,7 +36,10 @@ export function publishUpload(
   if (!model || model.length > 80) return { ok: false, code: "bad_model" };
   const promptBody = input.promptBody.slice(0, 20000);
   const parentId = input.parentId && input.parentId.trim() ? input.parentId.trim() : null;
-  if (parentId && !getGame(db, parentId)) return { ok: false, code: "bad_parent" };
+  if (parentId) {
+    const parent = await getGame(db, parentId);
+    if (!parent || !parent.promptPublic) return { ok: false, code: "bad_parent" };
+  }
 
   const lower = input.filename.toLowerCase();
   const kind = lower.endsWith(".zip") ? "zip" : lower.endsWith(".html") || lower.endsWith(".htm") ? "html" : null;
@@ -42,12 +50,16 @@ export function publishUpload(
 
   const id = newId();
   try {
-    writeBundle(blobs, id, accepted.bundle.files);
-    insertGame(db, {
+    await writeBundle(blobs, id, accepted.bundle.files);
+    await insertGame(db, {
       id,
       authorId: input.authorId,
       title,
       summary,
+      titleEn: input.titleEn.trim().slice(0, 120),
+      titleZh: input.titleZh.trim().slice(0, 120),
+      summaryEn: input.summaryEn.trim().slice(0, 2000),
+      summaryZh: input.summaryZh.trim().slice(0, 2000),
       model,
       promptPublic: input.promptPublic,
       promptBody,
@@ -57,7 +69,7 @@ export function publishUpload(
       now: input.now,
     });
   } catch (err) {
-    removeBundle(blobs, id);
+    await removeBundle(blobs, id);
     throw err;
   }
   return { ok: true, id };

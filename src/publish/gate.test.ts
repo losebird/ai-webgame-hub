@@ -243,6 +243,13 @@ test("too many files", () => {
   if (!r.ok) assert.equal(r.code, "too_many_files");
 });
 
+test("renamed zip uploaded as html is not_html", () => {
+  const zip = zipSync({ "index.html": strToU8("<html></html>") });
+  const r = acceptUpload({ kind: "html", filename: "game.html", bytes: zip });
+  assert.equal(r.ok, false);
+  if (!r.ok) assert.equal(r.code, "not_html");
+});
+
 test("bad html filename", () => {
   const r = acceptUpload({
     kind: "html",

@@ -1,37 +1,36 @@
-import { lstatSync, readFileSync, readdirSync } from "node:fs";
-import path from "node:path";
-import { randomBytes } from "node:crypto";
 import { zipSync } from "fflate";
-import { hashPassword } from "./auth.js";
-import { createUser, insertGame, linkCounts, newId, publishedGameCount, userByHandle, type Db } from "./db.js";
-import { importSeedFile } from "./links/import.js";
+import { hashPassword, newId } from "./crypto-util.js";
+import {
+  createUser,
+  insertGame,
+  linkCounts,
+  publishedGameCount,
+  userByHandle,
+  type Db,
+} from "./db.js";
+import { importSeedText } from "./links/import.js";
 import { removeBundle, writeBundle } from "./play/files.js";
 import { acceptUpload, type RawUpload } from "./publish/gate.js";
+import type { BlobStore } from "./store.js";
 
-function zipTree(dir: string): Uint8Array {
-  const files: Record<string, Uint8Array> = {};
-  const walk = (current: string, prefix: string) => {
-    for (const name of readdirSync(current)) {
-      const abs = path.join(current, name);
-      const rel = prefix ? `${prefix}/${name}` : name;
-      const info = lstatSync(abs);
-      if (info.isSymbolicLink()) continue;
-      if (info.isDirectory()) walk(abs, rel);
-      else files[rel] = new Uint8Array(readFileSync(abs));
-    }
-  };
-  walk(dir, "");
-  return zipSync(files);
-}
+export type SeedAssets = {
+  seedJson: string;
+  dodgeHtml: Uint8Array;
+  birdFiles: { path: string; bytes: Uint8Array }[];
+};
 
-function publishSample(
+async function publishSample(
   db: Db,
-  blobs: string,
+  blobs: BlobStore,
   authorId: string,
   now: number,
   input: {
     title: string;
+    titleEn: string;
+    titleZh: string;
     summary: string;
+    summaryEn: string;
+    summaryZh: string;
     model: string;
     tags: string[];
     prompt: string;
@@ -42,12 +41,16 @@ function publishSample(
   if (!accepted.ok) throw new Error(`sample ${input.title} rejected: ${accepted.code}`);
   const id = newId();
   try {
-    writeBundle(blobs, id, accepted.bundle.files);
-    insertGame(db, {
+    await writeBundle(blobs, id, accepted.bundle.files);
+    await insertGame(db, {
       id,
       authorId,
       title: input.title,
       summary: input.summary,
+      titleEn: input.titleEn,
+      titleZh: input.titleZh,
+      summaryEn: input.summaryEn,
+      summaryZh: input.summaryZh,
       model: input.model,
       promptPublic: true,
       promptBody: input.prompt,
@@ -57,46 +60,69 @@ function publishSample(
       now,
     });
   } catch (err) {
-    removeBundle(blobs, id);
+    await removeBundle(blobs, id);
     throw err;
   }
 }
 
-export function seedIfEmpty(db: Db, opts: { repoRoot: string; blobs: string; now: number }) {
-  const links = linkCounts(db);
+export async function seedIfEmpty(db: Db, blobs: BlobStore, assets: SeedAssets, now: number): Promise<void> {
+  const links = await linkCounts(db);
   if (links.homepage === 0 && links.hidden === 0) {
-    const result = importSeedFile(db, path.join(opts.repoRoot, "data/seed/seed-games.json"), opts.now);
+    const result = await importSeedText(db, assets.seedJson, now);
     if (result.documentError || result.rejected.length) {
       const why = result.documentError ?? result.rejected.map((row) => `${row.placement}[${row.index}] ${row.reason}`).join("; ");
       throw new Error(`seed links failed: ${why}`);
     }
   }
-  if (publishedGameCount(db) > 0) return;
+  if (await publishedGameCount(db) > 0) return;
 
-  let author = userByHandle(db, "shelf");
+  let author = await userByHandle(db, "shelf");
   if (!author) {
-    const id = createUser(db, "shelf", hashPassword(randomBytes(24).toString("base64url")), opts.now);
+    const password = bytesToPassword();
+    const id = await createUser(db, "shelf", await hashPassword(password), now);
     if (!id) throw new Error("could not create the sample author");
     author = { id, handle: "shelf", passwordHash: "" };
   }
 
-  const dodge = readFileSync(path.join(opts.repoRoot, "sample-games/dodge/index.html"));
-  publishSample(db, opts.blobs, author.id, opts.now, {
+  await publishSample(db, blobs, author.id, now, {
     title: "Lantern Dodge",
+    titleEn: "Lantern Dodge",
+    titleZh: "灯笼躲闪",
     summary: "Move a lantern with the arrow keys or the pointer and avoid falling embers.",
+    summaryEn: "Move a lantern with the arrow keys or the pointer and avoid falling embers.",
+    summaryZh: "用方向键或指针移动灯笼，躲开落下的火星。",
     model: "Hand-written sample",
     tags: ["sample", "dodge"],
     prompt: "One-screen dodge game. The player is a lantern. Embers fall from the top. Arrow keys and pointer movement both move the lantern. Show the score and let the player restart after a hit.",
-    upload: { kind: "html", filename: "index.html", bytes: new Uint8Array(dodge) },
+    upload: { kind: "html", filename: "index.html", bytes: assets.dodgeHtml },
   });
 
-  const zipped = zipTree(path.join(opts.repoRoot, "sample-games/zip-bird"));
-  publishSample(db, opts.blobs, author.id, opts.now + 1, {
+  const bird: Record<string, Uint8Array> = {};
+  for (const file of assets.birdFiles) bird[file.path] = file.bytes;
+  const zipped = zipSync(bird);
+  await publishSample(db, blobs, author.id, now + 1, {
     title: "Paper Bird",
+    titleEn: "Paper Bird",
+    titleZh: "纸鸟",
     summary: "Flap a paper bird through gaps. Click, tap, or press Space.",
+    summaryEn: "Flap a paper bird through gaps. Click, tap, or press Space.",
+    summaryZh: "让纸鸟穿过空隙。点击、轻触或按空格。",
     model: "Hand-written sample",
     tags: ["sample", "flier"],
     prompt: "One-button flying game. A paper bird falls with gravity. Click or Space flaps upward. Walls with gaps scroll in. Score increases when you pass a gap. Restart after a hit.",
     upload: { kind: "zip", filename: "paper-bird.zip", bytes: zipped },
   });
+}
+
+function bytesToPassword(): string {
+  const bytes = crypto.getRandomValues(new Uint8Array(24));
+  let binary = "";
+  for (const b of bytes) binary += String.fromCharCode(b);
+  return btoa(binary);
+}
+
+export function birdZipFromFiles(files: { path: string; bytes: Uint8Array }[]): Uint8Array {
+  const map: Record<string, Uint8Array> = {};
+  for (const file of files) map[file.path] = file.bytes;
+  return zipSync(map);
 }

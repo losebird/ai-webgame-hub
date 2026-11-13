@@ -1,0 +1,39 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>evil-direct</title>
+<pre id="out">running</pre>
+<script>
+(async function () {
+  const log = [];
+  const hub = new URLSearchParams(location.search).get("hub") || "http://127.0.0.1:8787";
+  const sample = new URLSearchParams(location.search).get("game") || "";
+  log.push("cookie=" + JSON.stringify(document.cookie));
+  log.push("origin=" + JSON.stringify(location.origin));
+  let popup = null;
+  try {
+    popup = window.open(hub + "/en/g/" + sample);
+    log.push("open=" + (popup ? "object" : "null"));
+  } catch (err) {
+    log.push("open=throw:" + (err && err.name));
+  }
+  await new Promise((resolve) => setTimeout(resolve, 600));
+  try {
+    if (popup && popup.document) {
+      const button = popup.document.querySelector("[data-like]");
+      if (button) button.click();
+      log.push("like=clicked");
+    } else {
+      log.push("like=no-document");
+    }
+  } catch (err) {
+    log.push("like=throw:" + (err && err.name));
+  }
+  try {
+    top.location = hub + "/hijack";
+    log.push("top=assigned");
+  } catch (err) {
+    log.push("top=throw:" + (err && err.name));
+  }
+  document.getElementById("out").textContent = log.join("\n");
+})();
+</script>

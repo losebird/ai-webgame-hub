@@ -1,64 +1,66 @@
-import { lstatSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import type { BlobStore } from "../store.js";
 
-function assertInside(base: string, dest: string) {
-  const relative = path.relative(base, dest);
-  if (relative.startsWith("..") || path.isAbsolute(relative)) {
-    throw new Error("refusing to write outside the game folder");
-  }
+function validGameId(gameId: string): boolean {
+  return /^[A-Za-z0-9_-]+$/.test(gameId);
 }
 
-export function writeBundle(root: string, gameId: string, files: { path: string; bytes: Uint8Array }[]) {
-  if (!/^[A-Za-z0-9_-]+$/.test(gameId)) {
-    throw new Error("bad game id");
-  }
-  const base = path.resolve(root, gameId);
-  mkdirSync(base, { recursive: true });
-  for (const file of files) {
-    if (file.path.startsWith("/") || file.path.includes("\\") || file.path.split("/").includes("..")) {
-      rmSync(base, { recursive: true, force: true });
-      throw new Error("refusing to write outside the game folder");
-    }
-    const dest = path.resolve(base, file.path);
-    assertInside(base, dest);
-    mkdirSync(path.dirname(dest), { recursive: true });
-    writeFileSync(dest, file.bytes);
-  }
+function validRelPath(rel: string): boolean {
+  if (!rel || rel.startsWith("/") || rel.includes("\\") || rel.includes("\0")) return false;
+  const parts = rel.split("/");
+  return parts.every((part) => part !== "" && part !== "." && part !== "..");
 }
 
-export function readBundle(root: string, gameId: string): Map<string, Uint8Array> | null {
-  if (!/^[A-Za-z0-9_-]+$/.test(gameId)) return null;
-  const base = path.resolve(root, gameId);
-  if (!statOrNull(base)?.isDirectory()) return null;
-  const out = new Map<string, Uint8Array>();
-  walk(base, base, out);
-  return out;
-}
-
-function statOrNull(file: string) {
+export async function writeBundle(
+  blobs: BlobStore,
+  gameId: string,
+  files: { path: string; bytes: Uint8Array }[],
+): Promise<void> {
+  if (!validGameId(gameId)) throw new Error("bad game id");
   try {
-    return lstatSync(file);
-  } catch {
-    return null;
-  }
-}
-
-function walk(base: string, current: string, out: Map<string, Uint8Array>) {
-  for (const name of readdirSync(current)) {
-    const abs = path.join(current, name);
-    const info = lstatSync(abs);
-    if (info.isSymbolicLink()) continue;
-    if (info.isDirectory()) {
-      walk(base, abs, out);
-      continue;
+    for (const file of files) {
+      if (!validRelPath(file.path)) throw new Error("refusing to write outside the game folder");
+      await blobs.put(`games/${gameId}/${file.path}`, file.bytes);
     }
-    const relative = path.relative(base, abs).split(path.sep).join("/");
-    if (relative.startsWith("..") || relative.includes("/../")) continue;
-    out.set(relative, new Uint8Array(readFileSync(abs)));
+  } catch (err) {
+    await blobs.deletePrefix(`games/${gameId}/`);
+    throw err;
   }
 }
 
-export function removeBundle(root: string, gameId: string) {
-  if (!/^[A-Za-z0-9_-]+$/.test(gameId)) return;
-  rmSync(path.resolve(root, gameId), { recursive: true, force: true });
+export async function readBundle(blobs: BlobStore, gameId: string): Promise<Map<string, Uint8Array> | null> {
+  if (!validGameId(gameId)) return null;
+  const prefix = `games/${gameId}/`;
+  const keys = await blobs.list(prefix);
+  if (!keys.length) return null;
+  const out = new Map<string, Uint8Array>();
+  for (const key of keys) {
+    const rel = key.slice(prefix.length);
+    if (!validRelPath(rel)) continue;
+    const bytes = await blobs.get(key);
+    if (bytes) out.set(rel, bytes);
+  }
+  return out.size ? out : null;
+}
+
+export async function removeBundle(blobs: BlobStore, gameId: string): Promise<number> {
+  if (!validGameId(gameId)) return 0;
+  const games = await blobs.deletePrefix(`games/${gameId}/`);
+  const shots = await blobs.deletePrefix(`shots/${gameId}/`);
+  return games + shots;
+}
+
+export async function writeShot(
+  blobs: BlobStore,
+  gameId: string,
+  shotId: string,
+  bytes: Uint8Array,
+  contentType: string,
+): Promise<void> {
+  if (!validGameId(gameId) || !validGameId(shotId)) throw new Error("bad id");
+  await blobs.put(`shots/${gameId}/${shotId}`, bytes, contentType);
+}
+
+export async function readShot(blobs: BlobStore, gameId: string, shotId: string): Promise<Uint8Array | null> {
+  if (!validGameId(gameId) || !validGameId(shotId)) return null;
+  return blobs.get(`shots/${gameId}/${shotId}`);
 }
