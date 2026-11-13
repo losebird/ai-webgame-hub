@@ -1,0 +1,16 @@
+{
+  "id": "M2OOajon-Zphy1Ge",
+  "run": "http://127.0.0.1:8788/run/M2OOajon-Zphy1Ge/",
+  "headers": {
+    "csp": "default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data: blob:; media-src data: blob:; font-src data:; connect-src 'none'; worker-src blob:; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors http://127.0.0.1:8787; sandbox allow-scripts allow-pointer-lock",
+    "cookie": "absent"
+  },
+  "info": {
+    "origin": "http://127.0.0.1:8788",
+    "cookie": "throw:SecurityError",
+    "href": "http://127.0.0.1:8788/run/M2OOajon-Zphy1Ge/"
+  },
+  "opened": "null",
+  "topNav": "assigned",
+  "after": "http://127.0.0.1:8788/run/M2OOajon-Zphy1Ge/"
+}

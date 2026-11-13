@@ -1,0 +1,43 @@
+
+> test
+> tsx --test src/publish/gate.test.ts src/links/validate.test.ts src/play/inline.test.ts src/i18n/keys.test.ts src/crypto-util.test.ts test/app.test.ts test/security.test.ts
+
+✔ compareSecrets is length-independent xor of bytes (2.36775ms)
+✔ password hashes verify (23.616209ms)
+✔ en and zh dictionaries have identical keys (2.029166ms)
+✔ the shipped seed accepts 16 homepage cards and hides 6 alternates (1.733833ms)
+✔ missing fields and non-https urls are rejected without being filled in (0.231125ms)
+✔ local script and css are inlined and remote urls stay put (1.090458ms)
+✔ single html accepted as index.html (4.45425ms)
+✔ zip with root index.html accepted (4.311542ms)
+✔ zip with one folder containing index.html plus js/app.js (0.514458ms)
+✔ root index.html plus nested css and js is accepted (0.797417ms)
+✔ missing index.html (0.192667ms)
+✔ two different top-level folders and no root index.html (0.194125ms)
+✔ entry named ../x → path_traversal (0.218417ms)
+✔ entry named /etc/passwd → absolute_path (0.103333ms)
+✔ symlink entry (0.118292ms)
+✔ declared uncompressed size over the cap → compression_bomb (0.131667ms)
+✔ too many files (0.307334ms)
+✔ renamed zip uploaded as html is not_html (0.134167ms)
+✔ bad html filename (0.059583ms)
+✔ oversized html (0.056917ms)
+✔ seed import is idempotent and lists bad rows (16.43675ms)
+✔ import command prints rejections and exits non-zero (164.761083ms)
+✔ visitor can play, publish, like, and remix (70.207333ms)
+✔ D1 hub /run is 404 and game origin has sandbox CSP without cookies or api (57.145417ms)
+✔ D2 forged IP headers cannot inflate plays and authors do not count (24.384333ms)
+✔ D3 private prompt parent returns bad_parent (15.914083ms)
+✔ D4 takedown deletes R2 objects (16.205125ms)
+✔ D5 renamed zip uploaded as html is rejected (14.836917ms)
+✔ D6 admin token is not in HTML, origin and csrf are required, compare is constant-time (11.474583ms)
+✔ i18n urls, remembered language, and site name config (13.905833ms)
+✔ external cards stay cards and next=//evil is recovered (12.549584ms)
+ℹ tests 31
+ℹ suites 0
+ℹ pass 31
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 542.991584
