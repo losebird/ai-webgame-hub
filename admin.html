@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>后台 · 即玩空间</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+  <style>
+    /* 后台：沿用纸面语言，只补表格类组件。数字一律等宽，分隔线用 hairline。 */
+    .adm-stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin: 26px 0 8px;
+      border-top: 1px solid var(--border);
+      border-left: 1px solid var(--border);
+    }
+    .adm-stat {
+      padding: 16px 18px 14px;
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .adm-stat span {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .adm-stat b {
+      display: block;
+      margin: 8px 0 2px;
+      font-family: var(--font-display);
+      font-size: 30px;
+      line-height: 1;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+    .adm-stat em {
+      font-style: normal;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.04em;
+    }
+    .adm-block { margin-top: 40px; }
+    .adm-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 18px 0 4px;
+    }
+    .adm-input {
+      height: 34px;
+      min-width: 220px;
+      flex: 0 1 260px;
+      padding: 0 12px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: var(--surface);
+      color: var(--fg);
+      font-family: var(--font-body);
+      font-size: 13px;
+    }
+    .adm-input:focus { outline: none; border-color: var(--fg); }
+    .adm-sel {
+      height: 34px;
+      padding: 0 10px;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      background: var(--surface);
+      color: var(--fg);
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+    }
+    .adm-src {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+    .adm-src > span {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .adm-src .adm-sel { height: 30px; max-width: 168px; }
+    .adm-count {
+      margin-left: auto;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+    }
+    .adm-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 16px;
+      align-items: center;
+      padding: 14px 0;
+      border-top: 1px solid var(--border);
+    }
+    .adm-row:last-of-type { border-bottom: 1px solid var(--border); }
+    .adm-row h3 {
+      margin: 0 0 4px;
+      font-size: 16px;
+      line-height: 1.35;
+      font-weight: 600;
+      letter-spacing: 0.01em;
+    }
+    .adm-row h3 a { color: var(--fg); text-decoration: none; }
+    .adm-row h3 a:hover { text-decoration: underline; text-underline-offset: 3px; }
+    .adm-sub {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      line-height: 1.5;
+      letter-spacing: 0.03em;
+      color: var(--muted);
+    }
+    .adm-sub b { color: var(--fg); font-weight: 600; }
+    .adm-acts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+    .adm-acts .btn {
+      height: 30px;
+      min-height: 30px;
+      padding: 0 11px;
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      white-space: nowrap;
+    }
+    .adm-badge {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 7px;
+      border: 1px solid var(--border);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      vertical-align: 2px;
+    }
+    .adm-badge.is-on { color: var(--danger); border-color: var(--danger); }
+    .adm-badge.is-good { color: var(--good); border-color: var(--good); }
+    .adm-badge.is-role { color: var(--fg); border-color: var(--fg); }
+    .adm-pager {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 18px 0 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+    }
+    .adm-quick { margin-top: 26px; }
+    .adm-quick .adm-row { grid-template-columns: 90px minmax(0, 1fr) auto; }
+    .adm-kind {
+      font-family: var(--font-mono);
+      font-size: 10.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .adm-note {
+      margin: 26px 0 0;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+    .adm-note b { color: var(--fg); }
+    @media (max-width: 860px) {
+      .adm-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .adm-row { grid-template-columns: minmax(0, 1fr); }
+      .adm-acts { justify-content: flex-start; }
+      .adm-count { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap" data-od-id="view-admin">
+      <p class="crumb"><a href="index.html" data-i18n="nav.home">首页</a><span aria-hidden="true">/</span><span>后台</span></p>
+      <p class="page-kicker">Operations</p>
+      <h1 class="page-title" data-od-id="admin-title">后台</h1>
+      <p class="lede">举报、工坊投稿、帖子与游戏的治理台。审核员可处理内容；用户管理只有管理员能看。</p>
+      <div class="page-tabs" id="adm-tabs" role="tablist"></div>
+      <div id="adm-body"><p class="meta" style="margin-top:24px">加载中…</p></div>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, toast, esc, t, loginHref, gameHref, postHref } = JIWAN;
+      const api = JIWAN.api;
+      mountChrome('admin');
+
+      const body = document.getElementById('adm-body');
+      const tabsEl = document.getElementById('adm-tabs');
+      const me = api.meSync ? api.meSync() : null;
+      const canReview = !!(me && (me.role === 'admin' || me.role === 'reviewer' || me.id === 'lincheng' || me.id === 'admin'));
+      const isAdmin = !!(me && me.role === 'admin');
+      const PAGE_SIZE = 20;
+
+      if (!me) {
+        body.innerHTML = '<p class="empty">这个页面需要登录。<a class="more-link" href="' + loginHref('admin.html') + '">去登录</a></p>';
+        return;
+      }
+      if (!canReview) {
+        body.innerHTML = '<p class="empty">只有管理员与审核员能进后台。</p>';
+        return;
+      }
+
+      const TABS = [
+        ['over', '概览'],
+        ['reports', '举报'],
+        ['packs', '工坊'],
+        ['posts', '帖子'],
+        ['games', '游戏']
+      ];
+      if (isAdmin) TABS.push(['users', '用户']);
+
+      const state = { tab: 'over', page: 1, q: '', role: '', all: false };
+
+      function fmtTime(at) {
+        const n = Number(at) || 0;
+        if (!n) return '—';
+        const d = Date.now() - n;
+        if (d < 60e3) return '刚刚';
+        if (d < 3600e3) return Math.floor(d / 60e3) + ' 分钟前';
+        if (d < 864e5) return Math.floor(d / 3600e3) + ' 小时前';
+        if (d < 30 * 864e5) return Math.floor(d / 864e5) + ' 天前';
+        const dt = new Date(n);
+        return dt.getFullYear() + '-' + String(dt.getMonth() + 1).padStart(2, '0') + '-' + String(dt.getDate()).padStart(2, '0');
+      }
+      function roleLabel(role) {
+        if (role === 'admin') return '管理员';
+        if (role === 'reviewer') return '审核员';
+        return '用户';
+      }
+      function badge(text, cls) { return '<span class="adm-badge ' + (cls || '') + '">' + esc(text) + '</span>'; }
+      function btn(label, attr, cls) {
+        return '<button class="btn' + (cls ? ' ' + cls : '') + '" type="button" ' + attr + '>' + esc(label) + '</button>';
+      }
+      function paintTabs() {
+        tabsEl.innerHTML = TABS.map(([id, label]) =>
+          '<button class="page-tab' + (state.tab === id ? ' is-on' : '') + '" type="button" role="tab" aria-selected="' + (state.tab === id) + '" data-tab="' + id + '">' + esc(label) + '</button>'
+        ).join('');
+        tabsEl.querySelectorAll('[data-tab]').forEach(b => {
+          b.onclick = async () => { state.tab = b.dataset.tab; state.page = 1; state.q = ''; paint(); };
+        });
+      }
+      function toolbar(opts) {
+        const o = opts || {};
+        const sel = o.roles
+          ? '<select class="adm-sel" id="adm-role">' + [['', '全部角色'], ['admin', '管理员'], ['reviewer', '审核员'], ['user', '普通用户'], ['disabled', '已禁用']]
+              .map(([v, l]) => '<option value="' + v + '"' + (state.role === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
+          : (o.flag
+            ? '<select class="adm-sel" id="adm-flag">' + [[false, '全部'], [true, o.flag[0]]]
+                .map(([v, l]) => '<option value="' + (v ? '1' : '') + '"' + (state.all === v ? ' selected' : '') + '>' + l + '</option>').join('') + '</select>'
+            : '');
+        return '<div class="adm-toolbar">'
+          + '<input class="adm-input" id="adm-q" type="search" placeholder="' + esc(o.placeholder || '搜索') + '" value="' + esc(state.q) + '" autocomplete="off">'
+          + sel
+          + '<span class="adm-count" id="adm-count"></span>'
+          + '</div>';
+      }
+      function bindToolbar(rerender) {
+        const qi = document.getElementById('adm-q');
+        if (qi) {
+          let timer = 0;
+          qi.oninput = () => {
+            clearTimeout(timer);
+            timer = setTimeout(() => { state.q = qi.value.trim(); state.page = 1; rerender(); }, 260);
+          };
+        }
+        const rs = document.getElementById('adm-role');
+        if (rs) rs.onchange = () => { state.role = rs.value; state.page = 1; rerender(); };
+        const fs = document.getElementById('adm-flag');
+        if (fs) fs.onchange = () => { state.all = !!fs.value; state.page = 1; rerender(); };
+      }
+      function pager(data, rerender) {
+        const pages = Math.max(1, Math.ceil((data.total || 0) / PAGE_SIZE));
+        if (pages <= 1) return '';
+        const p = data.page || 1;
+        return '<div class="adm-pager">'
+          + '<button class="btn" type="button" data-page="' + (p - 1) + '"' + (p <= 1 ? ' disabled' : '') + '>上一页</button>'
+          + '<span>' + p + ' / ' + pages + '</span>'
+          + '<button class="btn" type="button" data-page="' + (p + 1) + '"' + (p >= pages ? ' disabled' : '') + '>下一页</button>'
+          + '</div>';
+      }
+      function bindPager(rerender) {
+        body.querySelectorAll('[data-page]').forEach(b => {
+          b.onclick = async () => {
+            if (b.disabled) return;
+            state.page = Number(b.dataset.page) || 1;
+            rerender();
+          };
+        });
+      }
+      /* 原生 confirm/prompt 在嵌入式预览里会被拦掉，后台一律用页内弹层 */
+      function openSheet(opts) {
+        return new Promise(resolve => {
+          const back = document.createElement('div');
+          back.className = 'modal-back is-on';
+          back.setAttribute('role', 'dialog');
+          back.setAttribute('aria-modal', 'true');
+          const input = opts.input
+            ? '<div class="field"><label for="adm-sheet-input">' + esc(opts.input.label || '') + '</label>'
+              + '<input id="adm-sheet-input" maxlength="' + (opts.input.maxLength || 200) + '" value="' + esc(opts.input.value || '') + '"></div>'
+            : '';
+          back.innerHTML = '<div class="sheet"><h3>' + esc(opts.title || '确认') + '</h3>'
+            + (opts.body ? '<p class="meta" style="margin:0 0 16px">' + esc(opts.body) + '</p>' : '')
+            + input
+            + '<div class="detail-actions"><button class="btn btn-primary" type="button" id="adm-sheet-ok">' + esc(opts.okText || '确认') + '</button>'
+            + '<button class="btn" type="button" id="adm-sheet-cancel">取消</button></div></div>';
+          function close(val) {
+            back.remove();
+            document.removeEventListener('keydown', onKey);
+            resolve(val);
+          }
+          function onKey(e) { if (e.key === 'Escape') close(null); }
+          document.addEventListener('keydown', onKey);
+          back.addEventListener('click', e => { if (e.target === back) close(null); });
+          back.querySelector('#adm-sheet-cancel').onclick = () => close(null);
+          back.querySelector('#adm-sheet-ok').onclick = () => {
+            const field = back.querySelector('#adm-sheet-input');
+            close(field ? String(field.value).trim() : true);
+          };
+          document.body.appendChild(back);
+          const field = back.querySelector('#adm-sheet-input');
+          const focusEl = field || back.querySelector('#adm-sheet-ok');
+          if (focusEl) focusEl.focus();
+          if (field) field.select();
+        });
+      }
+      async function ask(title, body, okText) {
+        return (await openSheet({ title, body, okText })) === true;
+      }
+      async function askText(opts) {
+        const v = await openSheet(opts);
+        return typeof v === 'string' ? v : null;
+      }
+
+      function failText(err) {
+        const map = {
+          forbidden: '没有权限',
+          not_found: '对象不存在或已删除',
+          invalid: '参数不合法',
+          conflict: '名字已被占用',
+          auth: '登录已过期，请重新登录',
+          last_admin: '至少保留一个管理员',
+          self: '不能对自己做这个操作'
+        };
+        return map[(err && err.code) || ''] || ((err && err.message) || '操作失败');
+      }
+      async function act(fn, okText) {
+        try {
+          await fn();
+          if (okText) toast(okText);
+          await paint();
+        } catch (err) {
+          toast(failText(err));
+        }
+      }
+
+      /* ---------- 概览 ---------- */
+      async function viewOverview() {
+        const s = await api.adminStats();
+        const cell = (label, n, note) =>
+          '<div class="adm-stat"><span>' + label + '</span><b>' + n + '</b><em>' + (note || '') + '</em></div>';
+        let html = '<div class="adm-stats">'
+          + cell('Games 游戏', s.games.total, s.games.down + ' 已下架')
+          + cell('Users 账号', s.users.total, s.users.new7 + ' 近 7 天新增')
+          + cell('Posts 帖子', s.posts.total, s.posts.hidden + ' 已隐藏')
+          + cell('Comments 评论', s.comments.total, s.comments.new7 + ' 近 7 天')
+          + cell('Reviews 评价', s.reviews.total, s.reviews.seed + ' 条种子')
+          + cell('Plays 试玩', s.plays.total, s.plays.week + ' 近 7 天触达')
+          + cell('Reports 举报', s.reports.pending, s.reports.done + ' 已处理')
+          + cell('Packs 工坊', s.packs.pending, s.packs.listed + ' 已上架')
+          + '</div>';
+
+        const pendingIssues = [];
+        if (s.reports.pending) pendingIssues.push(['reports', s.reports.pending + ' 条举报待处理']);
+        if (s.packs.pending) pendingIssues.push(['packs', s.packs.pending + ' 个工坊包待审']);
+        if (s.posts.hidden) pendingIssues.push(['posts', s.posts.hidden + ' 篇帖子被隐藏']);
+        if (s.games.down) pendingIssues.push(['games', s.games.down + ' 款游戏已下架']);
+        html += '<div class="adm-block"><div class="section-head"><h2>待办</h2><span class="meta">' + (pendingIssues.length ? pendingIssues.length + ' 项' : '干净') + '</span></div>';
+        if (!pendingIssues.length) {
+          html += '<p class="meta">没有待处理项。</p>';
+        } else {
+          html += '<div class="adm-quick">' + pendingIssues.map(([tab, text]) =>
+            '<div class="adm-row"><span class="adm-kind">' + (tab === 'reports' ? 'Reports' : tab === 'packs' ? 'Packs' : tab === 'posts' ? 'Posts' : 'Games') + '</span>'
+            + '<p class="adm-sub">' + esc(text) + '</p>'
+            + '<div class="adm-acts">' + btn('去处理', 'data-jump="' + tab + '"') + '</div></div>'
+          ).join('') + '</div>';
+        }
+        html += '</div>';
+        html += '<p class="adm-note">当前登录：<b>' + esc(me.name) + '</b>（' + roleLabel(me.role) + '）。'
+          + (isAdmin ? '可管理角色与封禁。' : '内容治理可用，用户管理需要管理员身份。') + '</p>';
+        body.innerHTML = html;
+        body.querySelectorAll('[data-jump]').forEach(b => {
+          b.onclick = async () => { state.tab = b.dataset.jump; state.page = 1; paint(); };
+        });
+      }
+
+      /* ---------- 举报 ---------- */
+      async function viewReports() {
+        body.innerHTML = '<div class="adm-toolbar">'
+          + '<label class="adm-sub" style="display:flex;align-items:center;gap:8px;cursor:pointer">'
+          + '<input type="checkbox" id="adm-all"' + (state.all ? ' checked' : '') + '> 连同已处理一起看</label>'
+          + '<span class="adm-count" id="adm-count"></span></div>'
+          + '<div id="adm-list"><p class="meta">加载中…</p></div>';
+        const data = await api.getReports(state.all ? { all: 1 } : {});
+        const allBox = document.getElementById('adm-all');
+        if (allBox) allBox.onchange = () => { state.all = allBox.checked; state.page = 1; paint(); };
+        const items = data.items || [];
+        document.getElementById('adm-count').textContent = items.length + ' 条';
+        const list = document.getElementById('adm-list');
+        if (!items.length) { list.innerHTML = '<p class="meta" style="margin-top:16px">没有举报。</p>'; return; }
+        list.innerHTML = items.map(r => {
+          const target = r.kind === 'post' ? postHref(r.target) : gameHref(r.target);
+          return '<div class="adm-row" data-rid="' + esc(r.id) + '">'
+            + '<div><h3><a href="' + target + '">' + esc(r.title) + '</a>'
+            + badge(r.kind === 'post' ? 'post' : 'game', 'is-role')
+            + (r.done ? badge('已处理', 'is-good') : (r.gone ? badge('已处置', 'is-on') : ''))
+            + '</h3>'
+            + '<p class="adm-sub">理由：' + esc(r.reason) + ' · 举报人 <b>' + esc(r.userId || '匿名') + '</b> · ' + fmtTime(r.at) + '</p></div>'
+            + '<div class="adm-acts">'
+            + (r.done ? '' :
+                btn('处理', 'data-fix="' + esc(r.id) + '" data-kind="' + r.kind + '" data-target="' + esc(r.target) + '"', 'btn-primary')
+                + btn('忽略', 'data-dismiss="' + esc(r.id) + '"'))
+            + '</div></div>';
+        }).join('');
+        list.querySelectorAll('[data-fix]').forEach(b => {
+          b.onclick = async () => {
+            const id = b.dataset.target, kind = b.dataset.kind, rid = b.dataset.fix;
+            const ok = await ask(kind === 'post' ? '隐藏这篇帖子？' : '下架这款游戏？',
+              '处理完会同时把这条举报标记为已处理。', '处理');
+            if (!ok) return;
+            act(async () => {
+              if (kind === 'post') await api.hidePost(id);
+              else await api.takedownGame(id);
+              await api.dismissReport(rid);
+            }, kind === 'post' ? '已隐藏帖子' : '已下架游戏');
+          };
+        });
+        list.querySelectorAll('[data-dismiss]').forEach(b => {
+          b.onclick = () => act(() => api.dismissReport(b.dataset.dismiss), '已标记处理');
+        });
+      }
+
+      /* ---------- 工坊审核 ---------- */
+      async function viewPacks() {
+        body.innerHTML = '<div id="adm-list"><p class="meta">加载中…</p></div>';
+        const data = await api.getWorkshopQueue();
+        const items = data.items || [];
+        const list = document.getElementById('adm-list');
+        if (!items.length) { list.innerHTML = '<p class="meta">队列是空的。</p>'; return; }
+        list.innerHTML = '<div class="section-head"><h2>待审</h2><span class="meta">' + items.length + ' 个包</span></div>'
+          + items.map(p => '<div class="adm-row" data-pid="' + esc(p.id) + '">'
+            + '<div><h3><a href="' + gameHref(p.id) + '">' + esc(p.title) + '</a>' + badge(p.vis === 'public' ? '公开' : p.vis === 'link' ? '链接' : '草稿') + '</h3>'
+            + '<p class="adm-sub">' + esc(p.author || '未署名') + ' · ' + esc(p.blurb || '（无简介）') + '</p>'
+            + '<p class="adm-sub">' + fmtTime(p.at) + (p.tags ? ' · ' + esc(p.tags) : '') + (p.playUrl ? ' · 可玩链接已填' : ' · 无试玩链接') + '</p></div>'
+            + '<div class="adm-acts">'
+            + btn('过审上架', 'data-pass="' + esc(p.id) + '"', 'btn-primary')
+            + btn('拒稿', 'data-reject="' + esc(p.id) + '"')
+            + '</div></div>').join('');
+        list.querySelectorAll('[data-pass]').forEach(b => {
+          b.onclick = async () => {
+            const ok = await ask('上架这个工坊包？', '过审后会并入可发现列表，作者收到通知。', '过审上架');
+            if (!ok) return;
+            act(() => api.reviewPack({ id: b.dataset.pass, status: 'listed' }), '已上架');
+          };
+        });
+        list.querySelectorAll('[data-reject]').forEach(b => {
+          b.onclick = async () => {
+            const why = await askText({
+              title: '拒稿',
+              body: '原因会随通知一起发给作者，留空则记为「未写明原因」。',
+              input: { label: '拒稿原因', value: '版式或可玩性不足', maxLength: 60 },
+              okText: '拒稿'
+            });
+            if (why == null) return;
+            act(() => api.reviewPack({ id: b.dataset.reject, status: 'rejected', reason: why || '未写明原因' }), '已拒稿');
+          };
+        });
+      }
+
+      /* ---------- 帖子 ---------- */
+      async function viewPosts() {
+        body.innerHTML = toolbar({ placeholder: '搜标题 / 正文 / 作者', flag: ['只看已隐藏'] }) + '<div id="adm-list"><p class="meta">加载中…</p></div>';
+        const data = await api.adminPosts({ q: state.q, hidden: state.all ? 1 : '', page: state.page, pageSize: PAGE_SIZE });
+        renderPosts(data);
+        bindToolbar(viewPosts);
+      }
+      function renderPosts(data) {
+        const list = document.getElementById('adm-list');
+        document.getElementById('adm-count').textContent = (data.total || 0) + ' 篇';
+        if (!data.items.length) { list.innerHTML = '<p class="meta" style="margin-top:16px">没有匹配的帖子。</p>'; return; }
+        list.innerHTML = data.items.map(p => '<div class="adm-row">'
+          + '<div><h3><a href="' + postHref(p.id) + '">' + esc(p.title) + '</a>'
+          + (p.hidden ? badge('已隐藏', 'is-on') : '')
+          + '</h3>'
+          + '<p class="adm-sub"><b>' + esc(p.user) + '</b> · ' + esc(p.game || '无关联游戏') + ' · ' + p.likes + ' 赞 · ' + p.comments + ' 评论 · ' + fmtTime(p.at) + '</p></div>'
+          + '<div class="adm-acts">'
+          + (p.hidden
+            ? btn('恢复', 'data-restore="' + esc(p.id) + '"')
+            : btn('隐藏', 'data-hide="' + esc(p.id) + '"'))
+          + btn('删除', 'data-del="' + esc(p.id) + '"')
+          + '</div></div>').join('') + pager(data, viewPosts);
+        list.querySelectorAll('[data-hide]').forEach(b => {
+          b.onclick = async () => {
+            const ok = await ask('隐藏这篇帖子？', '作者会收到通知。隐藏后只有作者和审核员能打开。', '隐藏');
+            if (!ok) return;
+            act(() => api.hidePost(b.dataset.hide), '已隐藏');
+          };
+        });
+        list.querySelectorAll('[data-restore]').forEach(b => {
+          b.onclick = () => act(() => api.adminRestorePost({ id: b.dataset.restore }), '已恢复');
+        });
+        list.querySelectorAll('[data-del]').forEach(b => {
+          b.onclick = async () => {
+            const ok = await ask('删除这篇帖子？', '评论和点赞会一起清掉，且不可恢复。', '删除');
+            if (!ok) return;
+            act(() => api.adminDeletePost({ id: b.dataset.del }), '已删除');
+          };
+        });
+        bindPager(viewPosts);
+      }
+
+      /* ---------- 游戏 ---------- */
+      async function viewGames() {
+        body.innerHTML = toolbar({ placeholder: '搜标题 / 作者 / id', flag: ['只看已下架'] }) + '<div id="adm-list"><p class="meta">加载中…</p></div>';
+        const data = await api.adminGames({ q: state.q, down: state.all ? 1 : '', page: state.page, pageSize: PAGE_SIZE });
+        const list = document.getElementById('adm-list');
+        document.getElementById('adm-count').textContent = (data.total || 0) + ' 部';
+        if (!data.items.length) { list.innerHTML = '<p class="meta" style="margin-top:16px">没有匹配的游戏。</p>'; return; }
+        const byline = g => g.author || (g.maker ? g.maker + ' 生成' : (g.source ? '来源 ' + g.source : '未署名'));
+        /* 来源选择：目录游戏可指派；工坊包固定为「工坊投稿」，不跟着目录来源走 */
+        const sourceCtl = g => {
+          if (g.packStatus) return badge('工坊投稿');
+          const opts = (data.sources || []).slice();
+          if (g.source && !opts.includes(g.source)) opts.unshift(g.source);
+          return '<label class="adm-src"><span>来源</span>'
+            + '<select class="adm-sel" data-src="' + esc(g.id) + '" aria-label="选择来源">'
+            + opts.map(v => '<option value="' + esc(v) + '"' + (g.source === v ? ' selected' : '') + '>' + esc(v || '未标记') + '</option>').join('')
+            + '</select></label>';
+        };
+        list.innerHTML = data.items.map(g => '<div class="adm-row">'
+          + '<div><h3><a href="' + gameHref(g.id) + '">' + esc(g.title) + '</a>'
+          + (g.takedown ? badge('已下架', 'is-on') : '')
+          + (g.packStatus ? badge('工坊 ' + g.packStatus) : '')
+          + '</h3>'
+          + '<p class="adm-sub">' + esc(byline(g)) + ' · ' + esc(g.id) + ' · ' + (g.score ? g.score.toFixed(1) + ' 分' : '无评分') + ' · ' + g.plays + ' 次试玩</p></div>'
+          + '<div class="adm-acts">'
+          + sourceCtl(g)
+          + (g.takedown ? btn('恢复', 'data-up="' + esc(g.id) + '"') : btn('下架', 'data-down="' + esc(g.id) + '"'))
+          + '</div></div>').join('') + pager(data, viewGames);
+        list.querySelectorAll('[data-src]').forEach(sel => {
+          sel.onchange = () => {
+            act(() => api.adminSetGameSource({ id: sel.dataset.src, source: sel.value }), '来源已更新');
+          };
+        });
+        list.querySelectorAll('[data-down]').forEach(b => {
+          b.onclick = async () => {
+            const ok = await ask('下架这款游戏？', '下架后普通用户打开会 404，作者会收到通知；审核员仍可查看。', '下架');
+            if (!ok) return;
+            act(() => api.takedownGame(b.dataset.down), '已下架');
+          };
+        });
+        list.querySelectorAll('[data-up]').forEach(b => {
+          b.onclick = () => act(() => api.adminRestoreGame({ id: b.dataset.up }), '已恢复上架');
+        });
+        bindToolbar(viewGames);
+        bindPager(viewGames);
+      }
+
+      /* ---------- 用户（仅管理员） ---------- */
+      async function viewUsers() {
+        if (!isAdmin) { body.innerHTML = '<p class="empty">用户管理需要管理员身份。</p>'; return; }
+        body.innerHTML = toolbar({ placeholder: '搜名字 / handle', roles: true }) + '<div id="adm-list"><p class="meta">加载中…</p></div>';
+        const data = await api.adminUsers({ q: state.q, role: state.role, page: state.page, pageSize: PAGE_SIZE });
+        const list = document.getElementById('adm-list');
+        document.getElementById('adm-count').textContent = (data.total || 0) + ' 个账号';
+        list.innerHTML = data.items.map(u => {
+          const roleCls = u.role === 'admin' ? 'is-role' : u.role === 'reviewer' ? 'is-good' : '';
+          return '<div class="adm-row">'
+            + '<div><h3><a href="user.html?id=' + encodeURIComponent(u.id) + '">' + esc(u.name) + '</a>'
+            + badge(roleLabel(u.role), roleCls)
+            + (u.disabled ? badge('已禁用', 'is-on') : '')
+            + (u.isMe ? badge('当前账号') : '')
+            + '</h3>'
+            + '<p class="adm-sub">@' + esc(u.handle) + ' · ' + u.posts + ' 帖 · ' + u.reviews + ' 评价 · 注册 ' + fmtTime(u.at) + (u.lastAt ? ' · 最近试玩 ' + fmtTime(u.lastAt) : '') + '</p></div>'
+            + '<div class="adm-acts">'
+            + (u.isMe ? '<span class="meta">— 不能改自己 —</span>' :
+                (u.role === 'admin' ? btn('取消管理员', 'data-role="' + esc(u.id) + '" data-to="reviewer"')
+                  : btn('设为管理员', 'data-role="' + esc(u.id) + '" data-to="admin"'))
+                + (u.role === 'reviewer' ? btn('取消审核', 'data-role="' + esc(u.id) + '" data-to=""')
+                  : (u.role === 'admin' ? '' : btn('设为审核员', 'data-role="' + esc(u.id) + '" data-to="reviewer"')))
+                + (u.disabled ? btn('解禁', 'data-toggle="' + esc(u.id) + '" data-to="0"') : btn('禁用', 'data-toggle="' + esc(u.id) + '" data-to="1"'))
+                + btn('重置密码', 'data-pass="' + esc(u.id) + '"'))
+            + '</div></div>';
+        }).join('') + pager(data, viewUsers);
+
+        list.querySelectorAll('[data-role]').forEach(b => {
+          b.onclick = async () => {
+            const to = b.dataset.to;
+            const ok = await ask('把角色改为「' + roleLabel(to) + '」？', '对方登录后权限立即生效，导航入口需刷新一次。', '改角色');
+            if (!ok) return;
+            act(() => api.adminSetUser({ id: b.dataset.role, role: to }), '角色已更新');
+          };
+        });
+        list.querySelectorAll('[data-toggle]').forEach(b => {
+          b.onclick = async () => {
+            const off = b.dataset.to === '1';
+            const ok = await ask(off ? '禁用这个账号？' : '解除禁用？',
+              off ? '该账号的会话会立即失效，之后登录会被拒绝。' : '解禁后可以正常登录。', off ? '禁用' : '解禁');
+            if (!ok) return;
+            act(() => api.adminSetUser({ id: b.dataset.toggle, disabled: off }), off ? '已禁用' : '已解禁');
+          };
+        });
+        list.querySelectorAll('[data-pass]').forEach(b => {
+          b.onclick = async () => {
+            const pass = await askText({
+              title: '重置密码',
+              body: '直接覆盖，不需要旧密码。至少 4 位。',
+              input: { label: '新密码', value: 'jiwan', maxLength: 40 },
+              okText: '重置'
+            });
+            if (pass == null) return;
+            if (pass.length < 4) { toast('密码至少 4 位'); return; }
+            act(() => api.adminResetPass({ id: b.dataset.pass, pass }), '密码已重置');
+          };
+        });
+        bindToolbar(viewUsers);
+        bindPager(viewUsers);
+      }
+
+      const VIEWS = { over: viewOverview, reports: viewReports, packs: viewPacks, posts: viewPosts, games: viewGames, users: viewUsers };
+
+      /* 只在「首屏」和「地址栏变化」时按 hash 切页签；点页签走 state，不能反过来被旧 hash 覆盖 */
+      async function paint(opts) {
+        if (opts && opts.fromHash) {
+          const h = (location.hash || '').replace('#', '');
+          if (h && VIEWS[h]) state.tab = h;
+        }
+        paintTabs();
+        if (location.hash.replace('#', '') !== state.tab) history.replaceState(null, '', '#' + state.tab);
+        body.innerHTML = '<p class="meta">加载中…</p>';
+        try {
+          await VIEWS[state.tab]();
+        } catch (err) {
+          body.innerHTML = '<p class="empty">加载失败：' + esc(failText(err)) + '</p>';
+        }
+      }
+
+      window.addEventListener('hashchange', () => { paint({ fromHash: true }); });
+      paint({ fromHash: true });
+    })();
+  </script>
+</body>
+</html>

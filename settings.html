@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 账号设置</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap auth-card" data-od-id="view-settings">
+      <p class="crumb"><a href="profile.html" data-i18n="nav.me">我的</a><span aria-hidden="true">/</span><span data-i18n="auth.settingsTitle">账号设置</span></p>
+      <p class="page-kicker" data-i18n="auth.kicker">账号</p>
+      <h1 class="page-title" data-od-id="settings-title" data-i18n="auth.settingsTitle">账号设置</h1>
+      <form id="settings-form" data-od-id="settings-form">
+        <div class="field" id="f-avatar">
+          <label data-i18n="auth.avatar">头像</label>
+          <input id="set-avatar" type="file" accept="image/*" hidden>
+          <button class="avatar-pick" id="avatar-pick" type="button" data-od-id="cta-avatar" aria-label="头像">?</button>
+          <p class="hint" data-i18n="auth.avatarHint">点这里选一张图。只写在这台设备上。</p>
+        </div>
+        <div class="field" id="f-name">
+          <label for="set-name" data-i18n="auth.name">名字</label>
+          <input id="set-name" name="name" maxlength="16" required>
+        </div>
+        <div class="field">
+          <label for="set-bio" data-i18n="auth.bio">简介</label>
+          <textarea id="set-bio" name="bio" maxlength="80"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" data-od-id="cta-save-profile" data-i18n="auth.save">保存资料</button>
+      </form>
+      <form id="pass-form" data-od-id="pass-form" style="margin-top:36px">
+        <div class="field" id="f-old-pass">
+          <label for="set-old-pass" data-i18n="auth.oldPass">当前密码</label>
+          <input id="set-old-pass" name="oldPass" type="password" autocomplete="current-password" required>
+        </div>
+        <div class="field" id="f-new-pass">
+          <label for="set-new-pass" data-i18n="auth.newPass">新密码</label>
+          <input id="set-new-pass" name="pass" type="password" autocomplete="new-password" minlength="4" required>
+          <p class="err" data-i18n="auth.passShort">密码至少四个字</p>
+        </div>
+        <button class="btn" type="submit" data-od-id="cta-save-pass" data-i18n="auth.changePass">记下新密码</button>
+      </form>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, t, applyI18n, toast, esc } = JIWAN;
+      const api = JIWAN.api;
+      if (!api.requireAuth('settings.html')) return;
+      mountChrome('profile');
+      document.title = t('title.settings');
+      let avatarData = '';
+      const pick = document.getElementById('avatar-pick');
+      const file = document.getElementById('set-avatar');
+      function paintFace(src, name) {
+        if (src) pick.innerHTML = '<img src="' + src + '" alt="">';
+        else pick.textContent = (name || '?').slice(0, 1);
+      }
+      function boot() {
+        const me = api.meSync() || {};
+        document.getElementById('set-name').value = me.name || '';
+        document.getElementById('set-bio').value = me.bio || '';
+        avatarData = me.avatar || '';
+        paintFace(avatarData, me.name);
+        applyI18n();
+      }
+      pick.onclick = () => file.click();
+      file.onchange = () => {
+        const f = file.files && file.files[0];
+        if (!f) return;
+        if (!f.type.startsWith('image/')) { toast(t('workshop.needImage')); return; }
+        const img = new Image();
+        const url = URL.createObjectURL(f);
+        img.onload = () => {
+          const c = document.createElement('canvas');
+          c.width = 128; c.height = 128;
+          const ctx = c.getContext('2d');
+          const s = Math.min(img.naturalWidth, img.naturalHeight);
+          const sx = (img.naturalWidth - s) / 2;
+          const sy = (img.naturalHeight - s) / 2;
+          ctx.drawImage(img, sx, sy, s, s, 0, 0, 128, 128);
+          try { avatarData = c.toDataURL('image/jpeg', 0.8); }
+          catch (e) { avatarData = ''; }
+          URL.revokeObjectURL(url);
+          paintFace(avatarData, document.getElementById('set-name').value);
+        };
+        img.onerror = () => { URL.revokeObjectURL(url); toast(t('workshop.badImage')); };
+        img.src = url;
+      };
+      document.getElementById('settings-form').onsubmit = async e => {
+        e.preventDefault();
+        const name = document.getElementById('set-name').value.trim();
+        document.getElementById('f-name').classList.toggle('is-bad', name.length < 2);
+        if (name.length < 2) { toast(t('auth.needFields')); return; }
+        try {
+          await api.updateMe({ name, bio: document.getElementById('set-bio').value.trim(), avatar: avatarData });
+          toast(t('auth.saved'));
+          mountChrome('profile');
+          paintFace(avatarData, name);
+        } catch (err) {
+          if (err.code === 'auth') api.requireAuth('settings.html');
+          else toast(t('auth.needFields'));
+        }
+      };
+      document.getElementById('pass-form').onsubmit = async e => {
+        e.preventDefault();
+        const oldPass = document.getElementById('set-old-pass').value;
+        const pass = document.getElementById('set-new-pass').value;
+        document.getElementById('f-new-pass').classList.toggle('is-bad', pass.length < 4);
+        if (pass.length < 4) { toast(t('auth.passShort')); return; }
+        try {
+          await api.changePassword({ oldPass, pass });
+          document.getElementById('set-old-pass').value = '';
+          document.getElementById('set-new-pass').value = '';
+          toast(t('auth.passChanged'));
+        } catch (err) {
+          if (err.code === 'auth' && err.message === 'login') api.requireAuth('settings.html');
+          else toast(t('auth.passWrong'));
+        }
+      };
+      window.addEventListener('jiwan:langchange', () => { document.title = t('title.settings'); applyI18n(); });
+      boot();
+    })();
+  </script>
+</body>
+</html>

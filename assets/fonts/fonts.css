@@ -1,0 +1,22 @@
+@font-face {
+  font-family: "Fusion Pixel";
+  src: url("fusion-pixel-12px-proportional-zh_hans.otf.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Fusion Bold Pixel";
+  src: url("fusion-bold-pixel-12px-proportional-zh_hans.otf.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Press Start 2P";
+  src: url("PressStart2P-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  unicode-range: U+0020-007E;
+}

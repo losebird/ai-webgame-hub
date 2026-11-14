@@ -1,0 +1,15 @@
+{
+  "name": "jiwan-server",
+  "private": true,
+  "version": "1.0.0",
+  "description": "即玩空间后端：node:http + node:sqlite，零依赖",
+  "engines": {
+    "node": ">=22.5"
+  },
+  "scripts": {
+    "migrate": "node migrate.js",
+    "api": "node index.js",
+    "web": "node static.js",
+    "test": "node smoke.js && node client-test.js"
+  }
+}

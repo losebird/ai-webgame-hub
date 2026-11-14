@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 作者</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap" data-od-id="view-user">
+      <div id="user-back"></div>
+      <div id="user-root"></div>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, coverHTML, iconHTML, scoreText, gameHref, t, applyI18n, gameTitle, tagLabel, fableLabel, toast, esc, loginHref, avatarHTML, postHref, userHref, reviewLabel, byId, authorLabel, backHTML} = JIWAN;
+      const api = JIWAN.api;
+      mountChrome('community');
+      /* 返回上一层：从社区/帖子/游戏详情/另一个作者页点进来的，就回到那一页 */
+      const backSlot = document.getElementById('user-back');
+      if (backSlot) backSlot.innerHTML = backHTML({ odId: 'user-back', wide: true });
+      const id = new URLSearchParams(location.search).get('id') || '';
+      const root = document.getElementById('user-root');
+      async function paint() {
+        let data;
+        try { data = await api.getUser(id); }
+        catch (e) {
+          document.title = t('user.missing') + ' · ' + t('brand.name');
+          root.innerHTML = '<div class="empty">' + t('user.missing') + '</div>';
+          applyI18n();
+          return;
+        }
+        const u = data.user;
+        document.title = u.name + ' · ' + t('brand.name');
+        const followBtn = data.isMe ? '' : `<button class="btn" type="button" id="btn-follow-user" data-od-id="cta-follow-user">${data.following ? t('user.following') : t('user.follow')}</button>`;
+        const games = data.made || [];
+        const playing = data.playing || [];
+        const reviews = data.reviews || [];
+        const posts = data.posts || [];
+        const followers = data.followers || [];
+        root.innerHTML = `
+          <p class="page-kicker">${esc(u.handle || u.id)}</p>
+          <h1 class="page-title" data-od-id="user-name">${avatarHTML(u, 'user-face')} ${esc(u.name)}</h1>
+          <p class="lede">${esc(u.bio || '')}</p>
+          <div class="profile-tools">${followBtn}</div>
+          <div class="section-head"><h2>${t('profile.followers')}</h2><span class="meta">${followers.length}</span></div>
+          ${followers.length
+            ? `<div class="shelf-list">${followers.map(f => `<a class="rank-item" href="${userHref(f.id)}" data-od-id="user-follower-${f.id}"><span>${avatarHTML(f, 'user-face')}</span><span><span class="row-title">${esc(f.name)}</span><div class="row-sub">${esc(f.handle || f.id)}</div></span></a>`).join('')}</div>`
+            : '<div class="empty">' + t('profile.emptyFollowers') + '</div>'}
+          <div class="section-head"><h2>${t('profile.tabPlay')}</h2><span class="meta">${playing.length}</span></div>
+          ${playing.length
+            ? `<div class="shelf-list">${playing.map(g => `<a class="rank-item" href="${gameHref(g.id)}" data-od-id="user-play-${g.id}">${iconHTML(g)}<span><span class="row-title">${gameTitle(g)}</span><div class="row-sub">${authorLabel(g)}</div></span><span class="score">${scoreText(g)}</span></a>`).join('')}</div>`
+            : '<div class="empty">' + t(data.isMe ? 'profile.emptyPlay' : 'profile.emptyPlayOther') + '</div>'}
+          <div class="section-head"><h2 data-i18n="profile.tabMade">${t('profile.tabMade')}</h2></div>
+          ${games.length
+            ? `<div class="browse-grid">${games.map(g => `<a class="browse-card" href="${gameHref(g.id)}" data-od-id="user-game-${g.id}"><div class="thumb">${coverHTML(g, fableLabel(g))}</div><p>${gameTitle(g)}</p><div class="meta"><span class="score">${scoreText(g)}</span> · ${tagLabel(g.tags[0])}</div></a>`).join('')}</div>`
+            : '<div class="empty">' + t('profile.emptyMade') + '</div>'}
+          <div class="section-head"><h2>${t('profile.tabReview')}</h2><span class="meta">${reviews.length}</span></div>
+          ${reviews.length
+            ? `<div class="reviews">${reviews.map(r => {
+                const g = byId(r.game);
+                return `<article class="review" data-od-id="user-rev-${r.id || r.game}">
+                  <header><span>${g ? gameTitle(g) : r.game}</span><span class="score">${r.score != null ? r.score.toFixed(1) + ' · ' : ''}${reviewLabel(r.s)}</span></header>
+                  <p style="margin:0">${esc(r.t)}</p>
+                  ${g ? `<p><a class="more-link" href="${gameHref(g.id)}">${t('cta.seeGame')}</a></p>` : ''}
+                </article>`;
+              }).join('')}</div>`
+            : '<div class="empty">' + t(data.isMe ? 'detail.noReviews' : 'profile.emptyReviewsOther') + '</div>'}
+          <div class="section-head"><h2>${t('profile.posts')}</h2><span class="meta">${posts.length}</span></div>
+          ${posts.length
+            ? `<div class="posts">${posts.map(p => {
+                const g = byId(p.game);
+                return `<article class="post" data-od-id="user-post-${p.id}">
+                  <div>
+                    <h3><a href="${postHref(p.id)}">${esc(p.title)}</a></h3>
+                    <div class="meta">${p.time}${g ? ' · ' + gameTitle(g) : ''}</div>
+                  </div>
+                </article>`;
+              }).join('')}</div>`
+            : '<div class="empty">' + t(data.isMe ? 'profile.emptyPosts' : 'profile.emptyPostsOther') + '</div>'}
+        `;
+        const btn = document.getElementById('btn-follow-user');
+        if (btn) btn.onclick = async () => {
+          if (!api.requireAuth()) return;
+          try {
+            const r = await api.followUser(u.id);
+            toast(r.followed ? t('community.followed', {name: u.name}) : t('community.unfollowed', {name: u.name}));
+            paint();
+          } catch (err) { if (err.code === 'auth') api.requireAuth(); }
+        };
+        applyI18n();
+      }
+      window.addEventListener('jiwan:langchange', paint);
+      paint();
+    })();
+  </script>
+</body>
+</html>

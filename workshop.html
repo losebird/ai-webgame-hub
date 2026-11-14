@@ -1,0 +1,605 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 工坊</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html" data-od-id="brand-home" aria-label="即玩空间"><svg class="brand-logo" data-lang="zh" viewBox="0 0 128 28" width="128" height="28" fill="none" role="img" aria-hidden="true" focusable="false" overflow="visible"><g class="brand-pads" aria-hidden="true" transform="translate(50 14) scale(.7) translate(-50 -14)"><defs><linearGradient id="jiwanPadWg" x1="18%" y1="6%" x2="82%" y2="96%"><stop offset="0" stop-color="#fffef8"/><stop offset=".38" stop-color="#f4eee4"/><stop offset=".72" stop-color="#d5ccbe"/><stop offset="1" stop-color="#b4a896"/></linearGradient><linearGradient id="jiwanPadWf" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e4dcd0"/></linearGradient><linearGradient id="jiwanPadWb" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#d8d0c4"/><stop offset="1" stop-color="#c4b8a8"/></linearGradient><radialGradient id="jiwanPadWs" cx="32%" cy="22%" r="58%"><stop offset="0" stop-color="#fff" stop-opacity=".72"/><stop offset=".42" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="jiwanPadKg" x1="16%" y1="0%" x2="88%" y2="100%"><stop offset="0" stop-color="#4e4e54"/><stop offset=".4" stop-color="#1c1c20"/><stop offset="1" stop-color="#08080a"/></linearGradient><linearGradient id="jiwanPadKf" x1="28%" y1="0%" x2="72%" y2="100%"><stop offset="0" stop-color="#3a3a40"/><stop offset="1" stop-color="#141416"/></linearGradient><linearGradient id="jiwanPadKb" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#121214"/></linearGradient><radialGradient id="jiwanPadKs" cx="36%" cy="18%" r="52%"><stop offset="0" stop-color="#9a9aa2" stop-opacity=".45"/><stop offset=".5" stop-color="#4a4a50" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><radialGradient id="jiwanPadStW" cx="36%" cy="30%" r="68%"><stop offset="0" stop-color="#4a4540"/><stop offset=".48" stop-color="#1a1816"/><stop offset="1" stop-color="#050403"/></radialGradient><radialGradient id="jiwanPadStK" cx="36%" cy="30%" r="68%"><stop offset="0" stop-color="#6e6e74"/><stop offset=".48" stop-color="#2a2a2e"/><stop offset="1" stop-color="#0c0c0e"/></radialGradient></defs><ellipse cx="24.5" cy="26.6" rx="17.5" ry="2.1" fill="#2a231c" opacity=".14"/><g transform="translate(14.2 .4) rotate(17 20 13.4) scale(.9)"><g class="pad-k"><path fill="url(#jiwanPadKg)" stroke="#050506" stroke-width=".35" stroke-linejoin="round" d="M8 3.6C4.5 3.8 2.2 6 1.6 9.4C1.1 12.6 1.8 15.5 3.4 17.5C3.2 20.6 1.8 24.8 4.6 26.8C7.2 28.6 11.4 26.6 12.2 22.6C12.8 20.4 15 18.4 18 18C19.3 17.8 20.7 17.8 22 18C25 18.4 27.2 20.4 27.8 22.6C28.6 26.6 32.8 28.6 35.4 26.8C38.2 24.8 36.8 20.6 36.6 17.5C38.2 15.5 38.9 12.6 38.4 9.4C37.8 6 35.5 3.8 32 3.6C27.5 2.8 12.5 2.8 8 3.6Z"/><path fill="url(#jiwanPadKb)" d="M8.4 3.7C12.2 2.55 27.8 2.55 31.6 3.7C28.6 2.35 11.4 2.35 8.4 3.7Z"/><path fill="url(#jiwanPadKf)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><path fill="url(#jiwanPadKs)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><circle cx="11.5" cy="10.15" r="2.45" fill="#000" opacity=".12"/><path fill="#c8c8ce" d="M10.95 8.00h1.1v1.6h1.6v1.1h-1.6v1.6h-1.1v-1.6h-1.6v-1.1h1.6z"/><circle cx="11.5" cy="10.15" r=".28" fill="#000" opacity=".25"/><ellipse cx="11.85" cy="16.7" rx="2.87" ry="2.6404" fill="#000" opacity=".22"/><ellipse cx="11.85" cy="16.55" rx="2.45" ry="2.303" fill="url(#jiwanPadStK)" stroke="#8a8a90" stroke-width=".35"/><ellipse cx="11.85" cy="16.844" rx="1.0290000000000001" ry="0.931" fill="#000" opacity=".28"/><ellipse cx="11.164" cy="15.717" rx="0.539" ry="0.392" fill="#fff" opacity=".4"/><circle cx="20.0" cy="8.55" r="1.55" fill="#0a0a0c"/><circle cx="20.0" cy="8.55" r="1.05" fill="#2e2e32"/><circle cx="19.75" cy="8.200000000000001" r=".35" fill="#fff" opacity=".28"/><circle cx="28.45" cy="9.35" r="1.05" fill="#efbf0d"/><circle cx="28.169999999999998" cy="9.03" r=".38" fill="#fff" opacity=".5"/><circle cx="26.25" cy="11.55" r="1.05" fill="#3b88e3"/><circle cx="25.97" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="30.65" cy="11.55" r="1.05" fill="#e03c3c"/><circle cx="30.369999999999997" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="28.45" cy="13.75" r="1.05" fill="#5cbf4a"/><circle cx="28.169999999999998" cy="13.43" r=".38" fill="#fff" opacity=".5"/><ellipse cx="28.85" cy="17.299999999999997" rx="2.64" ry="2.4288000000000003" fill="#000" opacity=".22"/><ellipse cx="28.85" cy="17.15" rx="2.22" ry="2.0868" fill="url(#jiwanPadStK)" stroke="#8a8a90" stroke-width=".35"/><ellipse cx="28.85" cy="17.4164" rx="0.9324" ry="0.8436000000000001" fill="#000" opacity=".28"/><ellipse cx="28.2284" cy="16.3952" rx="0.48840000000000006" ry="0.3552" fill="#fff" opacity=".4"/></g></g><g transform="translate(.15 2.05) rotate(-2.6 19.5 14)"><g class="pad-w"><path fill="url(#jiwanPadWg)" stroke="#2a231c" stroke-width=".7" stroke-linejoin="round" d="M8 3.6C4.5 3.8 2.2 6 1.6 9.4C1.1 12.6 1.8 15.5 3.4 17.5C3.2 20.6 1.8 24.8 4.6 26.8C7.2 28.6 11.4 26.6 12.2 22.6C12.8 20.4 15 18.4 18 18C19.3 17.8 20.7 17.8 22 18C25 18.4 27.2 20.4 27.8 22.6C28.6 26.6 32.8 28.6 35.4 26.8C38.2 24.8 36.8 20.6 36.6 17.5C38.2 15.5 38.9 12.6 38.4 9.4C37.8 6 35.5 3.8 32 3.6C27.5 2.8 12.5 2.8 8 3.6Z"/><path fill="url(#jiwanPadWb)" d="M8.4 3.7C12.2 2.55 27.8 2.55 31.6 3.7C28.6 2.35 11.4 2.35 8.4 3.7Z"/><path fill="url(#jiwanPadWf)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><path fill="url(#jiwanPadWs)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><circle cx="11.5" cy="10.15" r="2.45" fill="#000" opacity=".12"/><path fill="#2c2720" d="M10.95 8.00h1.1v1.6h1.6v1.1h-1.6v1.6h-1.1v-1.6h-1.6v-1.1h1.6z"/><circle cx="11.5" cy="10.15" r=".28" fill="#000" opacity=".25"/><ellipse cx="11.85" cy="16.7" rx="2.87" ry="2.6404" fill="#000" opacity=".22"/><ellipse cx="11.85" cy="16.55" rx="2.45" ry="2.303" fill="url(#jiwanPadStW)" stroke="#1a1814" stroke-width=".35"/><ellipse cx="11.85" cy="16.844" rx="1.0290000000000001" ry="0.931" fill="#000" opacity=".28"/><ellipse cx="11.164" cy="15.717" rx="0.539" ry="0.392" fill="#fff" opacity=".4"/><circle cx="20.0" cy="8.55" r="1.55" fill="#2a251f"/><circle cx="20.0" cy="8.55" r="1.05" fill="#14110e"/><circle cx="19.75" cy="8.200000000000001" r=".35" fill="#fff" opacity=".28"/><circle cx="28.45" cy="9.35" r="1.05" fill="#efbf0d"/><circle cx="28.169999999999998" cy="9.03" r=".38" fill="#fff" opacity=".5"/><circle cx="26.25" cy="11.55" r="1.05" fill="#3b88e3"/><circle cx="25.97" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="30.65" cy="11.55" r="1.05" fill="#e03c3c"/><circle cx="30.369999999999997" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="28.45" cy="13.75" r="1.05" fill="#5cbf4a"/><circle cx="28.169999999999998" cy="13.43" r=".38" fill="#fff" opacity=".5"/><ellipse cx="28.85" cy="17.299999999999997" rx="2.64" ry="2.4288000000000003" fill="#000" opacity=".22"/><ellipse cx="28.85" cy="17.15" rx="2.22" ry="2.0868" fill="url(#jiwanPadStW)" stroke="#1a1814" stroke-width=".35"/><ellipse cx="28.85" cy="17.4164" rx="0.9324" ry="0.8436000000000001" fill="#000" opacity=".28"/><ellipse cx="28.2284" cy="16.3952" rx="0.48840000000000006" ry="0.3552" fill="#fff" opacity=".4"/></g></g></g><text x="54" y="20" font-size="17" font-weight="600" letter-spacing="0.04em" fill="currentColor" style="font-family:'Noto Serif SC','Songti SC','STSong',serif">即玩空间</text></svg></a>
+      <nav class="nav-links" aria-label="主导航"><a class="nav-link" href="index.html" data-od-id="nav-home" data-i18n="nav.home">首页</a><a class="nav-link" href="browse.html" data-od-id="nav-browse" data-i18n="nav.discover">发现</a><a class="nav-link" href="rankings.html" data-od-id="nav-rank" data-i18n="nav.rank">排行</a><a class="nav-link" href="community.html" data-od-id="nav-community" data-i18n="nav.community">社区</a></nav>
+      <div class="search-wrap" data-od-id="search">
+        <input class="search-field" id="search" type="search" placeholder="搜索游戏" data-i18n-placeholder="nav.search" autocomplete="off">
+        <div class="search-pop" id="search-pop" role="listbox"></div>
+      </div>
+      <div class="nav-actions">
+        <div class="lang-switch" data-od-id="lang-switch" role="group" data-i18n-aria="nav.lang" aria-label="语言"><button class="lang-btn" type="button" data-lang="zh" data-od-id="lang-zh" aria-pressed="true">中</button><span class="lang-sep" aria-hidden="true">/</span><button class="lang-btn" type="button" data-lang="en" data-od-id="lang-en" aria-pressed="false">EN</button></div>
+        <a class="nav-link desktop-only" href="workshop.html#publish" data-od-id="btn-publish" data-i18n="nav.publish">上架作品</a>
+        <a class="nav-link desktop-only" href="profile.html" data-od-id="btn-login" data-i18n="nav.login">登录</a>
+        <button class="nav-link menu-btn" type="button" id="menu-btn" aria-label="打开菜单" data-i18n="nav.menu" data-i18n-aria="nav.menu">菜单</button>
+      </div>
+    </div>
+    <div class="mobile-drawer" id="mobile-drawer"><a class="nav-link" href="index.html">首页</a><a class="nav-link" href="browse.html">发现</a><a class="nav-link" href="rankings.html">排行</a><a class="nav-link" href="community.html">社区</a><a class="nav-link is-active" href="workshop.html">工坊</a>
+      <a class="nav-link" href="workshop.html#publish">上架作品</a>
+      <a class="nav-link" href="profile.html">登录</a>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap" data-od-id="view-workshop">
+      <p class="crumb"><a href="index.html" data-i18n="nav.home">首页</a><span aria-hidden="true">/</span><span data-i18n="nav.workshop">工坊</span></p>
+      <p class="page-kicker" data-i18n="workshop.kicker">工坊投稿</p>
+      <h1 class="page-title" data-od-id="workshop-title" data-i18n="workshop.title">把网页包放到架上</h1>
+      <p class="lede" data-i18n="workshop.lede">把你导出的网页包传上来——.zip 或 .html 都行，用什么工具做的都可以，只要能在浏览器里打开。补一张封面、写一句话和标签，提交后进入审核队列；审核通过，作品才会出现在发现页。</p>
+      <div class="form-grid">
+        <section data-od-id="workshop-mine">
+          <div class="section-head">
+            <h2 data-i18n="workshop.drafts">我的投稿</h2>
+            <span class="meta" id="mine-count"></span>
+          </div>
+          <div id="drafts"><p class="meta" data-i18n="workshop.draftsLoading">正在读你的投稿…</p></div>
+          <div id="review-queue" data-od-id="workshop-queue" hidden></div>
+        </section>
+        <section id="publish" data-od-id="workshop-form">
+          <div class="section-head"><h2 data-i18n="workshop.publish">上架作品</h2></div>
+          <p class="note" id="edit-banner" hidden></p>
+          <form id="pack-form" novalidate>
+            <div class="field" id="f-title">
+              <label for="pack-title" data-i18n="workshop.formName">游戏名</label>
+              <input id="pack-title" name="title" maxlength="24" required placeholder="例如：夜航港" data-i18n-placeholder="workshop.placeholder">
+              <p class="err" data-i18n="workshop.titleErr">请填写 2 到 24 个字的游戏名。</p>
+            </div>
+            <div class="field" id="f-author">
+              <label for="pack-author" data-i18n="workshop.formAuthor">作者</label>
+              <input id="pack-author" name="author" maxlength="20" value="林澄" required>
+              <p class="err" data-i18n="workshop.authorErr">请填写作者名。</p>
+            </div>
+            <div class="field" id="f-blurb">
+              <label for="pack-blurb" data-i18n="workshop.formBlurb">一句话</label>
+              <textarea id="pack-blurb" name="blurb" maxlength="60" placeholder="打开就能玩的那一句。" data-i18n-placeholder="workshop.blurbPh"></textarea>
+            </div>
+            <div class="field" id="f-cat">
+              <label for="pack-cat" data-i18n="workshop.formCat">类型</label>
+              <select id="pack-cat" name="cat">
+                <option value="story" data-i18n="genre.story">叙事</option>
+                <option value="action" data-i18n="genre.action">动作</option>
+                <option value="puzzle" data-i18n="genre.puzzle">解谜</option>
+                <option value="idle" data-i18n="genre.idle">放置</option>
+              </select>
+            </div>
+            <div class="field" id="f-tags">
+              <label for="pack-tags" data-i18n="workshop.formTags">标签</label>
+              <input id="pack-tags" name="tags" placeholder="工坊、叙事，用顿号分开" data-i18n-placeholder="workshop.tagsPh">
+            </div>
+            <div class="field" id="f-vis">
+              <label data-i18n="workshop.formVis">可见性</label>
+              <div class="choice-row">
+                <label><input type="radio" name="vis" value="public" checked> <span data-i18n="workshop.visOpen">公开</span></label>
+                <label><input type="radio" name="vis" value="link"> <span data-i18n="workshop.visLink">仅链接</span></label>
+                <label><input type="radio" name="vis" value="draft"> <span data-i18n="workshop.visDraft">草稿</span></label>
+              </div>
+            </div>
+            <div class="field" id="f-pack">
+              <label for="pack-file" data-i18n="workshop.formPack">网页包</label>
+              <input id="pack-file" name="pack" type="file" accept=".zip,.html,.htm">
+              <button class="drop" id="pack-drop" type="button">点这里选择 .zip 或 .html</button>
+              <p class="hint" data-i18n="workshop.packHint">提交后进入审核队列，审核通过才会出现在发现页。</p>
+              <p class="err" data-i18n="workshop.packErr">请选择网页包（.zip 或 .html）。</p>
+            </div>
+            <div class="field" id="f-play">
+              <label for="pack-play" data-i18n="workshop.formPlay">试玩地址</label>
+              <input id="pack-play" name="playUrl" maxlength="240" placeholder="https://" data-i18n-placeholder="workshop.playPh">
+              <p class="hint" data-i18n="workshop.playHint">填托管页地址后，试玩舱才能打开。没有地址会显示「暂不可玩」。</p>
+            </div>
+            <div class="field" id="f-cover">
+              <label for="pack-cover" data-i18n="workshop.formCover">封面</label>
+              <input id="pack-cover" name="cover" type="file" accept="image/*">
+              <div class="cover-live" data-od-id="workshop-cover-preview">
+                <button class="cover-live-hit" id="cover-drop" type="button" aria-label="选择封面">
+                  <div class="thumb">
+                    <div class="cover" id="cover-art" style="--hue:155;--chroma:0.1">
+                      <span class="cover-kicker">预览</span>
+                      <strong>游戏名</strong>
+                    </div>
+                  </div>
+                  <span class="cover-live-name" id="cover-live-name">未命名</span>
+                  <span class="cover-live-sub" id="cover-live-sub">林澄 · 叙事</span>
+                </button>
+                <div class="cover-live-tools" id="cover-tools">
+                  <button class="cover-clear" id="cover-clear" type="button" data-i18n="workshop.clearCover">去掉封面</button>
+                </div>
+              </div>
+              <p class="hint" id="cover-hint">点纸窗选图，也可拖进来。发现页按 16:10 裁切。</p>
+            </div>
+            <button class="btn btn-primary" type="submit" id="workshop-submit" data-od-id="workshop-submit" data-i18n="workshop.submit">提交上架</button>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"><div class="foot-inner"><strong>即玩空间</strong> <span data-i18n="foot.body">站内游戏均搜集自公开网络，版权归原作者所有。若涉侵权，请留言告知，我们会尽快核实并下架。联系邮箱：</span><a class="foot-mail" href="mailto:sqzxz456@gmail.com" data-i18n="foot.mail">sqzxz456@gmail.com</a></div></footer>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function(){
+    const { mountChrome, gameHref, toast, t, applyI18n, esc, loginHref, openReasonForm, postHref } = JIWAN;
+    const api = JIWAN.api;
+    mountChrome('workshop');
+    const CAT_HUE = { story: 155, action: 25, puzzle: 50, idle: 230 };
+    function catLabel(id){ return t('genre.' + id); }
+    function statusLabel(d){
+      if (d.status === 'listed') return t('workshop.statusListed');
+      if (d.status === 'rejected') return t('workshop.statusRejected');
+      if (d.status === 'unlisted') return t('workshop.statusUnlisted');
+      if (d.status === 'pending') return t('workshop.statusPending');
+      if (d.vis === 'public') return t('workshop.visPublic');
+      if (d.vis === 'link') return t('workshop.visLink');
+      return t('workshop.statusDraft');
+    }
+    let editingId = '';
+    let editingCoverData = '';
+    let editingFile = '';
+    function clearEdit(){
+      editingId = '';
+      editingCoverData = '';
+      editingFile = '';
+      const banner = document.getElementById('edit-banner');
+      banner.hidden = true;
+      banner.innerHTML = '';
+      document.getElementById('workshop-submit').textContent = t('workshop.submit');
+    }
+    function fillForm(d){
+      editingId = d.id;
+      editingCoverData = d.coverData || '';
+      editingFile = d.file || '';
+      document.getElementById('pack-title').value = d.title || '';
+      document.getElementById('pack-author').value = d.author || '';
+      document.getElementById('pack-blurb').value = d.blurb || '';
+      document.getElementById('pack-cat').value = d.cat || 'story';
+      document.getElementById('pack-tags').value = d.tags || '';
+      document.getElementById('pack-play').value = d.playUrl || '';
+      form.querySelectorAll('input[name="vis"]').forEach(r => { r.checked = r.value === (d.vis || 'public'); });
+      packFile.value = '';
+      drop.textContent = d.file || t('workshop.dropPack');
+      drop.classList.toggle('is-on', !!d.file);
+      const banner = document.getElementById('edit-banner');
+      banner.hidden = false;
+      banner.innerHTML = t('workshop.editing') + ' · ' + esc(d.title) + ' <button class="more-link" type="button" id="cancel-edit">' + t('workshop.cancelEdit') + '</button>';
+      document.getElementById('workshop-submit').textContent = t('workshop.saveEdit');
+      document.getElementById('cancel-edit').onclick = () => {
+        form.reset();
+        const meNow = api && api.meSync && api.meSync();
+        document.getElementById('pack-author').value = (meNow && meNow.name) || '';
+        drop.textContent = t('workshop.dropPack');
+        drop.classList.remove('is-on');
+        revokeCover();
+        clearEdit();
+        paintPreview();
+      };
+      if (d.coverData) {
+        revokeCover();
+        const img = new Image();
+        img.onload = () => {
+          coverMeta = { w: img.naturalWidth || 640, h: img.naturalHeight || 360, name: d.cover || t('workshop.coverAlt'), img };
+          coverUrl = d.coverData;
+          paintPreview();
+        };
+        img.onerror = paintPreview;
+        img.src = d.coverData;
+      } else {
+        revokeCover();
+        paintPreview();
+      }
+    }
+    /* 工坊是作者自己的作坊：只列「我的投稿」和审核队列（审核员才看得到），
+       公共作品去发现页看 —— 没上架过东西的人，这里不该凭空冒出别人的包。 */
+    async function paintMine(){
+      const box = document.getElementById('drafts');
+      const count = document.getElementById('mine-count');
+      const me = api && api.meSync && api.meSync();
+      if (!me) {
+        if (count) count.textContent = '';
+        box.innerHTML = '<p class="note">' + t('workshop.needLogin') + ' <a class="more-link" href="' + loginHref('workshop.html#publish') + '">' + t('nav.login') + '</a></p>'
+          + '<p class="meta">' + t('workshop.mineGuide') + '</p>';
+        applyI18n();
+        paintQueue();
+        return;
+      }
+      const mine = api ? (await api.getWorkshopMine()).items : [];
+      if (count) count.textContent = mine.length ? String(mine.length) : '';
+      /* 有过投稿就在导航里放出「工坊」入口（下次进站也记得） */
+      if (mine.length && JIWAN.markWorkshopEntry) JIWAN.markWorkshopEntry();
+      if (!mine.length) box.innerHTML = '<p class="meta">' + t('workshop.noDraft') + '</p>'
+        + '<p class="meta">' + t('workshop.mineGuide') + '</p>';
+      else box.innerHTML = mine.map((d) => {
+        const vis = statusLabel(d);
+        const hue = CAT_HUE[d.cat] || 70;
+        const pillClass = d.status==='listed'?' is-listed':d.status==='rejected'?' is-rejected':d.status==='unlisted'?' is-unlisted':'';
+        const pill = `<span class="status-pill${pillClass}">${vis}</span>`;
+        const art = d.coverData
+          ? `<div class="icon"><div class="cover has-poster"><img class="poster" src="${d.coverData}" alt=""></div></div>`
+          : `<div class="icon"><div class="cover" style="--hue:${hue};--chroma:0.1"></div></div>`;
+        const bits = [];
+        bits.push(`<button class="btn" type="button" data-pack-edit="${d.id}">${t('workshop.edit')}</button>`);
+        if (d.status === 'pending') {
+          bits.push(`<span class="meta">${t('workshop.statusPending')}</span>`);
+        }
+        if (d.status === 'listed') {
+          bits.push(`<a class="more-link" href="${gameHref(d.id)}">${t('cta.seeGame')}</a>`);
+          bits.push(`<button class="btn" type="button" data-pack-unlist="${d.id}">${t('workshop.unlist')}</button>`);
+        }
+        if (d.status === 'rejected' || d.status === 'unlisted' || d.status === 'draft') {
+          bits.push(`<button class="btn" type="button" data-pack-resubmit="${d.id}">${t('workshop.resubmit')}</button>`);
+        }
+        const reason = d.status === 'rejected' && d.reason
+          ? `<p class="meta">${t('workshop.rejectWhy')}：${esc(d.reason)}</p>`
+          : '';
+        const playBit = d.playUrl ? `<div class="meta">${esc(d.playUrl)}</div>` : '';
+        return `<article class="post" data-od-id="draft-${d.id}">
+          ${art}
+          <div>
+            <h3>${esc(d.title)} ${pill}</h3>
+            <div class="meta">${esc(d.author)} · ${d.file || t('workshop.noPack')}</div>
+            ${playBit}
+            ${reason}
+            <p class="profile-tools">${bits.join(' ')}</p>
+          </div>
+        </article>`;
+      }).join('');
+      applyI18n();
+      paintQueue();
+    }
+    async function paintQueue(){
+      const box = document.getElementById('review-queue');
+      if (!box) return;
+      const me = api && api.meSync && api.meSync();
+      if (!me || !api.isReviewer || !api.isReviewer(me)) {
+        box.hidden = true;
+        box.innerHTML = '';
+        return;
+      }
+      let data;
+      try { data = await api.getWorkshopQueue(); }
+      catch (e) {
+        box.hidden = true;
+        box.innerHTML = '';
+        return;
+      }
+      const items = (data.items || []).filter(d => d.ownerId !== me.id);
+      box.hidden = false;
+      const cards = items.map(d => {
+        const hue = CAT_HUE[d.cat] || 70;
+        const art = d.coverData
+          ? `<div class="icon"><div class="cover has-poster"><img class="poster" src="${d.coverData}" alt=""></div></div>`
+          : `<div class="icon"><div class="cover" style="--hue:${hue};--chroma:0.1"></div></div>`;
+        const playBit = d.playUrl ? `<div class="meta">${esc(d.playUrl)}</div>` : '';
+        return `<article class="post" data-od-id="queue-${d.id}">
+          ${art}
+          <div>
+            <h3>${esc(d.title)} <span class="status-pill">${t('workshop.statusPending')}</span></h3>
+            <div class="meta">${esc(d.author)} · ${d.file || t('workshop.noPack')}</div>
+            ${playBit}
+            <p class="profile-tools">
+              <button class="btn" type="button" data-pack-list="${d.id}">${t('workshop.markListed')}</button>
+              <button class="btn" type="button" data-pack-reject="${d.id}">${t('workshop.markRejected')}</button>
+            </p>
+          </div>
+        </article>`;
+      }).join('');
+      let reports = [];
+      try { reports = ((await api.getReports()).items) || []; }
+      catch (e) { reports = []; }
+      const reportCards = reports.map(r => {
+        const kind = r.kind === 'post' ? t('workshop.reportPost') : t('workshop.reportGame');
+        const href = r.kind === 'post' ? postHref(r.target) : gameHref(r.target);
+        const act = r.gone
+          ? `<button class="btn" type="button" disabled>${t('workshop.alreadyGone')}</button>`
+          : (r.kind === 'post'
+            ? `<button class="btn" type="button" data-report-hide="${esc(r.target)}" data-report-dismiss="${r.id}">${t('workshop.hidePost')}</button>`
+            : `<button class="btn" type="button" data-report-takedown="${esc(r.target)}" data-report-dismiss="${r.id}">${t('workshop.takedown')}</button>`);
+        return `<article class="post" data-od-id="report-${r.id}">
+          <div>
+            <h3>${kind} · ${esc(r.title || r.target)}</h3>
+            <div class="meta">${esc(r.reason)}</div>
+            <p class="profile-tools">
+              <a class="btn" href="${href}">${r.kind === 'post' ? t('post.kicker') : t('cta.seeGame')}</a>
+              ${act}
+              <button class="btn" type="button" data-report-dismiss="${r.id}">${t('workshop.reportDismiss')}</button>
+            </p>
+          </div>
+        </article>`;
+      }).join('');
+      box.innerHTML = `
+        <div class="section-head" style="margin-top:36px">
+          <h2>${t('workshop.queue')}</h2>
+          <span class="meta">${items.length ? t('workshop.queueCount', { n: items.length }) : t('workshop.queueEmpty')}</span>
+        </div>
+        <p class="note">${t('workshop.reviewerNote')}</p>
+        ${cards}
+        <div class="section-head" style="margin-top:36px">
+          <h2>${t('workshop.reports')}</h2>
+          <span class="meta">${reports.length ? t('workshop.reportsCount', { n: reports.length }) : ''}</span>
+        </div>
+        ${reports.length ? reportCards : '<div class="empty">' + t('workshop.reportsEmpty') + '</div>'}`;
+    }
+    const form = document.getElementById('pack-form');
+    const packFile = document.getElementById('pack-file');
+    const coverFile = document.getElementById('pack-cover');
+    const drop = document.getElementById('pack-drop');
+    const coverDrop = document.getElementById('cover-drop');
+    const coverArt = document.getElementById('cover-art');
+    const coverTools = document.getElementById('cover-tools');
+    const coverClear = document.getElementById('cover-clear');
+    const coverHint = document.getElementById('cover-hint');
+    let coverUrl = '';
+    let coverMeta = null;
+    function revokeCover(){
+      if (coverUrl) URL.revokeObjectURL(coverUrl);
+      coverUrl = '';
+      coverMeta = null;
+    }
+    function paintPreview(){
+      const title = document.getElementById('pack-title').value.trim();
+      const meNow = api && api.meSync && api.meSync();
+      const author = document.getElementById('pack-author').value.trim() || (meNow && meNow.name) || '';
+      const cat = document.getElementById('pack-cat').value;
+      const hue = CAT_HUE[cat] || 70;
+      document.getElementById('cover-live-name').textContent = title || t('workshop.unnamed');
+      document.getElementById('cover-live-sub').textContent = author + ' · ' + (catLabel(cat) || t('nav.workshop'));
+      coverArt.style.cssText = `--hue:${hue};--chroma:0.1`;
+      coverArt.replaceChildren();
+      if (coverUrl && coverMeta) {
+        coverArt.className = 'cover has-poster';
+        const img = document.createElement('img');
+        img.className = 'poster';
+        img.src = coverUrl;
+        img.alt = title ? title + ' · ' + t('workshop.coverAlt') : t('workshop.coverAlt');
+        img.width = coverMeta.w;
+        img.height = coverMeta.h;
+        coverArt.appendChild(img);
+        coverTools.classList.add('is-on');
+        coverDrop.setAttribute('aria-label', t('workshop.coverChange'));
+        coverHint.textContent = coverMeta.name + ' · ' + coverMeta.w + '×' + coverMeta.h;
+      } else {
+        coverArt.className = 'cover';
+        const kick = document.createElement('span');
+        kick.className = 'cover-kicker';
+        kick.textContent = t('workshop.preview');
+        const strong = document.createElement('strong');
+        strong.textContent = title || t('workshop.formName');
+        coverArt.append(kick, strong);
+        coverTools.classList.remove('is-on');
+        coverDrop.setAttribute('aria-label', t('workshop.coverPick'));
+        coverHint.textContent = t('workshop.coverHint');
+      }
+      if (!packFile.files[0]) drop.textContent = t('workshop.dropPack');
+    }
+    function applyCover(file){
+      revokeCover();
+      if (!file) { paintPreview(); return; }
+      if (!file.type.startsWith('image/')) {
+        toast(t('workshop.needImage'));
+        coverFile.value = '';
+        paintPreview();
+        return;
+      }
+      coverUrl = URL.createObjectURL(file);
+      const img = new Image();
+      img.onload = () => {
+        coverMeta = { w: img.naturalWidth, h: img.naturalHeight, name: file.name, img };
+        paintPreview();
+      };
+      img.onerror = () => {
+        revokeCover();
+        coverFile.value = '';
+        toast(t('workshop.badImage'));
+        paintPreview();
+      };
+      img.src = coverUrl;
+    }
+    function toThumb(img){
+      const maxW = 640;
+      const scale = Math.min(1, maxW / Math.max(1, img.naturalWidth));
+      const w = Math.round(img.naturalWidth * scale);
+      const h = Math.round(img.naturalHeight * scale);
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      c.getContext('2d').drawImage(img, 0, 0, w, h);
+      try { return c.toDataURL('image/jpeg', 0.72); }
+      catch { return ''; }
+    }
+    drop.addEventListener('click', () => packFile.click());
+    coverDrop.addEventListener('click', () => coverFile.click());
+    coverClear.addEventListener('click', () => {
+      coverFile.value = '';
+      revokeCover();
+      paintPreview();
+    });
+    ;['dragenter', 'dragover'].forEach(ev => {
+      coverDrop.addEventListener(ev, e => {
+        e.preventDefault();
+        coverDrop.classList.add('is-over');
+      });
+    });
+    coverDrop.addEventListener('dragleave', e => {
+      if (e.currentTarget.contains(e.relatedTarget)) return;
+      coverDrop.classList.remove('is-over');
+    });
+    coverDrop.addEventListener('drop', e => {
+      e.preventDefault();
+      coverDrop.classList.remove('is-over');
+      const file = [...(e.dataTransfer.files || [])].find(f => f.type.startsWith('image/'));
+      if (!file) { toast(t('workshop.dropImage')); return; }
+      try {
+        const dt = new DataTransfer();
+        dt.items.add(file);
+        coverFile.files = dt.files;
+      } catch {}
+      applyCover(file);
+    });
+    packFile.addEventListener('change', () => {
+      drop.textContent = packFile.files[0] ? packFile.files[0].name : t('workshop.dropPack');
+      drop.classList.toggle('is-on', !!packFile.files[0]);
+    });
+    coverFile.addEventListener('change', () => applyCover(coverFile.files[0] || null));
+    form.addEventListener('input', e => { if (e.target !== coverFile && e.target !== packFile) paintPreview(); });
+    form.addEventListener('change', e => { if (e.target === document.getElementById('pack-cat')) paintPreview(); });
+    window.addEventListener('pagehide', revokeCover);
+    function bad(id, on){ document.getElementById(id).classList.toggle('is-bad', on); }
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      if (!api || !api.requireAuth('workshop.html#publish')) return;
+      const title = document.getElementById('pack-title').value.trim();
+      const author = document.getElementById('pack-author').value.trim();
+      const vis = (form.querySelector('input[name="vis"]:checked') || {}).value || 'draft';
+      const playUrl = document.getElementById('pack-play').value.trim();
+      const fileOk = packFile.files && packFile.files[0];
+      const packOk = fileOk || playUrl || (editingId && (editingFile || playUrl));
+      bad('f-title', title.length < 2 || title.length > 24);
+      bad('f-author', author.length < 1);
+      bad('f-pack', !packOk);
+      if (title.length < 2 || title.length > 24 || !author || !packOk) {
+        toast(packOk ? t('workshop.needFields') : t('workshop.needPlayOrPack'));
+        return;
+      }
+      const payload = {
+        title,
+        author,
+        blurb: document.getElementById('pack-blurb').value.trim(),
+        cat: document.getElementById('pack-cat').value,
+        tags: document.getElementById('pack-tags').value.trim(),
+        vis,
+        file: fileOk ? packFile.files[0].name : (editingFile || ''),
+        cover: (coverMeta && coverMeta.name) || '',
+        coverData: coverMeta && coverMeta.img ? toThumb(coverMeta.img) : (editingCoverData || ''),
+        playUrl
+      };
+      try {
+        if (editingId) await api.updatePack(Object.assign({ id: editingId }, payload));
+        else await api.submitPack(payload);
+      } catch (err) {
+        if (err.code === 'auth') { api.requireAuth('workshop.html#publish'); return; }
+        toast(t('workshop.needFields'));
+        return;
+      }
+      const meAfter = api.meSync();
+      form.reset();
+      document.getElementById('pack-author').value = (meAfter && meAfter.name) || '';
+      drop.textContent = t('workshop.dropPack');
+      drop.classList.remove('is-on');
+      revokeCover();
+      const wasEdit = !!editingId;
+      clearEdit();
+      paintPreview();
+      paintMine();
+      if (JIWAN.markWorkshopEntry) JIWAN.markWorkshopEntry();
+      toast(wasEdit ? t('workshop.saveEdit') : (vis === 'draft' ? t('workshop.savedDraft') : t('workshop.submitted')));
+    });
+    async function onPackClick(e) {
+      if (!api) return;
+      const editBtn = e.target.closest('[data-pack-edit]');
+      const listBtn = e.target.closest('[data-pack-list]');
+      const rejBtn = e.target.closest('[data-pack-reject]');
+      const unlistBtn = e.target.closest('[data-pack-unlist]');
+      const resubmitBtn = e.target.closest('[data-pack-resubmit]');
+      const hideBtn = e.target.closest('[data-report-hide]');
+      const takeBtn = e.target.closest('[data-report-takedown]');
+      const dismissBtn = e.target.closest('[data-report-dismiss]');
+      if (hideBtn) {
+        try {
+          await api.hidePost(hideBtn.dataset.reportHide);
+          await api.dismissReport(hideBtn.dataset.reportDismiss);
+          toast(t('workshop.hiddenOk'));
+          paintQueue();
+        } catch (err) {
+          toast(t('workshop.needReviewer'));
+        }
+        return;
+      }
+      if (takeBtn) {
+        try {
+          await api.takedownGame(takeBtn.dataset.reportTakedown);
+          await api.dismissReport(takeBtn.dataset.reportDismiss);
+          toast(t('workshop.takedownOk'));
+          paintQueue();
+        } catch (err) {
+          toast(t('workshop.needReviewer'));
+        }
+        return;
+      }
+      if (editBtn) {
+        const mine = (await api.getWorkshopMine()).items || [];
+        const row = mine.find(x => x.id === editBtn.dataset.packEdit);
+        if (row) fillForm(row);
+        return;
+      }
+      if (listBtn) {
+        try {
+          await api.reviewPack({ id: listBtn.dataset.packList, status: 'listed' });
+          toast(t('workshop.listedOk'));
+          paintMine();
+        } catch (err) {
+          toast(t('workshop.needReviewer'));
+        }
+        return;
+      }
+      if (rejBtn) {
+        openReasonForm({
+          title: t('workshop.markRejected'),
+          hint: t('workshop.reviewerNote'),
+          placeholder: t('workshop.reasonPh'),
+          submit: t('workshop.rejectSend'),
+          onSubmit: async (reason) => {
+            try {
+              await api.reviewPack({ id: rejBtn.dataset.packReject, status: 'rejected', reason });
+              toast(t('workshop.statusRejected'));
+              paintMine();
+            } catch (err) {
+              toast(t('workshop.needReviewer'));
+            }
+          }
+        });
+        return;
+      }
+      if (unlistBtn) {
+        await api.unlistPack(unlistBtn.dataset.packUnlist);
+        toast(t('workshop.unlistedOk'));
+        paintMine();
+        return;
+      }
+      if (resubmitBtn) {
+        await api.resubmitPack(resubmitBtn.dataset.packResubmit);
+        toast(t('workshop.resubmitOk'));
+        paintMine();
+        return;
+      }
+      if (dismissBtn) {
+        try {
+          await api.dismissReport(dismissBtn.dataset.reportDismiss);
+          toast(t('workshop.reportGone'));
+          paintQueue();
+        } catch (err) {
+          toast(t('workshop.needReviewer'));
+        }
+      }
+    }
+    document.getElementById('drafts').addEventListener('click', onPackClick);
+    document.getElementById('review-queue').addEventListener('click', onPackClick);
+    window.addEventListener('jiwan:langchange', () => { paintMine(); paintPreview(); });
+    const meBoot = api && api.meSync && api.meSync();
+    document.getElementById('pack-author').value = (meBoot && meBoot.name) || '';
+    paintMine();
+    paintPreview();
+      })();
+  </script>
+</body>
+</html>

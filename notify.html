@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 通知</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap" data-od-id="view-notify">
+      <p class="crumb"><a href="index.html" data-i18n="nav.home">首页</a><span aria-hidden="true">/</span><span data-i18n="nav.notify">通知</span></p>
+      <p class="page-kicker" data-i18n="nav.notify">通知</p>
+      <h1 class="page-title" data-od-id="notify-title" data-i18n="notify.title">通知</h1>
+      <p class="profile-tools"><button class="btn" type="button" id="btn-mark" data-od-id="cta-mark-read" data-i18n="notify.mark">全部标为已读</button></p>
+      <div class="notify-list" id="notify-list" data-od-id="notify-list"></div>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, t, applyI18n, esc } = JIWAN;
+      const api = JIWAN.api;
+      if (!api.requireAuth('notify.html')) return;
+      mountChrome('notify');
+      document.title = t('title.notify');
+      async function paint() {
+        const data = await api.getNotifs();
+        const items = data.items || [];
+        const box = document.getElementById('notify-list');
+        function notifText(n) {
+          if (n.type === 'like') return t('notify.like', { name: n.from || '' });
+          if (n.type === 'comment') return t('notify.comment', { name: n.from || '' });
+          if (n.type === 'follow') return t('notify.follow', { name: n.from || '' });
+          if (n.type === 'packOn') return t('notify.packOn', { title: n.title || '' });
+          if (n.type === 'packOff') return t('notify.packOff', { title: n.title || '' });
+          if (n.type === 'postHidden') return t('notify.postHidden');
+          if (n.type === 'gameDown') return t('notify.gameDown');
+          return n.text || '';
+        }
+        box.innerHTML = items.length
+          ? items.map(n => `<a class="notify-item${n.read?'':' is-unread'}" href="${esc(n.href || 'index.html')}" data-nid="${esc(n.id)}" data-od-id="notify-${n.id}"><span class="row-title">${esc(notifText(n))}</span><span class="meta">${n.read ? '' : t('notify.unread')}</span></a>`).join('')
+          : '<div class="empty">' + t('notify.empty') + '</div>';
+        box.onclick = async e => {
+          const a = e.target.closest('[data-nid]');
+          if (!a) return;
+          e.preventDefault();
+          try { await api.markNotifRead(a.dataset.nid); } catch (err) {}
+          location.href = a.getAttribute('href');
+        };
+        applyI18n();
+      }
+      document.getElementById('btn-mark').onclick = async () => {
+        await api.markNotifsRead();
+        mountChrome('notify');
+        paint();
+      };
+      window.addEventListener('jiwan:langchange', () => { document.title = t('title.notify'); paint(); });
+      paint();
+    })();
+  </script>
+</body>
+</html>

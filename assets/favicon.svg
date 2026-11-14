@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- 即玩空间：黑白双打机手柄的简化记号（深底 + 米色手柄） -->
+  <rect width="64" height="64" rx="14" fill="#17171a"/>
+  <rect x="10" y="21" width="44" height="25" rx="12.5" fill="#f4eee4"/>
+  <rect x="17" y="31.5" width="13" height="4.5" rx="2.25" fill="#17171a"/>
+  <rect x="21.25" y="27.25" width="4.5" height="13" rx="2.25" fill="#17171a"/>
+  <circle cx="38.5" cy="29.5" r="2.8" fill="#17171a"/>
+  <circle cx="45.5" cy="34.5" r="2.8" fill="#17171a"/>
+  <circle cx="45.5" cy="29.5" r="2.8" fill="#c4b8a8"/>
+  <circle cx="38.5" cy="34.5" r="2.8" fill="#c4b8a8"/>
+</svg>

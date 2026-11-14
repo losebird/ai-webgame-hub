@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 发现网页游戏</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+  <style>
+    /* 首页网格：热玩对排行，口碑常驻对工坊，同一行起点齐平 */
+    .home-grid {
+      grid-template-columns: minmax(0, 1fr) 340px;
+      column-gap: 48px;
+      row-gap: 36px;
+      align-items: start;
+      margin-top: 28px;
+    }
+    .home-grid > .section,
+    .home-grid > .panel {
+      margin-top: 0;
+    }
+    .home-span {
+      grid-column: 1 / -1;
+      grid-row: auto;
+      margin-top: 0;
+      padding-top: 0;
+      border-top: 0;
+    }
+    [data-od-id="section-hot"] {
+      grid-column: 1;
+      grid-row: 1;
+    }
+    #rank-panel {
+      grid-column: 2;
+      grid-row: 1;
+    }
+    [data-od-id="section-kept"] {
+      grid-column: 1;
+      grid-row: 2;
+    }
+    [data-od-id="workshop-rail"][hidden] {
+      display: none !important;
+    }
+    [data-od-id="workshop-rail"] {
+      grid-column: 2;
+      grid-row: 2;
+      margin-top: 0;
+      padding-top: 0;
+    }
+    #grid-hot {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px 16px;
+    }
+    #grid-hot .rail-card {
+      width: auto;
+      min-width: 0;
+    }
+    #rank-list .rank-item,
+    #kept-list .rank-item,
+    #workshop-list .rank-item {
+      min-height: 88px;
+      height: 88px;
+      padding: 12px 0;
+      box-sizing: border-box;
+      gap: 16px;
+    }
+    #rank-list .rank-item {
+      grid-template-columns: 44px 72px minmax(0, 1fr) auto;
+    }
+    #rank-list .rank-n {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      min-width: 0;
+      line-height: 1;
+    }
+    #rank-list .rank-n b {
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+    }
+    #rank-list .rank-item:nth-child(-n+3) .rank-n b {
+      color: var(--fg);
+      font-size: 16px;
+    }
+    #rank-list .rank-delta {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 1px;
+      min-height: 12px;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
+      letter-spacing: 0;
+      line-height: 1;
+      word-break: keep-all;
+      white-space: nowrap;
+    }
+    #rank-list .rank-item:nth-child(-n+3) .rank-delta {
+      font-size: 10px;
+    }
+    #rank-list .rank-delta svg {
+      width: 8px;
+      height: 8px;
+      fill: currentColor;
+      flex: 0 0 auto;
+    }
+    #rank-list .rank-delta.is-up { color: var(--good); }
+    #rank-list .rank-delta.is-down { color: var(--danger); }
+    #rank-list .rank-delta.is-same { color: var(--muted); }
+    #rank-list .rank-delta.is-new { color: var(--fg); }
+    #rank-list .rank-item:hover .rank-delta.is-up { color: var(--good); }
+    #rank-list .rank-item:hover .rank-delta.is-down { color: var(--danger); }
+    #rank-list .rank-item:hover .rank-delta.is-same { color: var(--muted); }
+    #rank-list .rank-item:hover .rank-delta.is-new { color: var(--fg); }
+    /* 口碑行：窄栏容不下第四条列，宽栏又只剩一条空带，
+       所以在分数前补一列元信息（标签 + 在玩），把右侧用起来 */
+    #workshop-list .rank-item {
+      grid-template-columns: 72px minmax(0, 1fr) auto;
+    }
+    #kept-list .rank-item {
+      grid-template-columns: 72px minmax(0, 1fr) auto auto;
+    }
+    #kept-list .rank-item .kept-meta {
+      color: var(--muted);
+      font-size: 12.5px;
+      line-height: 1.4;
+      letter-spacing: 0.01em;
+      text-align: right;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    #rank-list .rank-item .icon,
+    #kept-list .rank-item .icon,
+    #workshop-list .rank-item .icon {
+      width: 72px;
+      height: 48px;
+    }
+    #rank-list .rank-item .row-title,
+    #kept-list .rank-item .row-title,
+    #workshop-list .rank-item .row-title {
+      font-size: 17px;
+      letter-spacing: 0.02em;
+      line-height: 1.25;
+    }
+    #rank-list .rank-item .score,
+    #kept-list .rank-item .score,
+    #workshop-list .rank-item .score {
+      font-size: 16px;
+    }
+    #rank-list .rank-item .row-title,
+    #kept-list .rank-item .row-title,
+    #workshop-list .rank-item .row-title {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      display: block;
+      -webkit-line-clamp: unset;
+      min-width: 0;
+    }
+    #kept-list .rank-item .row-sub,
+    #workshop-list .rank-item .row-sub {
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    [data-od-id="section-hot"] .section-head,
+    #rank-panel .section-head {
+      align-items: center;
+      min-height: 40px;
+      flex-wrap: nowrap;
+    }
+    [data-od-id="section-kept"] .section-head,
+    [data-od-id="workshop-rail"] .section-head {
+      align-items: center;
+      min-height: 40px;
+      height: 40px;
+      margin: 0 0 16px;
+      flex-wrap: nowrap;
+    }
+    [data-od-id="section-kept"],
+    [data-od-id="workshop-rail"] {
+      display: flex;
+      flex-direction: column;
+      padding-top: 0;
+    }
+    #kept-list .rank-item > div,
+    #workshop-list .rank-item > div {
+      min-width: 0;
+    }
+    #rank-panel .section-head .rank-head-extra {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 2px;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+    #rank-panel .section-head .rank-tabs {
+      margin: 0;
+      border: 0;
+      flex: 0 1 auto;
+      min-width: 0;
+    }
+    #rank-panel .section-head .rank-tab {
+      flex: 0 0 auto;
+      height: 36px;
+      min-height: 36px;
+      padding: 0 6px;
+    }
+    #rank-panel .section-head .more-link {
+      flex: 0 0 auto;
+      margin-left: 4px;
+    }
+    #rank-period {
+      display: flex;
+      gap: 0;
+      margin: 0 0 8px;
+      border-bottom: 1px solid var(--border);
+    }
+    #rank-period .rank-period-btn {
+      flex: 1 1 0;
+      height: 44px;
+      min-height: 44px;
+      min-width: 44px;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: var(--muted);
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.16em;
+      line-height: 1;
+      word-break: keep-all;
+    }
+    #rank-period .rank-period-btn:hover {
+      color: var(--fg);
+      background: transparent;
+    }
+    #rank-period .rank-period-btn.is-on {
+      color: var(--fg);
+      font-weight: 650;
+      position: relative;
+    }
+    #rank-period .rank-period-btn.is-on::after {
+      content: "";
+      position: absolute;
+      left: 10px;
+      right: 10px;
+      bottom: -1px;
+      height: 2px;
+      background: var(--fg);
+    }
+    #rank-period .rank-period-btn.is-on:hover {
+      color: var(--fg);
+    }
+    .rail-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 20px 16px;
+    }
+    .rail-grid .rail-card {
+      flex: none;
+      width: auto;
+      min-width: 0;
+    }
+    /* 接着玩：从横滑条改成固定四列网格。四张正好铺满一行、八张整齐两行，
+       条目不足时只缺一个位（313px），不再是原来自适应横滑条留下的 500px 空档。 */
+    #continue-list {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 22px 18px;
+      overflow: visible;
+      padding-bottom: 0;
+    }
+    #continue-list .rail-card {
+      flex: none;
+      width: auto;
+      min-width: 0;
+    }
+    @media (max-width: 960px) {
+      #continue-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+    .posts-spread {
+      grid-template-columns: 1fr 1fr;
+      column-gap: 48px;
+    }
+    .feat-ctrl {
+      display: flex;
+      justify-content: center;
+      padding-top: 8px;
+    }
+    .feat-dots {
+      width: auto;
+      justify-content: center;
+    }
+    /* 翻页箭头叠在封面图上；点封面本身直接进详情，不再翻页 */
+    #feat #feat-prev,
+    #feat #feat-next {
+      position: absolute;
+      top: 50%;
+      z-index: 6;
+      width: 44px;
+      height: 44px;
+      margin: 0;
+      transform: translateY(-50%);
+      background: transparent;
+      color: oklch(99% 0.004 95);
+      border: 0;
+      border-radius: 0;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      text-decoration: none;
+      text-shadow: 0 1px 6px oklch(16% 0.02 70 / 0.55);
+      cursor: pointer;
+      font-size: 22px;
+    }
+    #feat #feat-prev { left: 12px; }
+    #feat #feat-next { right: 12px; }
+    #feat #feat-prev:hover,
+    #feat #feat-next:hover {
+      background: transparent;
+      color: oklch(100% 0 0);
+      text-decoration: none;
+      text-shadow: 0 1px 8px oklch(16% 0.02 70 / 0.7);
+    }
+    #feat #feat-prev:focus-visible,
+    #feat #feat-next:focus-visible {
+      outline: 2px solid oklch(99% 0.004 95);
+      outline-offset: 2px;
+    }
+    /* 三张封面各自成圆角纸窗，中间留一道窄纸缝 */
+    #feat .feat-viewport {
+      border: 0;
+    }
+    #feat .feat-track {
+      gap: 8px;
+    }
+    #feat .feat-card,
+    #feat .feat-card:last-child {
+      border: 0;
+      border-radius: 14px;
+      background: var(--bg);
+      overflow: hidden;
+    }
+    /* 左右封面压暗并轻微模糊，只让中间这张全亮清晰 */
+    #feat .feat-card {
+      --feat-blur: 6px;
+      --feat-scale: 1.06;
+    }
+    #feat .feat-card.is-focus,
+    #feat .feat-card:hover,
+    #feat .feat-card:focus-visible {
+      --feat-blur: 0px;
+      --feat-scale: 1;
+    }
+    #feat .feat-track:has(.feat-card:hover) .feat-card.is-focus:not(:hover),
+    #feat .feat-track:has(.feat-card:focus-visible) .feat-card.is-focus:not(:focus-visible) {
+      --feat-blur: 6px;
+      --feat-scale: 1.06;
+    }
+    #feat .feat-art {
+      overflow: hidden;
+      inset: 2px;
+      border-radius: 12px;
+      background: var(--photo-well);
+    }
+    #feat .feat-overlay {
+      inset: 2px;
+      border-radius: 12px;
+      z-index: 3;
+    }
+    #feat .feat-icon img {
+      filter: none;
+      transform: none;
+    }
+    #feat .feat-caption { display: none; }
+    /* 纸白描边 + 很淡的纸色晕边，让海报坐进纸面 */
+    #feat .feat-art::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: inherit;
+      box-shadow:
+        inset 0 0 0 1px oklch(100% 0.002 95 / 0.34),
+        inset 0 0 52px 16px oklch(98% 0.004 95 / 0.14);
+      pointer-events: none;
+    }
+    #feat .feat-art::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background: oklch(22% 0.02 70 / 0.36);
+      pointer-events: none;
+      opacity: 1;
+      transition: opacity 0.45s cubic-bezier(.22, .7, .28, 1);
+    }
+    #feat .feat-poster,
+    #feat .feat-art:not(.has-poster) {
+      filter: blur(var(--feat-blur));
+      transform: scale(var(--feat-scale));
+      transition: filter 0.45s cubic-bezier(.22, .7, .28, 1),
+                  transform 0.45s cubic-bezier(.22, .7, .28, 1);
+    }
+    #feat .feat-card.is-focus .feat-art::after,
+    #feat .feat-card:hover .feat-art::after,
+    #feat .feat-card:focus-visible .feat-art::after {
+      opacity: 0;
+    }
+    #feat .feat-track:has(.feat-card:hover) .feat-card.is-focus:not(:hover) .feat-art::after,
+    #feat .feat-track:has(.feat-card:focus-visible) .feat-card.is-focus:not(:focus-visible) .feat-art::after {
+      opacity: 1;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      #feat .feat-art::after,
+      #feat .feat-poster,
+      #feat .feat-art:not(.has-poster) { transition: none; }
+    }
+    .mast-note-lead {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+    [data-od-id="section-kept"] .mast-note-lead,
+    [data-od-id="workshop-rail"] .mast-note-lead {
+      min-height: 20px;
+      height: 20px;
+      line-height: 20px;
+      margin: 0 0 12px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+    @media (max-width: 960px) {
+      .home-grid {
+        grid-template-columns: 1fr;
+        row-gap: 28px;
+      }
+      [data-od-id="section-hot"],
+      #rank-panel,
+      [data-od-id="section-kept"],
+      [data-od-id="workshop-rail"] {
+        grid-column: 1;
+        grid-row: auto;
+      }
+      .rail-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .posts-spread { grid-template-columns: 1fr; column-gap: 0; }
+    }
+    @media (max-width: 720px) {
+      .rail-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #rank-list .rank-item {
+        grid-template-columns: 40px 64px minmax(0, 1fr) auto;
+        min-height: 80px;
+        height: 80px;
+      }
+      #kept-list .rank-item {
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        min-height: 80px;
+        height: 80px;
+      }
+      #kept-list .rank-item .kept-meta {
+        display: none;
+      }
+      #workshop-list .rank-item {
+        grid-template-columns: 64px minmax(0, 1fr) auto;
+        min-height: 80px;
+        height: 80px;
+      }
+      #rank-list .rank-item .icon,
+      #kept-list .rank-item .icon,
+      #workshop-list .rank-item .icon {
+        width: 64px;
+        height: 42px;
+      }
+      #grid-hot {
+        gap: 16px 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav">
+    <div class="nav-inner">
+      <a class="brand" href="index.html" data-od-id="brand-home" aria-label="即玩空间"><svg class="brand-logo" data-lang="zh" viewBox="0 0 128 28" width="128" height="28" fill="none" role="img" aria-hidden="true" focusable="false" overflow="visible"><g class="brand-pads" aria-hidden="true" transform="translate(50 14) scale(.7) translate(-50 -14)"><defs><linearGradient id="jiwanPadWg" x1="18%" y1="6%" x2="82%" y2="96%"><stop offset="0" stop-color="#fffef8"/><stop offset=".38" stop-color="#f4eee4"/><stop offset=".72" stop-color="#d5ccbe"/><stop offset="1" stop-color="#b4a896"/></linearGradient><linearGradient id="jiwanPadWf" x1="30%" y1="0%" x2="70%" y2="100%"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e4dcd0"/></linearGradient><linearGradient id="jiwanPadWb" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#d8d0c4"/><stop offset="1" stop-color="#c4b8a8"/></linearGradient><radialGradient id="jiwanPadWs" cx="32%" cy="22%" r="58%"><stop offset="0" stop-color="#fff" stop-opacity=".72"/><stop offset=".42" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient><linearGradient id="jiwanPadKg" x1="16%" y1="0%" x2="88%" y2="100%"><stop offset="0" stop-color="#4e4e54"/><stop offset=".4" stop-color="#1c1c20"/><stop offset="1" stop-color="#08080a"/></linearGradient><linearGradient id="jiwanPadKf" x1="28%" y1="0%" x2="72%" y2="100%"><stop offset="0" stop-color="#3a3a40"/><stop offset="1" stop-color="#141416"/></linearGradient><linearGradient id="jiwanPadKb" x1="50%" y1="0%" x2="50%" y2="100%"><stop offset="0" stop-color="#2a2a30"/><stop offset="1" stop-color="#121214"/></linearGradient><radialGradient id="jiwanPadKs" cx="36%" cy="18%" r="52%"><stop offset="0" stop-color="#9a9aa2" stop-opacity=".45"/><stop offset=".5" stop-color="#4a4a50" stop-opacity=".1"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient><radialGradient id="jiwanPadStW" cx="36%" cy="30%" r="68%"><stop offset="0" stop-color="#4a4540"/><stop offset=".48" stop-color="#1a1816"/><stop offset="1" stop-color="#050403"/></radialGradient><radialGradient id="jiwanPadStK" cx="36%" cy="30%" r="68%"><stop offset="0" stop-color="#6e6e74"/><stop offset=".48" stop-color="#2a2a2e"/><stop offset="1" stop-color="#0c0c0e"/></radialGradient></defs><ellipse cx="24.5" cy="26.6" rx="17.5" ry="2.1" fill="#2a231c" opacity=".14"/><g transform="translate(14.2 .4) rotate(17 20 13.4) scale(.9)"><g class="pad-k"><path fill="url(#jiwanPadKg)" stroke="#050506" stroke-width=".35" stroke-linejoin="round" d="M8 3.6C4.5 3.8 2.2 6 1.6 9.4C1.1 12.6 1.8 15.5 3.4 17.5C3.2 20.6 1.8 24.8 4.6 26.8C7.2 28.6 11.4 26.6 12.2 22.6C12.8 20.4 15 18.4 18 18C19.3 17.8 20.7 17.8 22 18C25 18.4 27.2 20.4 27.8 22.6C28.6 26.6 32.8 28.6 35.4 26.8C38.2 24.8 36.8 20.6 36.6 17.5C38.2 15.5 38.9 12.6 38.4 9.4C37.8 6 35.5 3.8 32 3.6C27.5 2.8 12.5 2.8 8 3.6Z"/><path fill="url(#jiwanPadKb)" d="M8.4 3.7C12.2 2.55 27.8 2.55 31.6 3.7C28.6 2.35 11.4 2.35 8.4 3.7Z"/><path fill="url(#jiwanPadKf)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><path fill="url(#jiwanPadKs)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><circle cx="11.5" cy="10.15" r="2.45" fill="#000" opacity=".12"/><path fill="#c8c8ce" d="M10.95 8.00h1.1v1.6h1.6v1.1h-1.6v1.6h-1.1v-1.6h-1.6v-1.1h1.6z"/><circle cx="11.5" cy="10.15" r=".28" fill="#000" opacity=".25"/><ellipse cx="11.85" cy="16.7" rx="2.87" ry="2.6404" fill="#000" opacity=".22"/><ellipse cx="11.85" cy="16.55" rx="2.45" ry="2.303" fill="url(#jiwanPadStK)" stroke="#8a8a90" stroke-width=".35"/><ellipse cx="11.85" cy="16.844" rx="1.0290000000000001" ry="0.931" fill="#000" opacity=".28"/><ellipse cx="11.164" cy="15.717" rx="0.539" ry="0.392" fill="#fff" opacity=".4"/><circle cx="20.0" cy="8.55" r="1.55" fill="#0a0a0c"/><circle cx="20.0" cy="8.55" r="1.05" fill="#2e2e32"/><circle cx="19.75" cy="8.200000000000001" r=".35" fill="#fff" opacity=".28"/><circle cx="28.45" cy="9.35" r="1.05" fill="#efbf0d"/><circle cx="28.169999999999998" cy="9.03" r=".38" fill="#fff" opacity=".5"/><circle cx="26.25" cy="11.55" r="1.05" fill="#3b88e3"/><circle cx="25.97" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="30.65" cy="11.55" r="1.05" fill="#e03c3c"/><circle cx="30.369999999999997" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="28.45" cy="13.75" r="1.05" fill="#5cbf4a"/><circle cx="28.169999999999998" cy="13.43" r=".38" fill="#fff" opacity=".5"/><ellipse cx="28.85" cy="17.299999999999997" rx="2.64" ry="2.4288000000000003" fill="#000" opacity=".22"/><ellipse cx="28.85" cy="17.15" rx="2.22" ry="2.0868" fill="url(#jiwanPadStK)" stroke="#8a8a90" stroke-width=".35"/><ellipse cx="28.85" cy="17.4164" rx="0.9324" ry="0.8436000000000001" fill="#000" opacity=".28"/><ellipse cx="28.2284" cy="16.3952" rx="0.48840000000000006" ry="0.3552" fill="#fff" opacity=".4"/></g></g><g transform="translate(.15 2.05) rotate(-2.6 19.5 14)"><g class="pad-w"><path fill="url(#jiwanPadWg)" stroke="#2a231c" stroke-width=".7" stroke-linejoin="round" d="M8 3.6C4.5 3.8 2.2 6 1.6 9.4C1.1 12.6 1.8 15.5 3.4 17.5C3.2 20.6 1.8 24.8 4.6 26.8C7.2 28.6 11.4 26.6 12.2 22.6C12.8 20.4 15 18.4 18 18C19.3 17.8 20.7 17.8 22 18C25 18.4 27.2 20.4 27.8 22.6C28.6 26.6 32.8 28.6 35.4 26.8C38.2 24.8 36.8 20.6 36.6 17.5C38.2 15.5 38.9 12.6 38.4 9.4C37.8 6 35.5 3.8 32 3.6C27.5 2.8 12.5 2.8 8 3.6Z"/><path fill="url(#jiwanPadWb)" d="M8.4 3.7C12.2 2.55 27.8 2.55 31.6 3.7C28.6 2.35 11.4 2.35 8.4 3.7Z"/><path fill="url(#jiwanPadWf)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><path fill="url(#jiwanPadWs)" d="M9.2 5C6.4 5.2 4.4 6.8 4 9.4C3.6 12 4.6 14.4 6.4 15.8C9.2 17.2 14 17.4 17.6 17.2H22.4C26 17.4 30.8 17.2 33.6 15.8C35.4 14.4 36.4 12 36 9.4C35.6 6.8 33.6 5.2 30.8 5C26.8 4.4 13.2 4.4 9.2 5Z"/><circle cx="11.5" cy="10.15" r="2.45" fill="#000" opacity=".12"/><path fill="#2c2720" d="M10.95 8.00h1.1v1.6h1.6v1.1h-1.6v1.6h-1.1v-1.6h-1.6v-1.1h1.6z"/><circle cx="11.5" cy="10.15" r=".28" fill="#000" opacity=".25"/><ellipse cx="11.85" cy="16.7" rx="2.87" ry="2.6404" fill="#000" opacity=".22"/><ellipse cx="11.85" cy="16.55" rx="2.45" ry="2.303" fill="url(#jiwanPadStW)" stroke="#1a1814" stroke-width=".35"/><ellipse cx="11.85" cy="16.844" rx="1.0290000000000001" ry="0.931" fill="#000" opacity=".28"/><ellipse cx="11.164" cy="15.717" rx="0.539" ry="0.392" fill="#fff" opacity=".4"/><circle cx="20.0" cy="8.55" r="1.55" fill="#2a251f"/><circle cx="20.0" cy="8.55" r="1.05" fill="#14110e"/><circle cx="19.75" cy="8.200000000000001" r=".35" fill="#fff" opacity=".28"/><circle cx="28.45" cy="9.35" r="1.05" fill="#efbf0d"/><circle cx="28.169999999999998" cy="9.03" r=".38" fill="#fff" opacity=".5"/><circle cx="26.25" cy="11.55" r="1.05" fill="#3b88e3"/><circle cx="25.97" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="30.65" cy="11.55" r="1.05" fill="#e03c3c"/><circle cx="30.369999999999997" cy="11.23" r=".38" fill="#fff" opacity=".5"/><circle cx="28.45" cy="13.75" r="1.05" fill="#5cbf4a"/><circle cx="28.169999999999998" cy="13.43" r=".38" fill="#fff" opacity=".5"/><ellipse cx="28.85" cy="17.299999999999997" rx="2.64" ry="2.4288000000000003" fill="#000" opacity=".22"/><ellipse cx="28.85" cy="17.15" rx="2.22" ry="2.0868" fill="url(#jiwanPadStW)" stroke="#1a1814" stroke-width=".35"/><ellipse cx="28.85" cy="17.4164" rx="0.9324" ry="0.8436000000000001" fill="#000" opacity=".28"/><ellipse cx="28.2284" cy="16.3952" rx="0.48840000000000006" ry="0.3552" fill="#fff" opacity=".4"/></g></g></g><text x="54" y="20" font-size="17" font-weight="600" letter-spacing="0.04em" fill="currentColor" style="font-family:'Noto Serif SC','Songti SC','STSong',serif">即玩空间</text></svg></a>
+      <nav class="nav-links" aria-label="主导航" data-i18n-aria="nav.main"><a class="nav-link is-active" href="index.html" data-od-id="nav-home" data-i18n="nav.home">首页</a><a class="nav-link" href="browse.html" data-od-id="nav-browse" data-i18n="nav.discover">发现</a><a class="nav-link" href="rankings.html" data-od-id="nav-rank" data-i18n="nav.rank">排行</a><a class="nav-link" href="community.html" data-od-id="nav-community" data-i18n="nav.community">社区</a></nav>
+      <div class="search-wrap" data-od-id="search">
+        <input class="search-field" id="search" type="search" placeholder="搜索游戏" data-i18n-placeholder="nav.search" autocomplete="off">
+        <div class="search-pop" id="search-pop" role="listbox"></div>
+      </div>
+      <div class="nav-actions">
+        <div class="lang-switch" data-od-id="lang-switch-nav" role="group" data-i18n-aria="nav.lang" aria-label="语言"><button class="lang-btn" type="button" data-lang="zh" data-od-id="lang-zh-nav" aria-pressed="true">中</button><span class="lang-sep" aria-hidden="true">/</span><button class="lang-btn" type="button" data-lang="en" data-od-id="lang-en-nav" aria-pressed="false">EN</button></div>
+        <a class="nav-link desktop-only" href="workshop.html#publish" data-od-id="btn-publish" data-i18n="nav.publish">上架作品</a>
+        <a class="nav-link desktop-only" href="profile.html" data-od-id="btn-login" data-i18n="nav.login">登录</a>
+        <button class="nav-link menu-btn" type="button" id="menu-btn" aria-label="打开菜单" data-i18n="nav.menu" data-i18n-aria="nav.menu">菜单</button>
+      </div>
+    </div>
+    <div class="mobile-drawer" id="mobile-drawer"><a class="nav-link is-active" href="index.html" data-i18n="nav.home">首页</a><a class="nav-link" href="browse.html" data-i18n="nav.discover">发现</a><a class="nav-link" href="rankings.html" data-i18n="nav.rank">排行</a><a class="nav-link" href="community.html" data-i18n="nav.community">社区</a>
+      <a class="nav-link" href="workshop.html#publish" data-i18n="nav.publish">上架作品</a>
+      <a class="nav-link" href="profile.html" data-i18n="nav.login">登录</a>
+    </div>
+  </header>
+  <main id="main">
+    <div class="wrap" id="store-wrap">
+      <section class="view is-on" id="view-home" data-od-id="view-home">
+        <section class="feat" data-od-id="hero" id="feat" aria-roledescription="carousel" aria-label="编辑推荐" data-i18n-aria="home.feat">
+          <div class="feat-viewport">
+            <div class="feat-track" id="feat-track"></div>
+            <button class="ctrl" id="feat-prev" type="button" aria-label="上一张封面" data-od-id="feat-prev" data-i18n-aria="home.featPrev">《</button>
+            <button class="ctrl" id="feat-next" type="button" aria-label="下一张封面" data-od-id="feat-next" data-i18n-aria="home.featNext">》</button>
+          </div>
+          <div class="feat-ctrl">
+            <div class="feat-dots" id="feat-dots" role="tablist" aria-label="封面进度" data-i18n-aria="home.featDots"></div>
+          </div>
+        </section>
+        <section class="section" data-od-id="section-continue" id="section-continue" hidden>
+          <div class="section-head">
+            <h2 data-i18n="home.continue">接着玩</h2>
+            <a class="more-link" href="profile.html?tab=play" data-od-id="more-continue" data-i18n="nav.me">我的</a>
+          </div>
+          <p class="mast-note-lead" data-i18n="home.continueNote">最近打开的试玩舱。</p>
+          <div class="rail" id="continue-list"></div>
+        </section>
+        <div class="home-grid">
+          <section class="section" data-od-id="section-hot">
+            <div class="section-head">
+              <h2 data-i18n="home.hot">大家都在玩</h2>
+              <a class="more-link" href="browse.html?sort=hot" data-od-id="more-hot" data-i18n="cta.more">更多</a>
+            </div>
+            <div id="grid-hot"></div>
+          </section>
+          <aside class="panel" id="rank-panel" data-od-id="rank-panel">
+            <div class="section-head">
+              <h2 data-i18n="home.rank">排行榜</h2>
+              <div class="rank-head-extra">
+                <div class="rank-tabs" id="rank-tabs"></div>
+                <a class="more-link" href="browse.html?sort=hot&amp;from=rank&amp;period=day" id="rank-more" data-od-id="more-rank" data-i18n="cta.more">更多</a>
+              </div>
+            </div>
+            <div class="rank-period" id="rank-period" role="tablist" aria-label="日周月" data-i18n-aria="rank.periodAria" data-od-id="rank-period"></div>
+            <div id="rank-list"></div>
+          </aside>
+          <section class="section" data-od-id="section-kept">
+            <div class="section-head">
+              <h2 data-i18n="home.kept">口碑常驻</h2>
+              <a class="more-link" href="browse.html?sort=score" data-od-id="more-kept" data-i18n="cta.more">更多</a>
+            </div>
+            <p class="mast-note-lead" data-i18n="home.keptNote">高分还在榜上，打开就能玩。</p>
+            <div class="kept-list" id="kept-list"></div>
+          </section>
+          <section class="section" data-od-id="workshop-rail">
+            <div class="section-head">
+              <h2 data-i18n="home.workshop">工坊</h2>
+              <a class="more-link" href="browse.html?source=workshop" data-od-id="more-workshop" data-i18n="cta.more">更多</a>
+            </div>
+            <p class="mast-note-lead" data-i18n="home.workshopNote">作者过审上架、打开就能玩。</p>
+            <div id="workshop-list"></div>
+          </section>
+          <section class="section home-span" data-od-id="section-new">
+            <div class="section-head">
+              <h2 data-i18n="home.new">本周新作</h2>
+              <a class="more-link" href="browse.html?sort=new" data-od-id="more-new" data-i18n="cta.more">更多</a>
+            </div>
+            <div class="rail-grid" id="grid-new"></div>
+          </section>
+          <section class="section home-span" data-od-id="section-community">
+            <div class="section-head">
+              <h2 data-i18n="home.community">玩家社区</h2>
+              <a class="more-link" href="community.html" data-od-id="more-community" data-i18n="cta.more">更多</a>
+            </div>
+            <div class="posts posts-spread" id="posts"></div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"><div class="foot-inner"><strong>即玩空间</strong> <span data-i18n="foot.body">站内游戏均搜集自公开网络，版权归原作者所有。若涉侵权，请留言告知，我们会尽快核实并下架。联系邮箱：</span><a class="foot-mail" href="mailto:sqzxz456@gmail.com" data-i18n="foot.mail">sqzxz456@gmail.com</a></div></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function(){
+    const J = JIWAN;
+    const { ICONS, RANK_TABS, RANK_PERIODS, RANK_TAB_NAME, RANK_PERIOD_NAME,
+      rankIndexMap, rankMoveHTML, coverHTML, iconHTML, scoreText, playerLine, bindLivePlayers,
+      tagsLine, tagLabel, gameHref, playHref, playSrc, t, applyI18n, gameTitle, gameBanner, postHref, esc, authorLabel} = J;
+    const api = J.api;
+    const $ = (s, r=document) => r.querySelector(s);
+    const $$ = (s, r=document) => [...r.querySelectorAll(s)];
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const state = {
+      view: 'home',
+      featured: 0,
+      featPaused: reduceMotion,
+      featHover: false,
+      rank: 'hot',
+      period: 'day',
+      rankPrevPeriod: 'week',
+      likes: api && api.likes ? api.likes() : new Set()
+    };
+    let featuredGames = [];
+    let homeData = null;
+    const FEAT_MS = 4800;
+    let featTimer = null;
+    let featDeadline = 0;
+    function featBadge(g){
+      if (g.src) return t('label.live');
+      if (g.demo) return t('label.workshopDemo');
+      if (g.fable) return t('label.fable');
+      return t('home.feat');
+    }
+    function featCardHTML(g, focus){
+      const art = g.poster
+        ? `<div class="feat-art has-poster"><img class="feat-poster" src="${g.poster}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}"></div>`
+        : `<div class="feat-art" data-kind="${g.play}" style="--hue:${g.hue};--chroma:${g.chroma}"></div>`;
+      const slogan = gameBanner(g);
+      const score = g.score
+        ? `<div class="feat-score"><b>${Number(g.score).toFixed(1)}</b></div>`
+        : '';
+      const icon = g.poster
+        ? `<span class="feat-icon"><img src="${g.poster}" alt="" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}"></span>`
+        : `<span class="feat-icon" style="--hue:${g.hue};--chroma:${g.chroma}"></span>`;
+      const title = gameTitle(g);
+      /* 三张封面都直接进详情页；翻页只由箭头、圆点和滑动负责，点图不再滚动 */
+      const openAttr = ` data-open="${g.id}"`;
+      const aria = title;
+      return `<button class="feat-card${focus?' is-focus':''}"${openAttr} data-od-id="feat-card-${g.id}" type="button"${focus?' aria-current="true"':''} aria-label="${aria}">
+        ${art}
+        <div class="feat-overlay">
+          <span class="feat-badge">${featBadge(g)}</span>
+          <div class="feat-copy"><strong>${slogan}</strong></div>
+          <div class="feat-foot">
+            ${icon}
+            <div class="feat-txt"><b>${title}</b><span>${tagsLine(g, 2)}</span></div>
+            ${score}
+          </div>
+        </div>
+      </button>`;
+    }
+    function featWindow(){
+      const n = featuredGames.length || 1;
+      const i = ((state.featured % n) + n) % n;
+      return [
+        featuredGames[(i - 1 + n) % n],
+        featuredGames[i],
+        featuredGames[(i + 1) % n]
+      ];
+    }
+    function featShouldRun(){
+      return !state.featPaused && !state.featHover && !reduceMotion && !document.hidden && featuredGames.length > 1;
+    }
+    function syncFeatPause(){
+      const feat = $('#feat');
+      if (feat) feat.classList.toggle('is-paused', !featShouldRun());
+    }
+    function clearFeatTimer(){
+      if (featTimer) { clearTimeout(featTimer); featTimer = null; }
+      syncFeatPause();
+    }
+    function scheduleFeat(){
+      clearFeatTimer();
+      if (!featShouldRun()) return;
+      const now = Date.now();
+      if (!featDeadline || featDeadline <= now) featDeadline = now + FEAT_MS;
+      featTimer = setTimeout(() => {
+        featTimer = null;
+        featDeadline = 0;
+        if (!featShouldRun()) return;
+        scrollFeatTo(state.featured + 1);
+      }, Math.max(16, featDeadline - now));
+    }
+    function paintFeatDots(){
+      const dots = $('#feat-dots');
+      if (!dots) return;
+      dots.innerHTML = featuredGames.map((g, i) =>
+        `<button class="feat-dot${i===state.featured?' is-on':''}" type="button" role="tab" aria-selected="${i===state.featured}" aria-label="${gameTitle(g)}" data-feat="${i}" data-od-id="feat-dot-${g.id}"><span><i></i></span></button>`
+      ).join('');
+      $$('.feat-dot', dots).forEach((d, i) => { d.onclick = () => scrollFeatTo(i); });
+    }
+    function paintFeat(){
+      if (!featuredGames.length) return;
+      const [left, mid, right] = featWindow();
+      $('#feat-track').innerHTML = featCardHTML(left, false) + featCardHTML(mid, true) + featCardHTML(right, false);
+      paintFeatDots();
+      scheduleFeat();
+    }
+    function scrollFeatTo(i){
+      const n = featuredGames.length;
+      if (!n) return;
+      state.featured = ((i % n) + n) % n;
+      featDeadline = 0;
+      paintFeat();
+    }
+    function initFeat(){
+      const track = $('#feat-track');
+      const feat = $('#feat');
+      if (!track || !feat) return;
+      paintFeat();
+      const prev = $('#feat-prev');
+      const next = $('#feat-next');
+      if (prev) prev.onclick = () => scrollFeatTo(state.featured - 1);
+      if (next) next.onclick = () => scrollFeatTo(state.featured + 1);
+      feat.addEventListener('mouseenter', () => { state.featHover = true; clearFeatTimer(); });
+      feat.addEventListener('mouseleave', () => { state.featHover = false; scheduleFeat(); });
+      let swipe = false, sx = 0, sy = 0;
+      track.addEventListener('pointerdown', e => {
+        if (e.pointerType === 'mouse') return;
+        swipe = true; sx = e.clientX; sy = e.clientY;
+      });
+      const endSwipe = e => {
+        if (!swipe) return;
+        swipe = false;
+        const dx = e.clientX - sx, dy = e.clientY - sy;
+        if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
+        track.dataset.suppressClick = '1';
+        scrollFeatTo(state.featured + (dx < 0 ? 1 : -1));
+      };
+      track.addEventListener('pointerup', endSwipe);
+      track.addEventListener('pointercancel', () => { swipe = false; });
+      track.addEventListener('click', e => {
+        if (track.dataset.suppressClick === '1') {
+          e.preventDefault(); e.stopPropagation();
+          track.dataset.suppressClick = '0';
+        }
+      }, true);
+    }
+    /* 口碑行的右侧元信息：题材标签 + 在玩人数，替分数补上前景 */
+    function keptMeta(g){
+      const parts = [];
+      const tags = tagsLine(g, 2);
+      if (tags) parts.push(tags);
+      if (g.players) parts.push(g.players + t('meta.playingSuffix'));
+      return parts.join(' · ');
+    }
+    async function renderHome(){
+      document.title = t('title.home');
+      const empty = `<div class="empty">${t('home.empty')}</div>`;
+      const prevPeriod = (state.rankPrevPeriod && state.rankPrevPeriod !== state.period)
+        ? state.rankPrevPeriod : (state.period === 'day' ? 'week' : 'day');
+      homeData = api ? await api.getHome({ rank: state.rank, period: state.period, prev: prevPeriod }) : homeData;
+      if (!homeData) return;
+      featuredGames = homeData.featured || [];
+      const hot = homeData.hot || [];
+      const neu = homeData.neu || [];
+      const hotBox = $('#grid-hot');
+      if (hotBox) hotBox.innerHTML = hot.length ? hot.map(g =>
+        `<a class="rail-card" href="${gameHref(g.id)}" data-od-id="game-card-${g.id}"><div class="thumb">${coverHTML(g,false)}</div><p>${gameTitle(g)}</p><div class="meta">${authorLabel(g)} · <span class="live-count" data-live-players="${g.id}">${playerLine(g)}</span></div></a>`
+      ).join('') : empty;
+      const newBox = $('#grid-new');
+      if (newBox) newBox.innerHTML = neu.length ? neu.slice(0,10).map(g =>
+        `<a class="rail-card" href="${gameHref(g.id)}" data-od-id="new-card-${g.id}"><div class="thumb">${coverHTML(g, g.demo ? t('label.workshopDemo') : t('meta.new'))}</div><p>${gameTitle(g)}</p><div class="meta"><span class="score">${scoreText(g)}</span> · ${tagLabel(g.tags[0])}</div></a>`
+      ).join('') : empty;
+      const rankSource = homeData.rank || [];
+      const prevMap = rankIndexMap();
+      const prevName = RANK_PERIOD_NAME[prevPeriod];
+      const tabs = $('#rank-tabs');
+      if (tabs) tabs.innerHTML = RANK_TABS.map(([id, lab]) =>
+        `<button class="rank-tab${state.rank===id?' is-on':''}" data-rank="${id}" data-od-id="rank-tab-${id}" type="button">${lab}</button>`
+      ).join('');
+      const periodBox = $('#rank-period');
+      if (periodBox) periodBox.innerHTML = RANK_PERIODS.map(([id, lab]) =>
+        `<button class="rank-period-btn${state.period===id?' is-on':''}" data-period="${id}" data-od-id="rank-period-${id}" type="button" role="tab" aria-selected="${state.period===id}" aria-label="${RANK_TAB_NAME[state.rank]} · ${RANK_PERIOD_NAME[id]}">${lab}</button>`
+      ).join('');
+      const rankMoreEl = $('#rank-more');
+      if (rankMoreEl) {
+        rankMoreEl.href = `browse.html?sort=${state.rank}&from=rank&period=${state.period}&prev=${prevPeriod}`;
+        rankMoreEl.setAttribute('aria-label', t('rank.moreAria', {name: RANK_TAB_NAME[state.rank], period: RANK_PERIOD_NAME[state.period]}));
+      }
+      const rankListEl = $('#rank-list');
+      if (rankListEl) rankListEl.innerHTML = rankSource.map((g, i) => {
+        const cur = i + 1;
+        return `<a class="rank-item" href="${gameHref(g.id)}" data-od-id="rank-item-${g.id}"><span class="rank-n"><b>${String(cur).padStart(2,'0')}</b>${rankMoveHTML(cur, prevMap[g.id], prevName)}</span>${iconHTML(g)}<span class="row-title">${gameTitle(g)}</span><span class="score">${scoreText(g)}</span></a>`;
+      }).join('');
+      const workshop = homeData.workshop || [];
+      const workshopBox = $('#workshop-list');
+      const workshopNote = $('[data-od-id="workshop-rail"]');
+      if (workshopNote) workshopNote.hidden = !workshop.length;
+      if (workshopBox) workshopBox.innerHTML = workshop.map(g =>
+        `<a class="rank-item" href="${gameHref(g.id)}" data-od-id="workshop-card-${g.id}">${iconHTML(g)}<div><p class="row-title">${gameTitle(g)}</p><div class="row-sub">${authorLabel(g)}</div></div><span class="score">${scoreText(g)}</span></a>`
+      ).join('');
+      const kept = homeData.kept || [];
+      const keptNote = $('[data-od-id="section-kept"]');
+      const keptBox = $('#kept-list');
+      if (keptNote) keptNote.hidden = !kept.length;
+      if (keptBox) keptBox.innerHTML = kept.map(g =>
+        `<a class="rank-item" href="${gameHref(g.id)}" data-od-id="kept-card-${g.id}">${iconHTML(g)}<div><p class="row-title">${gameTitle(g)}</p><div class="row-sub">${authorLabel(g)}${g.blurb ? ' · ' + esc(g.blurb) : ''}</div></div><span class="kept-meta">${keptMeta(g)}</span><span class="score">${scoreText(g)}</span></a>`
+      ).join('');
+      const resume = homeData.resume || [];
+      const contSec = $('#section-continue');
+      const contBox = $('#continue-list');
+      if (contSec) contSec.hidden = !resume.length;
+      if (contBox) contBox.innerHTML = resume.map(g =>
+        `<a class="rail-card" href="${playHref(g.id)}" data-od-id="continue-card-${g.id}"><div class="thumb">${coverHTML(g,false)}</div><p>${gameTitle(g)}</p><div class="meta">${authorLabel(g)} · <span class="live-count" data-live-players="${g.id}">${playerLine(g)}</span></div></a>`
+      ).join('');
+      const posts = $('#posts');
+      if (posts) posts.innerHTML = (homeData.posts || []).map(p => {
+        const g = p.game ? J.byId(p.game) : null;
+        const on = state.likes.has(p.id) || state.likes.has(Number(p.id));
+        return `<article class="post" data-od-id="post-${p.id}"><div><h3><a href="${postHref(p.id)}">${esc(p.title)}</a></h3><div class="meta">${esc(p.user)} · ${p.time}${g ? ' · ' + gameTitle(g) : ''}</div>${g ? `<a class="more-link" href="${gameHref(g.id)}">${t('cta.seeGame')}</a>` : ''}</div><button class="like${on?' is-on':''}" type="button" data-like="${p.id}" aria-pressed="${on}">${on?ICONS.heartOn:ICONS.heart}<span>${p.likes+(on?1:0)}</span></button></article>`;
+      }).join('');
+      applyI18n();
+      if (bindLivePlayers) bindLivePlayers();
+    }
+    JIWAN.mountChrome('home');
+    document.addEventListener('click', e => {
+      const open = e.target.closest('[data-open]');
+      if (open && !open.closest('#search-pop')) {
+        location.href = gameHref(open.dataset.open);
+        return;
+      }
+      const period = e.target.closest('[data-period]');
+      if (period) {
+        const next = period.dataset.period;
+        if (next !== state.period) { state.rankPrevPeriod = state.period; state.period = next; }
+        renderHome();
+        return;
+      }
+      const rank = e.target.closest('[data-rank]');
+      if (rank) { state.rank = rank.dataset.rank; renderHome(); return; }
+      const like = e.target.closest('[data-like]');
+      if (like) {
+        if (!api || !api.requireAuth()) return;
+        api.likePost(like.dataset.like).then(() => {
+          state.likes = api.likes();
+          renderHome();
+        }).catch(err => { if (err.code === 'auth') api.requireAuth(); });
+      }
+    });
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden) clearFeatTimer(); else scheduleFeat();
+    });
+    window.addEventListener('jiwan:langchange', () => { renderHome().then(() => paintFeat()); });
+    renderHome().then(() => { initFeat(); paintFeat(); });
+      })();
+  </script>
+</body>
+</html>

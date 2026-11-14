@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 帖子</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap" data-od-id="view-post">
+      <div id="post-back"></div>
+      <div id="post-root"></div>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, ICONS, gameHref, t, applyI18n, gameTitle, toast, esc, userHref, loginHref, openReasonForm, reportKinds, backHTML } = JIWAN;
+      const api = JIWAN.api;
+      mountChrome('community');
+      /* 返回上一层：从社区/某个游戏论坛/作者页点进来的，就回到那一页 */
+      const backSlot = document.getElementById('post-back');
+      if (backSlot) backSlot.innerHTML = backHTML({ odId: 'post-back', wide: true });
+      const id = new URLSearchParams(location.search).get('id') || '';
+      const root = document.getElementById('post-root');
+      function commentForm() {
+        const me = api.meSync && api.meSync();
+        if (!me) return `<p class="note">${t('post.loginToComment')} <a class="more-link" href="${loginHref()}">${t('nav.login')}</a></p>`;
+        return `<form class="composer" id="comment-form" data-od-id="comment-form">
+          <div class="field" id="f-comment">
+            <label for="comment-text">${t('post.comment')}</label>
+            <textarea id="comment-text" name="text" maxlength="280" required></textarea>
+            <p class="err">${t('post.commentNeed')}</p>
+          </div>
+          <button class="btn btn-primary" type="submit" data-od-id="cta-comment">${t('post.comment')}</button>
+        </form>`;
+      }
+      /* 没有 id 时不要打接口：/posts/ 会被路由收敛成列表，返回体里没有 post。
+         直接落到「帖子不存在」，和 404 的表现保持一致。 */
+      function notFound() {
+        document.title = t('post.none') + ' · ' + t('brand.name');
+        root.innerHTML = '<div class="empty">' + t('post.none') + '</div>';
+        applyI18n();
+      }
+      async function paint() {
+        if (!id) { notFound(); return; }
+        let data;
+        try { data = await api.getPost(id); }
+        catch (e) { notFound(); return; }
+        if (!data || !data.post) { notFound(); return; }
+        const p = data.post;
+        const g = data.game;
+        const on = !!data.liked;
+        const comments = data.comments || [];
+        const me = api.meSync && api.meSync();
+        const mine = !!(me && p.userId === me.id);
+        document.title = p.title + ' · ' + t('brand.name');
+        const editForm = mine ? `<form class="composer" id="post-edit" data-od-id="post-edit" hidden>
+          <div class="field" id="f-edit-title">
+            <label for="edit-title">${t('post.title')}</label>
+            <input id="edit-title" name="title" maxlength="48" required value="${esc(p.title)}">
+            <p class="err">${t('post.needTitle')}</p>
+          </div>
+          <div class="field">
+            <label for="edit-body">${t('post.body')}</label>
+            <textarea id="edit-body" name="body" maxlength="400">${esc(p.body || '')}</textarea>
+          </div>
+          <button class="btn btn-primary" type="submit">${t('post.save')}</button>
+        </form>` : '';
+        root.innerHTML = `
+          <p class="page-kicker" data-i18n="post.kicker">${t('post.kicker')}</p>
+          <h1 class="page-title" data-od-id="post-title">${esc(p.title)}</h1>
+          <p class="meta">${p.userId ? `<a href="${userHref(p.userId)}">${esc(p.user)}</a>` : esc(p.user)} · ${p.time}${g ? ' · ' + gameTitle(g) : ''}</p>
+          <p class="lede" id="post-body-view">${esc(p.body || '')}</p>
+          ${editForm}
+          <div class="detail-actions">
+            <button class="like${on?' is-on':''}" type="button" id="btn-like-post" data-od-id="cta-like-post" aria-pressed="${on}">${on?ICONS.heartOn:ICONS.heart}<span>${p.likes+(on?1:0)}</span></button>
+            ${g ? `<a class="btn" href="${gameHref(g.id)}">${t('cta.seeGame')}</a>` : ''}
+            ${mine ? `<button class="btn" type="button" id="btn-edit-post" data-od-id="cta-edit-post">${t('post.edit')}</button><button class="btn" type="button" id="btn-del-post" data-od-id="cta-del-post">${t('post.delete')}</button>` : `<button class="btn" type="button" id="btn-report-post" data-od-id="cta-report-post">${t('detail.report')}</button>`}
+          </div>
+          <section class="comment-list" data-od-id="post-comments">
+            <div class="section-head"><h2>${t('post.comments')}</h2><span class="meta">${t('post.countComments', { n: comments.length })}</span></div>
+            ${commentForm()}
+            ${comments.length
+              ? comments.map(c => {
+                  const mineC = !!(me && c.userId === me.id);
+                  const tools = mineC ? `<p class="owner-tools"><button class="more-link" type="button" data-c-edit="${c.id}">${t('post.commentEdit')}</button><button class="more-link" type="button" data-c-del="${c.id}">${t('post.commentDel')}</button></p>` : '';
+                  return `<article class="review" data-od-id="comment-${c.id}"><header><span>${c.userId ? `<a href="${userHref(c.userId)}">${esc(c.name)}</a>` : esc(c.name)}</span><span class="meta">${c.time || ''}</span></header><p style="margin:0" data-c-text="${c.id}">${esc(c.text)}</p>${tools}</article>`;
+                }).join('')
+              : '<p class="meta">' + t('post.noComments') + '</p>'}
+          </section>
+        `;
+        document.getElementById('btn-like-post').onclick = async () => {
+          if (!api.requireAuth()) return;
+          try { await api.likePost(p.id); paint(); }
+          catch (err) { if (err.code === 'auth') api.requireAuth(); }
+        };
+        const reportBtn = document.getElementById('btn-report-post');
+        if (reportBtn) reportBtn.onclick = () => {
+          if (!api.requireAuth()) return;
+          openReasonForm({
+            title: t('detail.report'),
+            kinds: reportKinds(),
+            onSubmit: async (reason) => {
+              try { await api.report({ kind: 'post', id: p.id, reason }); toast(t('detail.reported')); }
+              catch (err) { if (err.code === 'auth') api.requireAuth(); else toast(t('detail.reportNeed')); }
+            }
+          });
+        };
+        const editBtn = document.getElementById('btn-edit-post');
+        const editFormEl = document.getElementById('post-edit');
+        if (editBtn && editFormEl) {
+          editBtn.onclick = () => {
+            editFormEl.hidden = !editFormEl.hidden;
+            const view = document.getElementById('post-body-view');
+            if (view) view.hidden = !editFormEl.hidden;
+          };
+          editFormEl.onsubmit = async e => {
+            e.preventDefault();
+            const title = document.getElementById('edit-title').value.trim();
+            document.getElementById('f-edit-title').classList.toggle('is-bad', title.length < 4 || title.length > 48);
+            if (title.length < 4 || title.length > 48) { toast(t('post.needTitle')); return; }
+            try {
+              await api.updatePost({ id: p.id, title, body: document.getElementById('edit-body').value.trim(), game: p.game });
+              toast(t('post.saved'));
+              paint();
+            } catch (err) {
+              if (err.code === 'auth') api.requireAuth();
+              else toast(t('post.needTitle'));
+            }
+          };
+        }
+        const delBtn = document.getElementById('btn-del-post');
+        if (delBtn) delBtn.onclick = async () => {
+          if (!window.confirm(t('confirm.delete'))) return;
+          try {
+            await api.deletePost(p.id);
+            toast(t('post.deleted'));
+            location.href = 'community.html';
+          } catch (err) {
+            if (err.code === 'auth') api.requireAuth();
+          }
+        };
+        root.querySelectorAll('[data-c-edit]').forEach(btn => {
+          btn.onclick = () => {
+            const cid = btn.dataset.cEdit;
+            const pEl = root.querySelector('[data-c-text="' + cid + '"]');
+            if (!pEl || pEl.dataset.editing) return;
+            pEl.dataset.editing = '1';
+            const orig = pEl.textContent;
+            pEl.innerHTML = `<textarea id="c-edit-${cid}" maxlength="280">${esc(orig)}</textarea>`;
+            const save = document.createElement('button');
+            save.className = 'btn';
+            save.type = 'button';
+            save.textContent = t('post.save');
+            save.onclick = async () => {
+              const text = (document.getElementById('c-edit-' + cid) || {}).value.trim();
+              if (!text || text.length < 2) { toast(t('post.commentNeed')); return; }
+              try {
+                await api.updateComment({ id: cid, text });
+                toast(t('post.commentSaved'));
+                paint();
+              } catch (err) {
+                if (err.code === 'auth') api.requireAuth();
+                else toast(t('post.commentNeed'));
+              }
+            };
+            pEl.after(save);
+          };
+        });
+        root.querySelectorAll('[data-c-del]').forEach(btn => {
+          btn.onclick = () => {
+            if (!window.confirm(t('confirm.delete'))) return;
+            api.deleteComment(btn.dataset.cDel).then(() => paint())
+              .catch(err => { if (err.code === 'auth') api.requireAuth(); });
+          };
+        });
+        const form = document.getElementById('comment-form');
+        if (form) form.onsubmit = async e => {
+          e.preventDefault();
+          const text = document.getElementById('comment-text').value.trim();
+          document.getElementById('f-comment').classList.toggle('is-bad', text.length < 2);
+          if (text.length < 2) { toast(t('post.commentNeed')); return; }
+          try {
+            await api.addComment({ postId: p.id, text });
+            toast(t('post.commentOk'));
+            paint();
+          } catch (err) {
+            if (err.code === 'auth') api.requireAuth();
+            else toast(t('post.commentNeed'));
+          }
+        };
+        applyI18n();
+      }
+      window.addEventListener('jiwan:langchange', paint);
+      paint();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,427 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>试玩舱 · 即玩空间</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body class="play-page">
+  <a class="skip" href="#play-stage" data-i18n="play.skip">跳到试玩舱</a>
+  <section id="view-play" class="is-on" data-od-id="view-play">
+    <div class="play-bar" data-od-id="play-shell">
+      <a class="back back-dark" id="play-back" href="index.html" data-back data-back-exact="0" data-od-id="play-back" rel="prev"><span class="back-ar" aria-hidden="true">←</span><span data-back-label data-back-key="home" data-back-short="1">首页</span></a>
+      <a class="btn btn-on-dark" id="play-exit" href="game-detail.html?id=mothlight" data-od-id="play-exit" data-i18n="play.exit">退出</a>
+      <div class="play-title" id="play-title">MOTHLIGHT // Vesper-9</div>
+      <span class="meta" data-i18n="play.cabin">试玩舱</span>
+      <div class="play-tools">
+        <span class="play-spacer" aria-hidden="true"></span>
+        <div class="lang-switch" data-od-id="lang-switch-play" role="group" data-i18n-aria="nav.lang" aria-label="语言"><button class="lang-btn is-on" type="button" data-lang="zh" data-od-id="lang-zh-play" aria-pressed="true">中</button><span class="lang-sep" aria-hidden="true">/</span><button class="lang-btn" type="button" data-lang="en" data-od-id="lang-en-play" aria-pressed="false">EN</button></div>
+        <button class="btn btn-on-dark" id="play-mute" type="button" aria-label="静音">静音</button>
+        <a class="btn btn-on-dark" id="play-src" href="#" target="_blank" rel="noopener noreferrer" hidden data-od-id="play-open-src" data-i18n="play.openSrc">原页打开</a>
+        <button class="btn btn-on-dark" id="play-full" type="button" aria-label="全屏" data-i18n="play.full" data-i18n-aria="play.full">全屏</button>
+        <button class="btn btn-on-dark" id="play-share" type="button" aria-label="分享" data-i18n="play.share" data-i18n-aria="play.share">分享</button>
+      </div>
+    </div>
+    <div class="play-stage" id="play-stage" data-od-id="play-stage"></div>
+    <p class="play-note" id="play-note">这是即玩站内试玩舱，用来感受操作，不是作者托管的完整原作。</p>
+  </section>
+  <div class="modal-back" id="share-modal" role="dialog" aria-labelledby="share-title">
+    <div class="sheet">
+      <h3 id="share-title" class="title" data-i18n="share.title">分享这款游戏</h3>
+      <p id="share-url" style="word-break:break-all;color:var(--muted)"></p>
+      <div class="detail-actions">
+        <button class="btn" id="share-copy" type="button" data-i18n="share.copy">复制链接</button>
+        <button class="btn" id="share-close" type="button" data-i18n="share.close">关闭</button>
+      </div>
+    </div>
+  </div>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    (async function () {
+      const J = window.JIWAN;
+      if (!J) return;
+      const { byId, gameHref, playSrc, toast, t, applyI18n, gameTitle } = J;
+      const api = J.api;
+      const $ = (s, r = document) => r.querySelector(s);
+      function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
+      function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+      const id = new URLSearchParams(location.search).get('id') || '';
+      /* 返回键：回到点进来时那一页（排行榜 / 发现 / 搜索结果 …），不是写死回首页 */
+      (function initBack() {
+        const el = $('#play-back');
+        if (!el || !J.backTarget) return;
+        const b = J.backTarget();
+        el.href = b.href;
+        el.setAttribute('data-back-exact', b.exact ? '1' : '0');
+        el.title = t('back.' + b.key);
+        const lab = el.querySelector('[data-back-label]');
+        if (lab) { lab.setAttribute('data-back-key', b.key); lab.setAttribute('data-back-short', '1'); }
+      })();
+      /* byId 读的是 /games/index 的缓存，先把它拉下来再查 */
+      if (api && api.loadIndex) { try { await api.loadIndex(); } catch (e) {} }
+      const g = byId(id);
+      const me = api && api.meSync && api.meSync();
+      const reviewer = !!(api && api.isReviewer && api.isReviewer(me));
+      if (!g || (g.takedown && !reviewer)) {
+        document.title = t('detail.missing') + ' · ' + t('brand.name');
+        $('#play-title').textContent = t('detail.missing');
+        $('#play-exit').href = 'index.html';
+        $('#play-stage').innerHTML = `<div class="sheet-dark play-empty" data-od-id="play-missing"><p>${t('detail.missing')}</p><p><a class="btn btn-on-dark" href="index.html">${t('detail.backHome')}</a></p></div>`;
+        $('#play-note').textContent = '';
+        applyI18n();
+        return;
+      }
+      let muted = lsGet('jiwan-muted', '') === '1';
+      let playCtl = null;
+      function paintChrome(){
+        const live = !!playSrc(g);
+        document.title = t('play.cabin') + ' · ' + gameTitle(g) + ' · ' + t('brand.name');
+        $('#play-title').textContent = gameTitle(g);
+        $('#play-note').textContent = t(live ? 'play.noteLive' : 'play.note', {title: gameTitle(g)});
+        applyI18n();
+        $('#play-mute').hidden = true;
+        $('#play-mute').textContent = muted ? t('play.muted') : t('play.mute');
+        $('#play-mute').setAttribute('aria-label', muted ? t('play.muted') : t('play.mute'));
+        const srcBtn = $('#play-src');
+        if (srcBtn) {
+          srcBtn.hidden = !live;
+          if (live) {
+            srcBtn.href = playSrc(g);
+            srcBtn.textContent = t('play.openSrc');
+          }
+        }
+        const cabinMeta = document.querySelector('.play-bar .meta');
+        if (cabinMeta) cabinMeta.textContent = live ? t('play.live') : t('play.cabin');
+        if (playCtl && playCtl.paint) playCtl.paint();
+      }
+      $('#play-exit').href = gameHref(g.id);
+      let audio = null;
+      function blip(freq) {
+        if (muted) return;
+        try {
+          audio = audio || new (window.AudioContext || window.webkitAudioContext)();
+          const o = audio.createOscillator(), gain = audio.createGain();
+          o.frequency.value = freq;
+          gain.gain.value = 0.04;
+          o.connect(gain); gain.connect(audio.destination);
+          o.start();
+          gain.gain.exponentialRampToValueAtTime(0.0001, audio.currentTime + 0.12);
+          o.stop(audio.currentTime + 0.13);
+        } catch (e) {}
+      }
+      function playClicker(root, game) {
+        const cookie = game.id === 'paperclips';
+        let n = 0, cps = 0;
+        const items = [
+          { id: cookie ? 'auto' : 'cursor', cost: 15, add: 0.2, own: 0 },
+          { id: cookie ? 'plant' : 'oven', cost: 80, add: 1.2, own: 0 },
+          { id: cookie ? 'market' : 'factory', cost: 320, add: 6, own: 0 }
+        ];
+        root.innerHTML = `<div class="hud"><span id="c-count"></span><span id="c-cps"></span></div><div class="stage-ui"><button class="btn btn-primary big-hit" id="c-hit" type="button"></button><div class="shop" id="c-shop"></div></div>`;
+        const draw = () => {
+          $('#c-count').textContent = t(cookie ? 'play.clips' : 'play.cookies', {n: Math.floor(n)});
+          $('#c-cps').textContent = t('play.cps', {n: cps.toFixed(1)});
+          $('#c-hit').textContent = t(cookie ? 'play.hitClip' : 'play.hitCookie');
+          $('#c-shop').innerHTML = items.map((it, i) => `<button class="btn btn-on-dark" data-i="${i}" type="button">${t('play.shop.' + it.id)} ${it.own} · ${Math.floor(it.cost)}</button>`).join('');
+        };
+        draw();
+        $('#c-hit').onclick = () => { n += 1; blip(cookie ? 520 : 320); draw(); };
+        root.onclick = e => {
+          const b = e.target.closest('[data-i]');
+          if (!b) return;
+          const it = items[+b.dataset.i];
+          if (n < it.cost) return toast(t('play.notEnough'));
+          n -= it.cost; it.own++; cps += it.add; it.cost *= 1.25; draw();
+        };
+        const tick = setInterval(() => { n += cps / 10; draw(); }, 100);
+        return { stop: () => clearInterval(tick), paint: draw };
+      }
+      function play2048(root, game) {
+        let board = Array(16).fill(0);
+        const spawn = () => {
+          const empty = board.map((v, i) => v ? null : i).filter(v => v !== null);
+          if (!empty.length) return;
+          board[empty[Math.floor(Math.random() * empty.length)]] = Math.random() < 0.9 ? 2 : 4;
+        };
+        spawn(); spawn();
+        const slide = arr => {
+          const a = arr.filter(Boolean);
+          for (let i = 0; i < a.length - 1; i++) if (a[i] === a[i + 1]) { a[i] *= 2; a[i + 1] = 0; blip(480); }
+          return a.filter(Boolean).concat([0, 0, 0, 0]).slice(0, 4);
+        };
+        const move = dir => {
+          const old = board.slice();
+          const idx = (r, c) => r * 4 + c;
+          let next = Array(16).fill(0);
+          if (dir === 'L' || dir === 'R') {
+            for (let r = 0; r < 4; r++) {
+              let row = [0, 1, 2, 3].map(c => board[idx(r, c)]);
+              if (dir === 'R') row.reverse();
+              row = slide(row);
+              if (dir === 'R') row.reverse();
+              row.forEach((v, c) => next[idx(r, c)] = v);
+            }
+          } else {
+            for (let c = 0; c < 4; c++) {
+              let col = [0, 1, 2, 3].map(r => board[idx(r, c)]);
+              if (dir === 'D') col.reverse();
+              col = slide(col);
+              if (dir === 'D') col.reverse();
+              col.forEach((v, r) => next[idx(r, c)] = v);
+            }
+          }
+          if (next.join() !== old.join()) { board = next; spawn(); draw(); }
+        };
+        root.innerHTML = `<div class="hud"><span id="n2048-title"></span><button class="btn btn-on-dark" id="n2048" type="button"></button></div><div class="stage-ui"><div class="grid-2048" id="g2048"></div><p class="meta" id="n2048-keys"></p></div>`;
+        const draw = () => {
+          $('#g2048').innerHTML = board.map(v => {
+            if (!v) return `<div class="cell4"></div>`;
+            const lv = Math.log2(v);
+            const bg = lv <= 1 ? 'oklch(62% 0.14 230)' : lv <= 3 ? 'oklch(68% 0.14 155)' : lv <= 6 ? 'oklch(78% 0.14 85)' : 'oklch(62% 0.18 18)';
+            return `<div class="cell4" style="background:${bg};color:#fff">${v}</div>`;
+          }).join('');
+        };
+        draw();
+        const onKey = e => {
+          const map = { ArrowLeft: 'L', ArrowRight: 'R', ArrowUp: 'U', ArrowDown: 'D', a: 'L', d: 'R', w: 'U', s: 'D' };
+          if (!map[e.key]) return;
+          e.preventDefault();
+          move(map[e.key]);
+        };
+        window.addEventListener('keydown', onKey);
+        $('#n2048').onclick = () => { board = Array(16).fill(0); spawn(); spawn(); draw(); };
+        let sx, sy;
+        root.addEventListener('touchstart', e => { sx = e.touches[0].clientX; sy = e.touches[0].clientY; }, { passive: true });
+        root.addEventListener('touchend', e => {
+          const dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+          if (Math.abs(dx) + Math.abs(dy) < 24) return;
+          move(Math.abs(dx) > Math.abs(dy) ? (dx > 0 ? 'R' : 'L') : (dy > 0 ? 'D' : 'U'));
+        });
+        const paint = () => {
+          $('#n2048-title').textContent = t('play.demo', {title: gameTitle(game)});
+          $('#n2048').textContent = t('play.newGame');
+          $('#n2048-keys').textContent = t('play.keys');
+        };
+        paint();
+        return { stop: () => window.removeEventListener('keydown', onKey), paint };
+      }
+      function playIO(root) {
+        const canvas = document.createElement('canvas');
+        canvas.id = 'io';
+        root.appendChild(canvas);
+        const hud = document.createElement('div');
+        hud.className = 'hud';
+        hud.innerHTML = `<span id="io-score"></span><span id="io-hint"></span>`;
+        root.appendChild(hud);
+        const ctx = canvas.getContext('2d');
+        let w, h, running = true, raf;
+        const mouse = { x: 0, y: 0 };
+        const player = { x: 0, y: 0, r: 12, alive: true };
+        const bits = [], bots = [];
+        const resize = () => {
+          w = canvas.width = root.clientWidth;
+          h = canvas.height = root.clientHeight;
+          if (!player.x) { player.x = w / 2; player.y = h / 2; mouse.x = w / 2; mouse.y = h / 2; }
+        };
+        resize();
+        for (let i = 0; i < 40; i++) bits.push({ x: Math.random() * w, y: Math.random() * h, r: 3 + Math.random() * 2 });
+        for (let i = 0; i < 6; i++) bots.push({ x: Math.random() * w, y: Math.random() * h, r: 8 + Math.random() * 18, vx: (Math.random() - .5) * 1.2, vy: (Math.random() - .5) * 1.2 });
+        const onMove = e => {
+          const r = canvas.getBoundingClientRect();
+          const pt = e.touches ? e.touches[0] : e;
+          mouse.x = pt.clientX - r.left;
+          mouse.y = pt.clientY - r.top;
+        };
+        canvas.addEventListener('mousemove', onMove);
+        canvas.addEventListener('touchmove', onMove, { passive: true });
+        function loop() {
+          if (!running) return;
+          ctx.fillStyle = '#1c1914';
+          ctx.fillRect(0, 0, w, h);
+          if (player.alive) { player.x += (mouse.x - player.x) * 0.08; player.y += (mouse.y - player.y) * 0.08; }
+          bits.forEach(b => {
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.28); ctx.fillStyle = '#d9d0c3'; ctx.fill();
+            const dx = player.x - b.x, dy = player.y - b.y;
+            if (player.alive && dx * dx + dy * dy < (player.r + b.r) ** 2) {
+              player.r += 0.35; b.x = Math.random() * w; b.y = Math.random() * h; blip(660);
+              $('#io-score').textContent = t('play.size', {n: player.r.toFixed(1)});
+            }
+          });
+          bots.forEach(b => {
+            b.x += b.vx; b.y += b.vy;
+            if (b.x < 0 || b.x > w) b.vx *= -1;
+            if (b.y < 0 || b.y > h) b.vy *= -1;
+            ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, 6.28); ctx.fillStyle = '#9a3d2a'; ctx.fill();
+            const dx = player.x - b.x, dy = player.y - b.y, d = Math.hypot(dx, dy);
+            if (player.alive && d < player.r + b.r) {
+              if (player.r > b.r + 1) { player.r += b.r * 0.2; b.r = 8; b.x = Math.random() * w; b.y = Math.random() * h; }
+              else { player.alive = false; toast(t('play.ioDead')); }
+            }
+          });
+          ctx.beginPath(); ctx.arc(player.x, player.y, player.r, 0, 6.28);
+          ctx.fillStyle = player.alive ? '#f3eee6' : '#9a3d2a';
+          ctx.fill();
+          raf = requestAnimationFrame(loop);
+        }
+        canvas.onclick = () => { if (player.alive) return; player.alive = true; player.r = 12; player.x = w / 2; player.y = h / 2; };
+        const paint = () => {
+          $('#io-score').textContent = t('play.size', {n: player.r.toFixed(1)});
+          $('#io-hint').textContent = t('play.ioHint');
+        };
+        paint();
+        loop();
+        const ro = new ResizeObserver(resize);
+        ro.observe(root);
+        return { stop: () => { running = false; cancelAnimationFrame(raf); ro.disconnect(); }, paint };
+      }
+      function playStory(root, game) {
+        const dark = game.id === 'a-dark-room' || game.fable;
+        function nodes(){
+          if (dark) return {
+            start: { t: game.fable ? gameBlurb(game) : t('play.dark.start'), a: [t('play.dark.start.0'), t('play.dark.start.1')], n: ['fire', 'wait'] },
+            fire: { t: t('play.dark.fire'), a: [t('play.dark.fire.0'), t('play.dark.fire.1')], n: ['bar', 'open'] },
+            wait: { t: t('play.dark.wait'), a: [t('play.dark.wait.0'), t('play.dark.wait.1')], n: ['fire', 'end-cold'] },
+            bar: { t: t('play.dark.bar'), a: [t('play.dark.bar.0'), t('play.dark.bar.1')], n: ['end-keep', 'open'] },
+            open: { t: t('play.dark.open'), a: [t('play.dark.open.0'), t('play.dark.open.1')], n: ['end-out', 'fire'] },
+            'end-cold': { t: t('play.dark.endCold'), a: [t('play.again')], n: ['start'] },
+            'end-keep': { t: t('play.dark.endKeep'), a: [t('play.again')], n: ['start'] },
+            'end-out': { t: t('play.dark.endOut'), a: [t('play.again')], n: ['start'] }
+          };
+          return {
+            start: { t: t('play.pwd.start'), a: [t('play.pwd.start.0'), t('play.pwd.start.1')], n: ['letters', 'date'] },
+            letters: { t: t('play.pwd.letters'), a: [t('play.pwd.letters.0'), t('play.pwd.letters.1')], n: ['num', 'start'] },
+            date: { t: t('play.pwd.date'), a: [t('play.pwd.date.0'), t('play.pwd.date.1')], n: ['num', 'letters'] },
+            num: { t: t('play.pwd.num'), a: [t('play.again')], n: ['start'] }
+          };
+        }
+        let cur = 'start';
+        const box = document.createElement('div');
+        box.className = 'stage-ui';
+        root.appendChild(box);
+        const draw = () => {
+          const n = nodes()[cur];
+          box.innerHTML = `<div class="story sheet-dark"><p>${n.t}</p><div class="choices">${n.a.map((lab, i) => `<button class="btn btn-on-dark" data-n="${n.n[i]}" type="button">${lab}</button>`).join('')}</div></div>`;
+        };
+        box.onclick = e => {
+          const b = e.target.closest('[data-n]');
+          if (!b) return;
+          cur = b.dataset.n;
+          blip(390);
+          draw();
+        };
+        draw();
+        return { stop: () => {}, paint: draw };
+      }
+      function playLive(root, game) {
+        const src = playSrc(game);
+        root.classList.add('is-live');
+        const frame = document.createElement('iframe');
+        frame.className = 'play-frame';
+        frame.src = src;
+        frame.title = gameTitle(game);
+        frame.setAttribute('allow', 'fullscreen; gamepad; autoplay; clipboard-read; clipboard-write');
+        frame.setAttribute('allowfullscreen', '');
+        frame.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-pointer-lock allow-popups allow-forms allow-downloads');
+        frame.setAttribute('referrerpolicy', 'no-referrer-when-downgrade');
+        root.appendChild(frame);
+        const fail = document.createElement('div');
+        fail.className = 'sheet-dark play-empty play-embed-fail';
+        fail.hidden = true;
+        fail.setAttribute('data-od-id', 'play-embed-fail');
+        fail.innerHTML = `<p>${t('play.embedFail')}</p><p><a class="btn btn-on-dark" href="${src}" target="_blank" rel="noopener noreferrer">${t('play.openSrc')}</a></p>`;
+        root.appendChild(fail);
+        const hint = document.createElement('div');
+        hint.className = 'play-embed-hint';
+        hint.hidden = true;
+        hint.setAttribute('data-od-id', 'play-embed-hint');
+        hint.innerHTML = `<p>${t('play.embedHint')}</p><p><a class="btn btn-on-dark" href="${src}" target="_blank" rel="noopener noreferrer">${t('play.openSrc')}</a> <button class="btn btn-on-dark" type="button" data-dismiss-hint>${t('share.close')}</button></p>`;
+        root.appendChild(hint);
+        let failed = false;
+        function isBlank() {
+          try {
+            const href = frame.contentWindow && frame.contentWindow.location.href;
+            return !href || href === 'about:blank';
+          } catch (e) { return false; }
+        }
+        function showFail() {
+          if (failed) return;
+          failed = true;
+          fail.hidden = false;
+          hint.hidden = true;
+          frame.setAttribute('aria-hidden', 'true');
+        }
+        function paintFail() {
+          fail.querySelector('p').textContent = t('play.embedFail');
+          hint.querySelector('p').textContent = t('play.embedHint');
+        }
+        frame.addEventListener('load', () => { if (isBlank()) showFail(); });
+        frame.addEventListener('error', showFail);
+        const timer = setTimeout(() => {
+          if (isBlank()) showFail();
+          else if (!failed) hint.hidden = false;
+        }, 2800);
+        hint.addEventListener('click', e => {
+          if (e.target.closest('[data-dismiss-hint]')) hint.hidden = true;
+        });
+        return {
+          stop: () => { clearTimeout(timer); root.innerHTML = ''; root.classList.remove('is-live'); },
+          paint: paintFail
+        };
+      }
+      function playUnavailable(root, game) {
+        root.classList.remove('is-live');
+        root.innerHTML = `<div class="sheet-dark play-empty" data-od-id="play-unavailable"><p>${t('play.unavailable')}</p><p><a class="btn btn-on-dark" href="${gameHref(game.id)}">${t('play.openDetail')}</a></p></div>`;
+        return { stop: () => { root.innerHTML = ''; }, paint: () => {} };
+      }
+      const root = $('#play-stage');
+      root.innerHTML = '';
+      if (api && api.recordPlay) api.recordPlay(g.id);
+      if (playSrc(g)) {
+        playCtl = playLive(root, g);
+      } else if (g.play === 'io') {
+        playCtl = playIO(root);
+      } else if (g.play === 'merge') {
+        playCtl = play2048(root, g);
+      } else if (g.play === 'clicker') {
+        playCtl = playClicker(root, g);
+      } else if (g.play === 'story') {
+        playCtl = playStory(root, g);
+      } else {
+        playCtl = playUnavailable(root, g);
+      }
+      $('#play-mute').onclick = () => {
+        muted = !muted;
+        lsSet('jiwan-muted', muted ? '1' : '0');
+        paintChrome();
+      };
+      $('#play-full').onclick = () => {
+        const el = $('#play-stage');
+        if (!document.fullscreenElement) el.requestFullscreen?.();
+        else document.exitFullscreen?.();
+      };
+      function shareUrl() { return location.origin + location.pathname.replace(/play\.html.*/, '') + gameHref(g.id); }
+      $('#play-share').onclick = () => {
+        $('#share-url').textContent = shareUrl();
+        $('#share-modal').classList.add('is-on');
+      };
+      $('#share-copy').onclick = async () => {
+        try { await navigator.clipboard.writeText(shareUrl()); toast(t('share.copied')); }
+        catch (e) { toast(t('share.copyFail')); }
+      };
+      $('#share-close').onclick = () => $('#share-modal').classList.remove('is-on');
+      $('#share-modal').addEventListener('click', e => { if (e.target.id === 'share-modal') e.target.classList.remove('is-on'); });
+      window.addEventListener('jiwan:langchange', paintChrome);
+      window.addEventListener('beforeunload', () => { if (playCtl && playCtl.stop) playCtl.stop(); });
+      paintChrome();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 登录</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap auth-card" data-od-id="view-login">
+      <p class="crumb"><a href="index.html" data-i18n="nav.home">首页</a><span aria-hidden="true">/</span><span data-i18n="nav.login">登录</span></p>
+      <p class="page-kicker" data-i18n="auth.kicker">账号</p>
+      <h1 class="page-title" data-od-id="login-title" data-i18n="auth.loginTitle">登录即玩空间</h1>
+      <p class="lede" data-i18n="auth.demo">演示账号：林澄 / jiwan</p>
+      <form id="login-form" data-od-id="login-form">
+        <div class="field" id="f-name">
+          <label for="login-name" data-i18n="auth.name">名字</label>
+          <input id="login-name" name="name" maxlength="24" autocomplete="username" required>
+        </div>
+        <div class="field" id="f-pass">
+          <label for="login-pass" data-i18n="auth.pass">密码</label>
+          <input id="login-pass" name="pass" type="password" maxlength="32" autocomplete="current-password" required>
+          <p class="err" data-i18n="auth.bad">名字或密码不对</p>
+        </div>
+        <button class="btn btn-primary" type="submit" data-od-id="cta-login" data-i18n="auth.login">登录</button>
+      </form>
+      <p class="note"><a class="more-link" id="to-register" href="register.html" data-i18n="auth.toRegister">没有账号，去注册</a></p>
+      <p class="note"><a class="more-link" id="to-reset" href="reset.html" data-od-id="link-forgot" data-i18n="auth.forgot">忘记密码</a></p>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, t, applyI18n, toast } = JIWAN;
+      const api = JIWAN.api;
+      const next = api.safeNext(new URLSearchParams(location.search).get('next'));
+      if (api.meSync()) {
+        if (api.takeReturn) api.takeReturn();
+        location.replace(next);
+        return;
+      }
+      mountChrome('profile');
+      document.title = t('title.login');
+      document.getElementById('to-register').href = 'register.html?next=' + encodeURIComponent(next);
+      document.getElementById('to-reset').href = 'reset.html?next=' + encodeURIComponent(next);
+      document.getElementById('login-form').onsubmit = async e => {
+        e.preventDefault();
+        const name = document.getElementById('login-name').value.trim();
+        const pass = document.getElementById('login-pass').value;
+        document.getElementById('f-pass').classList.remove('is-bad');
+        try {
+          await api.login({ name, pass });
+          if (api.takeReturn) api.takeReturn();
+          location.replace(next);
+        } catch (err) {
+          document.getElementById('f-pass').classList.add('is-bad');
+          toast(t('auth.bad'));
+        }
+      };
+      window.addEventListener('jiwan:langchange', () => { document.title = t('title.login'); applyI18n(); });
+      applyI18n();
+    })();
+  </script>
+</body>
+</html>

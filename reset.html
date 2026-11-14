@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>即玩空间 · 重设密码</title>
+  <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
+  <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/jiwan-press.css">
+</head>
+<body>
+  <a class="skip" href="#main" data-i18n="nav.skip">跳到内容</a>
+  <header class="site-nav" id="jiwan-nav" data-od-id="site-nav"></header>
+  <main id="main">
+    <div class="wrap auth-card" data-od-id="view-reset">
+      <p class="crumb"><a id="crumb-login" href="login.html" data-i18n="nav.login">登录</a><span aria-hidden="true">/</span><span data-i18n="auth.resetTitle">重设密码</span></p>
+      <p class="page-kicker" data-i18n="auth.kicker">账号</p>
+      <h1 class="page-title" data-od-id="reset-title" data-i18n="auth.resetTitle">重设密码</h1>
+      <p class="lede" data-i18n="index.resetCopy">用账号写下新密码。演示不发邮件。</p>
+      <form id="reset-form" data-od-id="reset-form">
+        <div class="field" id="f-name">
+          <label for="reset-name" data-i18n="auth.name">名字</label>
+          <input id="reset-name" name="name" maxlength="24" autocomplete="username" required>
+          <p class="err" data-i18n="auth.resetMissing">找不到这个账号</p>
+        </div>
+        <div class="field" id="f-pass">
+          <label for="reset-pass" data-i18n="auth.newPass">新密码</label>
+          <input id="reset-pass" name="pass" type="password" maxlength="32" autocomplete="new-password" required>
+          <p class="err" data-i18n="auth.passShort">密码至少四个字</p>
+        </div>
+        <button class="btn btn-primary" type="submit" data-od-id="cta-reset" data-i18n="auth.reset">记下新密码</button>
+      </form>
+      <p class="note"><a class="more-link" id="to-login" href="login.html" data-i18n="auth.toLogin">已有账号，去登录</a></p>
+    </div>
+  </main>
+  <footer class="foot" id="jiwan-foot" data-od-id="site-footer"></footer>
+  <div class="toast" id="toast" role="status"></div>
+  <script src="assets/jiwan-catalog.js"></script>
+  <script src="assets/jiwan-api.js"></script>
+  <script>
+    if (window.JIWAN) (function () {
+      const { mountChrome, t, applyI18n, toast } = JIWAN;
+      const api = JIWAN.api;
+      const next = api.safeNext(new URLSearchParams(location.search).get('next'));
+      const back = 'login.html?next=' + encodeURIComponent(next);
+      mountChrome('profile');
+      document.title = t('title.reset');
+      document.getElementById('crumb-login').href = back;
+      document.getElementById('to-login').href = back;
+      document.getElementById('reset-form').onsubmit = async e => {
+        e.preventDefault();
+        const name = document.getElementById('reset-name').value.trim();
+        const pass = document.getElementById('reset-pass').value;
+        document.getElementById('f-name').classList.remove('is-bad');
+        document.getElementById('f-pass').classList.toggle('is-bad', pass.length < 4);
+        if (pass.length < 4) { toast(t('auth.passShort')); return; }
+        try {
+          await api.resetPassword({ name, pass });
+          toast(t('auth.resetOk'));
+          location.href = back;
+        } catch (err) {
+          document.getElementById('f-name').classList.add('is-bad');
+          toast(err.code === 'not_found' ? t('auth.resetMissing') : t('auth.needFields'));
+        }
+      };
+      window.addEventListener('jiwan:langchange', () => { document.title = t('title.reset'); applyI18n(); });
+      applyI18n();
+    })();
+  </script>
+</body>
+</html>
