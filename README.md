@@ -40,7 +40,7 @@ npm test
 
 ## 正式部署
 
-正式域名是 `jiwan.space`（含 `*.jiwan.space`）。Worker 已部署在免费套餐上，预览地址：<https://jiwan.playjiwan.workers.dev>。`wrangler.toml` 已写入线上 D1 `jiwan` 的 `database_id`；自定义域路由仍先注释，等 Cloudflare zone 生效（需把阿里云域名服务器改为 Cloudflare 提供的两台）后再取消注释并重新 `npx wrangler deploy`。`workers_dev = true` 暂留作退路。
+正式域名是 `jiwan.space`（含 `*.jiwan.space`）。Worker 已部署在免费套餐上，预览地址：<https://jiwan.playjiwan.workers.dev>。`wrangler.toml` 已写入线上 D1 `jiwan` 的 `database_id`；阿里云域名服务器已改为 Cloudflare 的 `cruz/mitch.ns.cloudflare.com`，zone 已生效；`jiwan.space/*` 与 `*.jiwan.space/*` 路由已启用（DNS 为代理的 AAAA `100::` 占位记录）。`workers_dev = true` 保留作备用入口。
 
 线上初始数据来自清理过会话的 `data/sql/jiwan.sql`（导出自 `server/data/jiwan.db`）。对 remote D1 执行该文件前，必须去掉 dump 里的 `PRAGMA` / `BEGIN TRANSACTION` / `COMMIT`（远程执行不接受事务语句）；迁移用 `npx wrangler d1 migrations apply jiwan --remote`。环境里若已有不匹配的 `CLOUDFLARE_API_TOKEN`，登录与部署请用 `env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_API_KEY` 以免盖掉 OAuth 会话。
 

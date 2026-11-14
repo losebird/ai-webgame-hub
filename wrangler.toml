@@ -1,7 +1,7 @@
 # 即玩：同源 Worker（静态资源 + API）+ D1
 # database_id 已换成线上 D1。本地 wrangler dev --local 不依赖此 id。
-# routes 仍先注释：jiwan.space 的 zone 还在等待阿里云改域名服务器；未生效时启用 routes 可能让 deploy 失败。
-# workers_dev = true 暂留作退路。当前预览：https://jiwan.playjiwan.workers.dev
+# routes 已启用：jiwan.space 已托管到 Cloudflare（阿里云 NS 已改为 cruz/mitch.ns.cloudflare.com），@ 与 * 为代理的 AAAA 100:: 占位记录。
+# workers_dev = true 保留作备用入口。当前预览：https://jiwan.playjiwan.workers.dev
 name = "jiwan"
 main = "worker/index.js"
 compatibility_date = "2026-11-14"
@@ -20,10 +20,10 @@ database_name = "jiwan"
 database_id = "bf842924-7a17-48a1-954e-84281f2dee90"
 migrations_dir = "migrations"
 
-# 域名生效后再取消注释并重新部署：
-# [[routes]]
-# pattern = "jiwan.space/*"
-# zone_name = "jiwan.space"
-# [[routes]]
-# pattern = "*.jiwan.space/*"
-# zone_name = "jiwan.space"
+# 自定义域名路由（apex 与通配子域）：
+[[routes]]
+pattern = "jiwan.space/*"
+zone_name = "jiwan.space"
+[[routes]]
+pattern = "*.jiwan.space/*"
+zone_name = "jiwan.space"
