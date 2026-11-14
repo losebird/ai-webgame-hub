@@ -1,6 +1,6 @@
 /* 即玩 Workers 冒烟：语义对齐 server/smoke.js，跑在 wrangler dev --local 上（seed 快照）。 */
 import assert from 'node:assert';
-import { check, createClient, openQuery, summarize } from './lib.mjs';
+import { check, createClient, openQuery, summarize, TEST_PASS, TEST_PASS_NEXT, TEST_PASS_RESET } from './lib.mjs';
 
 async function main() {
   const base = process.env.JIWAN_TEST_BASE;
@@ -36,7 +36,7 @@ async function main() {
 
   console.log('\n[2] 林澄（审核员）');
   await check('登录成功且 role=reviewer', async () => {
-    const r = await lin('POST', '/auth/login', { name: '林澄', pass: 'jiwan' });
+    const r = await lin('POST', '/auth/login', { name: '林澄', pass: TEST_PASS });
     assert.equal(r.status, 200); assert.equal(r.data.user.id, 'lincheng');
     assert.equal(r.data.user.role, 'reviewer');
   });
@@ -49,7 +49,7 @@ async function main() {
     assert.equal(r.status, 200); assert.ok(Array.isArray(r.data.items));
   });
   await check('何予看举报表 403 forbidden', async () => {
-    await he('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+    await he('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
     const r = await he('GET', '/reports');
     assert.equal(r.status, 403); assert.equal(r.data.code, 'forbidden');
   });
@@ -310,7 +310,7 @@ async function main() {
   await check('游客游玩记录登录后认领', async () => {
     const g = createClient(base);
     await g('POST', '/plays', { id: 'cookie-clicker' });
-    await g('POST', '/auth/login', { name: 'kevinngo', pass: 'jiwan' });
+    await g('POST', '/auth/login', { name: 'kevinngo', pass: TEST_PASS });
     const h = await g('GET', '/home');
     assert.equal(h.data.resume[0].id, 'cookie-clicker');
   });
@@ -329,38 +329,42 @@ async function main() {
   await check('注册 2–16 名、重复冲突、能登录', async () => {
     const bad = await anon('POST', '/auth/register', { name: 'A', handle: 'aa', pass: '1234' });
     assert.equal(bad.status, 422);
-    const ok = await anon('POST', '/auth/register', { name: '测试用户', handle: 'tester', pass: '1234' });
+    const short = await anon('POST', '/auth/register', { name: '测试用户', handle: 'tester', pass: '1234' });
+    assert.equal(short.status, 422);
+    const ok = await anon('POST', '/auth/register', { name: '测试用户', handle: 'tester', pass: TEST_PASS });
     assert.equal(ok.status, 200); assert.equal(ok.data.user.id, 'tester');
-    const dup = await anon('POST', '/auth/register', { name: '测试用户', handle: 'tester', pass: '1234' });
+    const dup = await anon('POST', '/auth/register', { name: '测试用户', handle: 'tester', pass: TEST_PASS });
     assert.equal(dup.status, 409);
     const c = createClient(base);
-    const login = await c('POST', '/auth/login', { name: '测试用户', pass: '1234' });
+    const login = await c('POST', '/auth/login', { name: '测试用户', pass: TEST_PASS });
     assert.equal(login.status, 200);
   });
-  await check('目录里出现过的作者都能用 jiwan 登录', async () => {
+  await check('目录里出现过的作者都能用测试口令登录', async () => {
     const names = db.all("SELECT DISTINCT author FROM games WHERE author != ''").map(r => r.author);
     let bad = [];
     for (const name of names) {
       const c = createClient(base);
-      const r = await c('POST', '/auth/login', { name, pass: 'jiwan' });
+      const r = await c('POST', '/auth/login', { name, pass: TEST_PASS });
       if (r.status !== 200) bad.push(name);
     }
     assert.deepEqual(bad, [], '登录失败的作者: ' + bad.join(', '));
   });
   await check('改密码：旧密码错 401，改完新密码可登录', async () => {
     const c = createClient(base);
-    await c('POST', '/auth/login', { name: '测试用户', pass: '1234' });
-    const bad = await c('POST', '/me/password', { oldPass: 'xxxx', pass: '5678' });
+    await c('POST', '/auth/login', { name: '测试用户', pass: TEST_PASS });
+    const bad = await c('POST', '/me/password', { oldPass: 'xxxx', pass: TEST_PASS_NEXT });
     assert.equal(bad.status, 401);
-    const ok = await c('POST', '/me/password', { oldPass: '1234', pass: '5678' });
+    const short = await c('POST', '/me/password', { oldPass: TEST_PASS, pass: '5678' });
+    assert.equal(short.status, 422);
+    const ok = await c('POST', '/me/password', { oldPass: TEST_PASS, pass: TEST_PASS_NEXT });
     assert.equal(ok.status, 200);
     const c2 = createClient(base);
-    const login = await c2('POST', '/auth/login', { name: '测试用户', pass: '5678' });
+    const login = await c2('POST', '/auth/login', { name: '测试用户', pass: TEST_PASS_NEXT });
     assert.equal(login.status, 200);
   });
   await check('logout 清 Cookie 后 /me 为 null', async () => {
     const c = createClient(base);
-    await c('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+    await c('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
     assert.equal((await c('GET', '/me')).data.user.id, 'heyu');
     await c('POST', '/logout');
     assert.equal((await c('GET', '/me')).data.user, null);
@@ -377,7 +381,7 @@ async function main() {
 
   console.log('\n[9] 后台（admin）');
   await check('管理员账号能登录且 role=admin', async () => {
-    const r = await adm('POST', '/auth/login', { name: 'admin', pass: 'jiwan' });
+    const r = await adm('POST', '/auth/login', { name: 'admin', pass: TEST_PASS });
     assert.equal(r.status, 200);
     assert.equal(r.data.user.role, 'admin');
     assert.equal(r.data.user.name, '站务');
@@ -446,11 +450,11 @@ async function main() {
     assert.equal(off.data.disabled, true);
     const me = await he('GET', '/me');
     assert.equal(me.data.user, null, '被禁用的会话不再算登录');
-    const login = await createClient(base)('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+    const login = await createClient(base)('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
     assert.equal(login.status, 403);
     assert.equal(login.data.message, 'disabled');
     await adm('POST', '/admin/users/heyu', { id: 'heyu', disabled: false });
-    const back = await he('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+    const back = await he('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
     assert.equal(back.status, 200);
   });
   await check('管理员不能改自己，也不能把最后一个管理员降级', async () => {
@@ -466,12 +470,12 @@ async function main() {
     await adm('POST', '/admin/users/heyu', { id: 'heyu', role: '' });
   });
   await check('管理员重置密码后新密码可用（再改回）', async () => {
-    const r = await adm('POST', '/admin/users/heyu/password', { id: 'heyu', pass: 'jiwan9' });
+    const r = await adm('POST', '/admin/users/heyu/password', { id: 'heyu', pass: TEST_PASS_RESET });
     assert.equal(r.status, 200);
-    const ok = await createClient(base)('POST', '/auth/login', { name: '何予', pass: 'jiwan9' });
+    const ok = await createClient(base)('POST', '/auth/login', { name: '何予', pass: TEST_PASS_RESET });
     assert.equal(ok.status, 200);
-    await adm('POST', '/admin/users/heyu/password', { id: 'heyu', pass: 'jiwan' });
-    const back = await createClient(base)('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+    await adm('POST', '/admin/users/heyu/password', { id: 'heyu', pass: TEST_PASS });
+    const back = await createClient(base)('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
     assert.equal(back.status, 200);
   });
   await check('游戏下架 / 恢复：普通用户 404，审核员可见', async () => {

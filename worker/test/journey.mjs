@@ -1,6 +1,6 @@
 /* 主路径与耗时：在导入 jiwan.db 的本地 Worker 上走一遍，并记录 Server-Timing。 */
 import assert from 'node:assert';
-import { check, createClient, summarize } from './lib.mjs';
+import { check, createClient, summarize, TEST_PASS } from './lib.mjs';
 
 function nums(res) {
   const v = res.headers.get('x-jiwan-elapsed-ms') || res.headers.get('X-Jiwan-Elapsed-Ms');
@@ -72,7 +72,7 @@ async function main() {
 
   await check('注册并登录，刷新后 Cookie 仍有效', async () => {
     const name = '旅人' + Date.now().toString(36).slice(-4);
-    const reg = await user('POST', '/auth/register', { name, handle: 'traveler-' + Date.now().toString(36).slice(-5), pass: 'jiwan' });
+    const reg = await user('POST', '/auth/register', { name, handle: 'traveler-' + Date.now().toString(36).slice(-5), pass: TEST_PASS });
     assert.equal(reg.status, 200);
     assert.ok(reg.data.user.id);
     const me1 = await user('GET', '/me');
@@ -99,8 +99,8 @@ async function main() {
     assert.equal(review.status, 200);
   });
 
-  await check('审核员演示账号能进后台', async () => {
-    const login = await review('POST', '/auth/login', { name: '林澄', pass: 'jiwan' });
+  await check('审核员账号能进后台', async () => {
+    const login = await review('POST', '/auth/login', { name: '林澄', pass: TEST_PASS });
     assert.equal(login.status, 200, 'login ' + login.status + ' ' + JSON.stringify(login.data));
     assert.equal(login.data.user.role, 'reviewer');
     assert.ok(review.jar.jiwan_sid, '登录后应持有 jiwan_sid');
@@ -131,11 +131,11 @@ async function main() {
     Cookie: Object.entries(primed.jar).map(([k, v]) => k + '=' + v).join('; '),
     'X-CSRF-Token': primed.jar.jiwan_csrf || ''
   };
-  const loginT = await timed(base, 'POST', '/auth/login', { name: '林澄', pass: 'jiwan' }, base, loginHeaders);
+  const loginT = await timed(base, 'POST', '/auth/login', { name: '林澄', pass: TEST_PASS }, base, loginHeaders);
   timings.push({ name: 'POST /auth/login', ...loginT });
 
   const writer = createClient(base);
-  await writer('POST', '/auth/login', { name: '何予', pass: 'jiwan' });
+  await writer('POST', '/auth/login', { name: '何予', pass: TEST_PASS });
   const writeSamples = [];
   for (let i = 0; i < 5; i++) {
     const r = await writer('POST', '/plays', { id: 'evensong' });

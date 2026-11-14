@@ -5,7 +5,7 @@ import path from 'node:path';
 import vm from 'node:vm';
 import assert from 'node:assert';
 import { fileURLToPath } from 'node:url';
-import { check, summarize } from './lib.mjs';
+import { check, summarize, TEST_PASS } from './lib.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const catCode = fs.readFileSync(path.join(root, 'assets/jiwan-catalog.js'), 'utf8');
@@ -101,7 +101,7 @@ async function main() {
   });
 
   await check('login 成功后把 user 写进 jiwan-session', async () => {
-    const r = await page1.J.api.login({ name: '林澄', pass: 'jiwan' });
+    const r = await page1.J.api.login({ name: '林澄', pass: TEST_PASS });
     assert.equal(r.user.id, 'lincheng');
     const raw = store.get('jiwan-session');
     assert.ok(raw, 'jiwan-session 缺失');
@@ -118,7 +118,7 @@ async function main() {
   });
 
   await check('getNotifs 之后未读计数同步到本地', async () => {
-    await page1.J.api.login({ name: '何予', pass: 'jiwan' });
+    await page1.J.api.login({ name: '何予', pass: TEST_PASS });
     const data = await page1.J.api.getNotifs();
     const unread = (data.items || []).filter(n => !n.read).length;
     assert.equal(page1.J.api.unreadCount(), unread);
@@ -134,7 +134,7 @@ async function main() {
   });
 
   await check('启动时用 GET /me 校正角色（本地角色被改坏也能修回）', async () => {
-    await page1.J.api.login({ name: '林澄', pass: 'jiwan' });
+    await page1.J.api.login({ name: '林澄', pass: TEST_PASS });
     const stale = JSON.parse(store.get('jiwan-session'));
     stale.role = '';
     stale.id = 'lincheng';

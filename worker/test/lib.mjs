@@ -1,7 +1,16 @@
 import assert from "node:assert";
 import fs from "node:fs";
 import path from "node:path";
+import { createRequire } from "node:module";
 import { DatabaseSync } from "node:sqlite";
+
+const require = createRequire(import.meta.url);
+const { hashPass } = require("../../server/db.js");
+
+/* 仅测试用，不写入生产库或文档。 */
+export const TEST_PASS = "test-login-ok";
+export const TEST_PASS_NEXT = "test-login-11";
+export const TEST_PASS_RESET = "test-reset-ok";
 
 export const assert_ = assert;
 let pass = 0;
@@ -76,6 +85,25 @@ export function createClient(base, origin) {
   call.jar = jar;
   call.prime = prime;
   return call;
+}
+
+
+export function injectTestPasswords(persistDir, pass = TEST_PASS) {
+  const file = findD1File(persistDir);
+  if (!file) throw new Error("local D1 sqlite not found under " + persistDir);
+  const db = new DatabaseSync(file);
+  const rows = db.prepare("SELECT id FROM users").all();
+  const up = db.prepare("UPDATE users SET pass_hash = ? WHERE id = ?");
+  db.exec("BEGIN");
+  try {
+    for (const r of rows) up.run(hashPass(pass), r.id);
+    db.exec("COMMIT");
+  } catch (err) {
+    try { db.exec("ROLLBACK"); } catch (e) {}
+    throw err;
+  }
+  db.close();
+  return { file, users: rows.length };
 }
 
 export function findD1File(persistDir) {

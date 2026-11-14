@@ -8,6 +8,7 @@ import { createHash } from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 
 import net from 'node:net';
+import { injectTestPasswords } from './lib.mjs';
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 
@@ -96,6 +97,9 @@ async function main() {
   sh(process.execPath, [path.join(root, 'scripts/dump-sql.mjs')], { stdio: 'inherit' });
   sh(process.execPath, [path.join(root, 'scripts/import-local-d1.mjs'), 'seed', '--persist-to', seedPersist], { stdio: 'inherit' });
   sh(process.execPath, [path.join(root, 'scripts/import-local-d1.mjs'), 'jiwan', '--persist-to', jiwanPersist], { stdio: 'inherit' });
+  const seedInjected = injectTestPasswords(seedPersist);
+  const jiwanInjected = injectTestPasswords(jiwanPersist);
+  console.log('injected test passwords', 'seed', seedInjected.users, 'jiwan', jiwanInjected.users);
 
   const unitLog = [];
   let exitCode = 0;
