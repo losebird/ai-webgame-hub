@@ -2,6 +2,7 @@
 import { createApi, HttpError } from "../src/api.js";
 import { createD1, isApiPath, hasFileExtension } from "../src/d1.js";
 import { randomToken, timingSafeEqual } from "../src/util.js";
+import { isAllowedOrigin } from "../src/origin.js";
 
 const COOKIE_SID = "jiwan_sid";
 const COOKIE_CSRF = "jiwan_csrf";
@@ -32,7 +33,7 @@ function siteOrigin(request) {
 
 function originMatches(request) {
   const origin = request.headers.get("Origin");
-  return !!origin && origin === siteOrigin(request);
+  return isAllowedOrigin(origin, siteOrigin(request));
 }
 
 function isSafeMethod(method) {

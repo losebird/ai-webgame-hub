@@ -1,7 +1,7 @@
 'use strict';
 /* 即玩空间后端路由。语义以 assets/jiwan-api.js 的 mock 为准：
    同一批字段、同一批错误码、同一批分桶规则（关注/点赞/收藏/通知/历史按账号）。 */
-const { hashPass, slug } = require('./db');
+const { hashPass, verifyPass, slug, DUMMY_PASS_HASH, MIN_PASS_LENGTH } = require('./db');
 const S = require('./store');
 
 const STATUS = { auth: 401, bad_credentials: 401, forbidden: 403, not_found: 404, invalid: 422, conflict: 409 };
@@ -574,7 +574,8 @@ function createApi({ db, onLogin, onLogout }) {
       const sub = parts[1];
       if (sub === 'login') {
         const u = userByAny(b.name);
-        if (!u || u.pass_hash !== hashPass(b.pass)) fail('bad_credentials', 'bad_credentials');
+        const ok = verifyPass(b.pass, u ? u.pass_hash : DUMMY_PASS_HASH);
+        if (!ok || !u) fail('bad_credentials', 'bad_credentials');
         if (u.disabled) fail('forbidden', 'disabled');
         const guest = all('SELECT gameId, at FROM history WHERE userId = ?', 'guest');
         guest.forEach(h => run('INSERT OR REPLACE INTO history (userId, gameId, at) VALUES (?,?,?)', u.id, h.gameId, h.at));
@@ -587,7 +588,7 @@ function createApi({ db, onLogin, onLogout }) {
         const handle = slug(str(b.handle) || name);
         const pass = String(b.pass || '');
         if (name.length < 2 || name.length > 16) fail('invalid', 'name');
-        if (pass.length < 4) fail('invalid', 'pass');
+        if (pass.length < MIN_PASS_LENGTH) fail('invalid', 'pass');
         if (userByAny(handle) || userByAny(name)) fail('conflict', 'exists');
         run('INSERT INTO users (id, name, handle, pass_hash, bio, game, avatar, role, at) VALUES (?,?,?,?,?,?,?,?,?)',
           handle, name, handle, hashPass(pass), '', '', '', '', Date.now());
@@ -596,12 +597,7 @@ function createApi({ db, onLogin, onLogout }) {
         return { user: publicUser(u) };
       }
       if (sub === 'reset') {
-        const u = userByAny(b.name);
-        if (!u) fail('not_found', 'missing');
-        const pass = String(b.pass || '');
-        if (pass.length < 4) fail('invalid', 'pass');
-        run('UPDATE users SET pass_hash = ? WHERE id = ?', hashPass(pass), u.id);
-        return { ok: true };
+        fail('forbidden', 'reset_disabled');
       }
     }
 
@@ -620,9 +616,9 @@ function createApi({ db, onLogin, onLogout }) {
       }
       if (method === 'POST' && parts[1] === 'password') {
         const u = requireUser(ctx);
-        if (u.pass_hash !== hashPass(b.oldPass)) fail('auth', 'bad_credentials');
+        if (!verifyPass(b.oldPass, u.pass_hash)) fail('auth', 'bad_credentials');
         const pass = String(b.pass || '');
-        if (pass.length < 4) fail('invalid', 'pass');
+        if (pass.length < MIN_PASS_LENGTH) fail('invalid', 'pass');
         run('UPDATE users SET pass_hash = ? WHERE id = ?', hashPass(pass), u.id);
         return { ok: true };
       }
@@ -865,7 +861,7 @@ function createApi({ db, onLogin, onLogout }) {
 
         if (sub === 'password') {
           const pass = String(b.pass || '');
-          if (pass.length < 4) fail('invalid', 'pass');
+          if (pass.length < MIN_PASS_LENGTH) fail('invalid', 'pass');
           run('UPDATE users SET pass_hash = ? WHERE id = ?', hashPass(pass), target.id);
           return { ok: true, id: target.id };
         }

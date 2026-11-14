@@ -638,12 +638,12 @@
           b.onclick = async () => {
             const pass = await askText({
               title: '重置密码',
-              body: '直接覆盖，不需要旧密码。至少 4 位。',
-              input: { label: '新密码', value: 'jiwan', maxLength: 40 },
+              body: '直接覆盖，不需要旧密码。至少 10 位。',
+              input: { label: '新密码', value: '', maxLength: 64 },
               okText: '重置'
             });
             if (pass == null) return;
-            if (pass.length < 4) { toast('密码至少 4 位'); return; }
+            if (pass.length < 10) { toast('密码至少 10 位'); return; }
             act(() => api.adminResetPass({ id: b.dataset.pass, pass }), '密码已重置');
           };
         });

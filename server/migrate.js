@@ -8,7 +8,7 @@
  *
  * 可重复执行：games / topics 按 id upsert；用户、帖子、种子评价只在缺失时补。
  */
-const { openDb, hashPass, slug } = require('./db');
+const { openDb, unusablePassHash, slug } = require('./db');
 
 const PLACEHOLDER_AUTHOR = 'fable52.games';
 
@@ -115,7 +115,7 @@ function importUsers(db, J) {
     if (!clean || clean === PLACEHOLDER_AUTHOR) return false;
     const uid = id || slug(clean);
     if (has.get(uid, clean)) return false;
-    insert.run(uid, clean, uid, hashPass('jiwan'), bio || '', game || '', '', role || '', now);
+    insert.run(uid, clean, uid, unusablePassHash(), bio || '', game || '', '', role || '', now);
     return true;
   };
   let n = 0;
