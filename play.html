@@ -84,7 +84,8 @@
       const mode = playMode(g);
       function paintChrome(){
         const live = mode === 'embed' || mode === 'link';
-        const noteKey = { embed: 'play.noteLive', link: 'play.noteLink', sample: 'play.note', info: 'play.noteInfo' }[mode];
+        const selfHosted = mode === 'embed' && playSrc(g).startsWith('/');
+        const noteKey = { embed: selfHosted ? 'play.noteSelf' : 'play.noteLive', link: 'play.noteLink', sample: 'play.note', info: 'play.noteInfo' }[mode];
         const metaKey = { embed: 'mode.embed', link: 'mode.link', sample: 'mode.sample', info: 'mode.info' }[mode];
         document.title = t(metaKey) + ' · ' + gameTitle(g) + ' · ' + t('brand.name');
         $('#play-title').textContent = gameTitle(g);
@@ -356,6 +357,13 @@
             return !href || href === 'about:blank';
           } catch (e) { return false; }
         }
+        /* 同源自托管（如 /vendor/2048/）读得到文档：有内容就确定没被拦，不必再弹白屏提示 */
+        function hasOwnContent() {
+          try {
+            const doc = frame.contentDocument;
+            return !!(doc && doc.body && doc.body.children.length);
+          } catch (e) { return false; }
+        }
         function showFail() {
           if (failed) return;
           failed = true;
@@ -373,6 +381,7 @@
         frame.addEventListener('load', () => {
           loaded = true;
           if (isBlank()) return showFail();
+          if (hasOwnContent()) return;
           hintTimer = setTimeout(() => { if (!failed) hint.hidden = false; }, 2800);
         });
         frame.addEventListener('error', showFail);

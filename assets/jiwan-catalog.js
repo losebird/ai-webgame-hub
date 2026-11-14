@@ -166,6 +166,7 @@ const I18N = {
     'play.exit':'退出','play.cabin':'游戏','play.mute':'静音','play.muted':'已静音','play.full':'全屏','play.share':'分享',
     'play.skip':'跳到游戏区','play.note':'站内示例 · {title}。即玩自己做的简短示例，不是完整作品。',
     'play.noteLive':'正在打开作者托管的原页 · {title}。打不开就点「去原页玩 ↗」。',
+    'play.noteSelf':'{title} 是作者开源的原版，由即玩自托管，直接在这里玩。',
     'play.noteLink':'{title} 只能在原页玩。',
     'play.noteInfo':'{title} 暂无可玩地址，仅介绍。',
     'play.openSrc':'去原页玩 ↗','play.live':'原页',
@@ -367,6 +368,7 @@ const I18N = {
     'play.exit':'Exit','play.cabin':'Game','play.mute':'Mute','play.muted':'Muted','play.full':'Full screen','play.share':'Share',
     'play.skip':'Skip to the game','play.note':'On-site sample · {title}. A short sample built on Jiwan, not a full game.',
     'play.noteLive':'Opening the author’s hosted page · {title}. If it does not load, use Play on original ↗.',
+    'play.noteSelf':'{title} is the author’s open-source original, self-hosted by Jiwan so it plays right here.',
     'play.noteLink':'{title} can only be played on its original page.',
     'play.noteInfo':'{title} has no playable page yet. Info only.',
     'play.openSrc':'Play on original ↗','play.live':'Original',
@@ -710,9 +712,14 @@ function fableLabel(g){
   if (g.origin === 'claudegaming') return 'Claude Gaming';
   return (g.tags && tagLabel(g.tags[0])) || t('label.webgame');
 }
+/* src 可以是站内相对地址（自托管的开源作品，如 /vendor/2048/），按当前页解析 */
+function urlHost(u){
+  const baseHref = typeof location !== 'undefined' && location.href ? location.href : 'https://jiwan.space/';
+  return new URL(u, baseHref).host.replace(/^www\./, '');
+}
 function originChip(g){
   if (g.src) {
-    try { return new URL(g.src).host.replace(/^www\./, ''); } catch (e) { return t('origin.hosted'); }
+    try { return urlHost(g.src); } catch (e) { return t('origin.hosted'); }
   }
   if (!g.poster) return '';
   if (g.origin === 'fable52') return 'fable52.games';
@@ -746,7 +753,9 @@ function playMode(g){
 }
 function modeLabel(g){ return t('mode.' + playMode(g)); }
 function srcHost(g){
-  try { return new URL(playSrc(g)).host.replace(/^www\./, ''); } catch (e) { return ''; }
+  const src = playSrc(g);
+  if (!src) return '';
+  try { return urlHost(src); } catch (e) { return ''; }
 }
 function playCtaHTML(g, odId){
   const mode = playMode(g);
