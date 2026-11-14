@@ -71,9 +71,9 @@ function isAnonCatalogGet(method, pathname, sid) {
 const ANON_CATALOG_CACHE = "public, max-age=60, s-maxage=120, stale-while-revalidate=600";
 
 function assetCacheControl(pathname, type) {
-  if ((type || "").includes("text/html")) return "no-store";
   const p = String(pathname || "").toLowerCase();
   if (/\.(woff2?|ttf|otf|webp|png|jpe?g|gif|svg|ico)$/.test(p) || p.includes("/fonts/") || p.includes("/posters/")) {
+    /* 同名文件会原地覆盖（分层图再压缩时），所以不加 immutable */
     return "public, max-age=604800";
   }
   if (/\.(js|mjs|css)$/.test(p)) return "public, max-age=86400";
@@ -141,11 +141,15 @@ async function serveAsset(request, env, url, cookies) {
   }
   const res = await env.ASSETS.fetch(assetReq);
   const headers = new Headers(res.headers);
-  ensureCsrf(cookies, url, headers);
   const type = res.headers.get("Content-Type") || "";
+  /* CSRF cookie 只出现在 HTML（和 API）上。图/字体/js/css 一旦 Set-Cookie，
+     浏览器往往拒绝写入磁盘缓存，列表里的封面每次都像第一次下载。 */
   if (res.ok && type.includes("text/html")) {
+    ensureCsrf(cookies, url, headers);
     const html = injectHtml(await res.text());
-    headers.set("Cache-Control", "no-store");
+    /* private, no-cache：CDN 不缓存带 CSRF 的 HTML；浏览器可进 bfcache。
+       no-store 会禁止 bfcache，退出游戏后整页重载、封面重下。 */
+    headers.set("Cache-Control", "private, no-cache");
     headers.set("Content-Length", String(new TextEncoder().encode(html).length));
     return new Response(html, { status: res.status, headers });
   }

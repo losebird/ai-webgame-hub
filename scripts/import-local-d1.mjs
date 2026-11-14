@@ -35,6 +35,16 @@ if (!fs.existsSync(sqlFile)) {
   process.exit(1);
 }
 
+function d1Name() {
+  const toml = fs.readFileSync(path.join(root, "wrangler.toml"), "utf8");
+  const m = toml.match(/^database_name\s*=\s*"([^"]+)"/m);
+  if (!m) {
+    console.error("wrangler.toml 里找不到 database_name");
+    process.exit(1);
+  }
+  return m[1];
+}
+
 function wrangler(argv) {
   const cmd = ["wrangler", ...argv];
   if (persist) cmd.push("--persist-to", persist);
@@ -43,6 +53,7 @@ function wrangler(argv) {
   if (r.status) process.exit(r.status);
 }
 
-wrangler(["d1", "migrations", "apply", "jiwan", "--local"]);
-wrangler(["d1", "execute", "jiwan", "--local", "--file", sqlFile, "--yes"]);
+const dbName = d1Name();
+wrangler(["d1", "migrations", "apply", dbName, "--local"]);
+wrangler(["d1", "execute", dbName, "--local", "--file", sqlFile, "--yes"]);
 console.log("imported", which, persist ? ("persist-to " + persist) : "(default .wrangler)");

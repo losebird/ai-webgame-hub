@@ -165,10 +165,30 @@ async function jiwanDataTests(base, persist) {
       assert.match(css.headers.get('cache-control') || '', /max-age=86400/);
       const page = await fetch(base + '/index.html');
       assert.equal(page.status, 200);
-      assert.match(page.headers.get('cache-control') || '', /no-store/);
+      const pageCc = page.headers.get('cache-control') || '';
+      assert.match(pageCc, /private/i);
+      assert.match(pageCc, /no-cache/i);
+      assert.equal(/no-store/i.test(pageCc), false, 'HTML 用 no-store 会禁止 bfcache');
       const html = await page.text();
       assert.equal(html.includes('fonts.googleapis.com') || html.includes('fonts.gstatic.com'), false);
       assert.ok(html.includes('assets/fonts/fonts.css'));
+      const cookieOf = (res) => {
+        const h = res.headers;
+        const list = h.getSetCookie ? h.getSetCookie() : (h.get('set-cookie') ? [h.get('set-cookie')] : []);
+        return list.join(';');
+      };
+      for (const path of [
+        '/assets/posters/icons/2048.webp',
+        '/assets/posters/thumbs/2048.webp',
+        '/assets/posters/detail/2048.webp',
+        '/assets/fonts/NotoSerifSC-500.woff2',
+        '/assets/jiwan-catalog.js'
+      ]) {
+        const r = await fetch(base + path);
+        assert.equal(r.status, 200, path);
+        assert.equal(cookieOf(r), '', path + ' 不得 Set-Cookie');
+      }
+      assert.match((await fetch(base + '/assets/posters/thumbs/2048.webp')).headers.get('content-type') || '', /webp/i);
     });
   } finally {
     db.close();
