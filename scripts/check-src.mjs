@@ -5,6 +5,9 @@
      node scripts/check-src.mjs --base https://jiwan.space   # 读线上 /games/index
    站内相对地址（如 /vendor/2048/）视为同源可嵌。页面里若有指向别的域名的 location 跳转或
    meta refresh（2048 的 gh-pages 就会跳 play2048.co），会追到跳转目标再判一次。
+   查不出运行期限制：例如原作在 iframe 里写 SameSite=Lax 的 Cookie 并强制读回（hanyue.io 的
+   breach / hextech-aram），跨站嵌入时必然失败。这类要在真实浏览器里点进去才看得到，见
+   docs/embed-cookie-hanyue-20261114.md。
    只读，不改库。输出不一致的条目；有不一致时退出码 1，方便放进部署前检查。 */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
