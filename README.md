@@ -50,9 +50,11 @@ npm test
 
 - `worker/index.js`：入口。API 路径先由 Worker 处理，其余交给静态资源绑定（`public/` 是对根目录 HTML 与 `assets/` 的符号链接；`html_handling` 为 none，以免 `/admin.html` 被改写成 `/admin` 撞上管理 API）。HTML 会注入 `window.JIWAN_API_BASE=''`，前端用相对路径请求。
 - `src/api.js` / `src/store.js`：与 `server/` 相同的业务语义，改为异步以适应 D1。
-- `migrations/0001_init.sql`：表结构（与 `server/db.js` 对齐）和读路径索引。
+- `migrations/0001_init.sql`：表结构（与 `server/db.js` 对齐）和读路径索引；`0002`/`0003` 见下。
 - `assets/jiwan-api.js`：前端封装。同源时空 BASE 即可；写操作带 `X-CSRF-Token`（双提交 Cookie `jiwan_csrf`）。会话 Cookie `jiwan_sid` 为 HttpOnly + SameSite=Lax，HTTPS 下加 Secure。
 - 工坊包仍不上传 zip，`playUrl` 只透传。本轮不引入 R2。
+- 打开方式（`playMode`，见 `assets/jiwan-catalog.js`）：有 `src` 且 `games.embed=1` → 站内 iframe（load 失败或 12 秒超时叠层「去原页玩 ↗」）；`embed=0` → 不嵌入，只给「去原页玩 ↗」；无 `src` 的工坊示例（`demo=1`）→ 站内示例；其余 → 仅介绍。`migrations/0002` 加列，`migrations/0003` 按 2026-11 可玩性审计回填地址与文案。
+- `node scripts/check-src.mjs [--base https://jiwan.space]`：只读巡检每个 `src` 的 XFO / `frame-ancestors`，标出 `embed` 与实际不符的条目（退出码 1）。部分站点对脚本返回 403（如 orteil、neal.fun），需人工确认。
 
 ## Node 对照版
 
