@@ -11,7 +11,9 @@
     "import:local:jiwan": "node scripts/import-local-d1.mjs jiwan",
     "import:local:seed": "node scripts/import-local-d1.mjs seed",
     "test": "node worker/test/run.mjs",
-    "test:node": "npm --prefix server test"
+    "test:node": "npm --prefix server test",
+    "stamp": "node scripts/stamp-assets.mjs",
+    "deploy": "npm run stamp && wrangler deploy"
   },
   "devDependencies": {
     "wrangler": "^4.162.0"
