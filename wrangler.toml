@@ -16,9 +16,11 @@ run_worker_first = true
 
 [[d1_databases]]
 binding = "DB"
-database_name = "jiwan"
-database_id = "bf842924-7a17-48a1-954e-84281f2dee90"
+database_name = "jiwan-apac"
+database_id = "9e312478-2850-4afe-b144-b93dcce49264"
 migrations_dir = "migrations"
+# 旧库 jiwan / bf842924-7a17-48a1-954e-84281f2dee90 仍保留在 ENAM，未删除。
+# 2026-11-14 从该库完整导出后导入本亚太库，回读 games/users/reviews/packs 等行数一致后再切换绑定。
 
 # 自定义域名路由（apex 与通配子域）：
 [[routes]]
