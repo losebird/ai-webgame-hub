@@ -27,6 +27,7 @@ function rowToGame(r) {
     chroma: r.chroma == null ? 0.1 : Number(r.chroma),
     play: r.play || 'story',
     src: r.src || '',
+    embed: r.embed == null ? true : !!Number(r.embed),
     demo: !!r.demo,
     fable: !!r.fable,
     hot: !!r.hot,

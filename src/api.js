@@ -91,7 +91,7 @@ function createApi({ db, onLogin, onLogout }) {
       duration: 'mid', origin: 'fable52', blurb: p.blurb || '', about: p.blurb || '',
       poster: p.coverData || '', pw: 640, ph: 360, pos: 'center',
       shots: p.coverData ? [p.coverData] : [], shotSize: p.coverData ? [[640, 360]] : [],
-      dist: [0, 0, 0, 0, 0], reviews: [], src: p.playUrl || '', playUrl: p.playUrl || '',
+      dist: [0, 0, 0, 0, 0], reviews: [], src: p.playUrl || '', playUrl: p.playUrl || '', embed: true,
       packStatus: p.status, vis: p.vis
     };
   }
@@ -307,7 +307,7 @@ function createApi({ db, onLogin, onLogout }) {
         items: world.games.map(g => ({
           id: g.id, title: g.title, title_en: g.title_en, author: g.author, maker: g.maker, source: g.source,
           score: g.score, players: g.players, plays: g.plays, year: g.year, cat: g.cat, tags: g.tags,
-          hue: g.hue, chroma: g.chroma, play: g.play, src: g.src, demo: g.demo, fable: g.fable,
+          hue: g.hue, chroma: g.chroma, play: g.play, src: g.src, embed: g.embed !== false, demo: g.demo, fable: g.fable,
           hot: g.hot, neu: g.neu, featured: g.featured, pick: g.pick, wide: g.wide,
           duration: g.duration, origin: g.origin, banner: g.banner, banner_en: g.banner_en,
           blurb: g.blurb, blurb_en: g.blurb_en, about: g.about, about_en: g.about_en,
@@ -326,7 +326,7 @@ function createApi({ db, onLogin, onLogout }) {
       const favs = await favSet(me && me.id);
       return {
         game: g, related: relatedFor(world, g), followed: favs.has(g.id),
-        playUrl: g.src || g.playUrl || '', playable: !!(g.src || g.playUrl)
+        playUrl: g.src || g.playUrl || '', playable: !!(g.src || g.playUrl), embed: g.embed !== false
       };
     }
 

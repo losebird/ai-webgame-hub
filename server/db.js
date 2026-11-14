@@ -225,6 +225,8 @@ function ensureColumns(db) {
   const gcols = db.prepare('PRAGMA table_info(games)').all().map(r => r.name);
   if (!gcols.includes('packStatus')) db.exec("ALTER TABLE games ADD COLUMN packStatus TEXT NOT NULL DEFAULT ''");
   if (!gcols.includes('ownerId')) db.exec("ALTER TABLE games ADD COLUMN ownerId TEXT NOT NULL DEFAULT ''");
+  /* src 能否嵌进 iframe：1 站内打开，0 只给「去原页玩」（与 migrations/0002 一致） */
+  if (!gcols.includes('embed')) db.exec('ALTER TABLE games ADD COLUMN embed INTEGER NOT NULL DEFAULT 1');
 }
 
 /* 管理员账号：空库、老库、测试快照都要有。已存在则不动（不覆盖改过的密码）。
