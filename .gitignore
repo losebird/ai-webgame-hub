@@ -7,3 +7,6 @@ node_modules/
 server/data/*.db-wal
 server/data/*.db-shm
 server/data/dev.db
+.wrangler/
+.secrets/
+jiwan-initial-passwords.txt

@@ -128,8 +128,86 @@ CREATE TABLE IF NOT EXISTS hidden (kind TEXT NOT NULL, id TEXT NOT NULL, at INTE
 CREATE TABLE IF NOT EXISTS meta (k TEXT PRIMARY KEY, v TEXT NOT NULL);
 `;
 
-function hashPass(pass) {
-  return crypto.createHash('sha256').update('jiwan:' + String(pass || '')).digest('hex');
+/* 与 src/util.js 保持同一格式与迭代次数：pbkdf2$sha256$<iters>$<salt_hex>$<dk_hex> */
+const MIN_PASS_LENGTH = 10;
+const PASS_ITERS = 10000;
+const PASS_MAX_ITERS = 20000;
+const PASS_SALT_BYTES = 16;
+const PASS_DK_BYTES = 32;
+
+function toHex(buf) {
+  return Buffer.from(buf).toString('hex');
+}
+
+function parsePassHash(stored) {
+  const parts = String(stored || '').split('$');
+  if (parts.length !== 5) return null;
+  if (parts[0] !== 'pbkdf2' || parts[1] !== 'sha256') return null;
+  const iters = Number(parts[2]);
+  if (!Number.isInteger(iters) || iters < 1 || iters > PASS_MAX_ITERS) return null;
+  if (!/^[0-9a-fA-F]+$/.test(parts[3]) || !/^[0-9a-fA-F]+$/.test(parts[4])) return null;
+  const salt = Buffer.from(parts[3], 'hex');
+  const dk = Buffer.from(parts[4], 'hex');
+  if (salt.length !== PASS_SALT_BYTES || dk.length !== PASS_DK_BYTES) return null;
+  return { iters, salt, dk };
+}
+
+function formatPassHash(iters, salt, dk) {
+  return 'pbkdf2$sha256$' + iters + '$' + toHex(salt) + '$' + toHex(dk);
+}
+
+function hashPass(pass, opts) {
+  const iters = opts && opts.iters != null ? opts.iters : PASS_ITERS;
+  const salt = opts && opts.salt ? Buffer.from(opts.salt) : crypto.randomBytes(PASS_SALT_BYTES);
+  const dk = crypto.pbkdf2Sync(String(pass || ''), salt, iters, PASS_DK_BYTES, 'sha256');
+  return formatPassHash(iters, salt, dk);
+}
+
+const DUMMY_SALT = Buffer.alloc(PASS_SALT_BYTES);
+const DUMMY_PASS_HASH = formatPassHash(PASS_ITERS, DUMMY_SALT, Buffer.alloc(PASS_DK_BYTES));
+
+function timingSafeEqualStr(a, b) {
+  const ba = Buffer.from(String(a ?? ''), 'utf8');
+  const bb = Buffer.from(String(b ?? ''), 'utf8');
+  const len = Math.max(ba.length, bb.length, 1);
+  const pa = Buffer.alloc(len);
+  const pb = Buffer.alloc(len);
+  ba.copy(pa);
+  bb.copy(pb);
+  let diff = ba.length ^ bb.length;
+  if (crypto.timingSafeEqual(pa, pb)) {
+    /* 内容相等，仍要把长度差算进去 */
+  } else {
+    diff |= 1;
+  }
+  return diff === 0;
+}
+
+function verifyPass(pass, stored) {
+  const parsed = parsePassHash(stored);
+  const iters = parsed ? parsed.iters : PASS_ITERS;
+  const salt = parsed ? parsed.salt : DUMMY_SALT;
+  const fresh = hashPass(pass, { iters, salt });
+  const target = parsed ? formatPassHash(parsed.iters, parsed.salt, parsed.dk) : DUMMY_PASS_HASH;
+  const ok = timingSafeEqualStr(fresh, target);
+  return !!(parsed && ok);
+}
+
+function unusablePassHash() {
+  return hashPass(crypto.randomBytes(32).toString('hex'));
+}
+
+function applyTestPasswords(db, pass) {
+  const rows = db.prepare('SELECT id FROM users').all();
+  const up = db.prepare('UPDATE users SET pass_hash = ? WHERE id = ?');
+  db.exec('BEGIN');
+  try {
+    for (const r of rows) up.run(hashPass(pass), r.id);
+    db.exec('COMMIT');
+  } catch (err) {
+    try { db.exec('ROLLBACK'); } catch (e) {}
+    throw err;
+  }
 }
 
 function slug(s) {
@@ -149,13 +227,14 @@ function ensureColumns(db) {
   if (!gcols.includes('ownerId')) db.exec("ALTER TABLE games ADD COLUMN ownerId TEXT NOT NULL DEFAULT ''");
 }
 
-/* 管理员账号：空库、老库、测试快照都要有。已存在则不动（不覆盖改过的密码）。 */
-const ADMIN = { id: 'admin', name: '站务', handle: 'admin', pass: 'jiwan' };
+/* 管理员账号：空库、老库、测试快照都要有。已存在则不动（不覆盖改过的密码）。
+   新建时写入不可用随机哈希，不放入已知明文口令。 */
+const ADMIN = { id: 'admin', name: '站务', handle: 'admin' };
 function ensureAdmin(db) {
   const has = db.prepare('SELECT id FROM users WHERE id = ? OR name = ?').get(ADMIN.id, ADMIN.name);
   if (has) return has.id;
   db.prepare('INSERT INTO users (id, name, handle, pass_hash, bio, game, avatar, role, disabled, at) VALUES (?,?,?,?,?,?,?,?,0,?)')
-    .run(ADMIN.id, ADMIN.name, ADMIN.handle, hashPass(ADMIN.pass), '站内运营', '', '', 'admin', Date.now());
+    .run(ADMIN.id, ADMIN.name, ADMIN.handle, unusablePassHash(), '站内运营', '', '', 'admin', Date.now());
   return ADMIN.id;
 }
 
@@ -171,4 +250,4 @@ function openDb(file) {
   return db;
 }
 
-module.exports = { openDb, hashPass, slug, ensureAdmin, ADMIN, DEFAULT_DB, SEED_DB };
+module.exports = { openDb, hashPass, verifyPass, unusablePassHash, applyTestPasswords, slug, ensureAdmin, ADMIN, DEFAULT_DB, SEED_DB, MIN_PASS_LENGTH, PASS_ITERS, DUMMY_PASS_HASH };

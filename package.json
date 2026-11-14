@@ -1,0 +1,22 @@
+{
+  "name": "jiwan",
+  "private": true,
+  "version": "1.0.0",
+  "description": "即玩：Cloudflare Workers + D1，同源提供站点与 API",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev --local",
+    "dump:sql": "node scripts/dump-sql.mjs",
+    "import:local": "node scripts/import-local-d1.mjs",
+    "import:local:jiwan": "node scripts/import-local-d1.mjs jiwan",
+    "import:local:seed": "node scripts/import-local-d1.mjs seed",
+    "test": "node worker/test/run.mjs",
+    "test:node": "npm --prefix server test"
+  },
+  "devDependencies": {
+    "wrangler": "^4.162.0"
+  },
+  "engines": {
+    "node": ">=22.5"
+  }
+}

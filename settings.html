@@ -43,8 +43,8 @@
         </div>
         <div class="field" id="f-new-pass">
           <label for="set-new-pass" data-i18n="auth.newPass">新密码</label>
-          <input id="set-new-pass" name="pass" type="password" autocomplete="new-password" minlength="4" required>
-          <p class="err" data-i18n="auth.passShort">密码至少四个字</p>
+          <input id="set-new-pass" name="pass" type="password" autocomplete="new-password" minlength="10" maxlength="64" required>
+          <p class="err" data-i18n="auth.passShort">密码至少十个字</p>
         </div>
         <button class="btn" type="submit" data-od-id="cta-save-pass" data-i18n="auth.changePass">记下新密码</button>
       </form>
@@ -118,8 +118,8 @@
         e.preventDefault();
         const oldPass = document.getElementById('set-old-pass').value;
         const pass = document.getElementById('set-new-pass').value;
-        document.getElementById('f-new-pass').classList.toggle('is-bad', pass.length < 4);
-        if (pass.length < 4) { toast(t('auth.passShort')); return; }
+        document.getElementById('f-new-pass').classList.toggle('is-bad', pass.length < 10);
+        if (pass.length < 10) { toast(t('auth.passShort')); return; }
         try {
           await api.changePassword({ oldPass, pass });
           document.getElementById('set-old-pass').value = '';

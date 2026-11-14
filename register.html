@@ -30,7 +30,7 @@
         </div>
         <div class="field" id="f-pass">
           <label for="reg-pass" data-i18n="auth.pass">密码</label>
-          <input id="reg-pass" name="pass" type="password" maxlength="32" autocomplete="new-password" required>
+          <input id="reg-pass" name="pass" type="password" minlength="10" maxlength="64" autocomplete="new-password" required>
           <p class="err" data-i18n="auth.needFields">请把名字和密码写完</p>
         </div>
         <button class="btn btn-primary" type="submit" data-od-id="cta-register" data-i18n="auth.register">注册</button>
@@ -61,8 +61,8 @@
         const handle = document.getElementById('reg-handle').value.trim();
         const pass = document.getElementById('reg-pass').value;
         document.getElementById('f-name').classList.toggle('is-bad', name.length < 2);
-        document.getElementById('f-pass').classList.toggle('is-bad', pass.length < 4);
-        if (name.length < 2 || pass.length < 4) { toast(t('auth.needFields')); return; }
+        document.getElementById('f-pass').classList.toggle('is-bad', pass.length < 10);
+        if (name.length < 2 || pass.length < 10) { toast(pass.length < 10 ? t('auth.passShort') : t('auth.needFields')); return; }
         try {
           await api.register({ name, handle, pass });
           if (api.takeReturn) api.takeReturn();

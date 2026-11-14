@@ -1,10 +1,34 @@
-/* 即玩 API 客户端：所有数据都来自后端（server/），本地只缓存会话与几个同步集合。
-   没有 JIWAN_API_BASE 时会直接报错，不再有本地 mock —— 数据只有 SQLite 一份。 */
+/* 即玩 API 客户端：所有数据都来自后端，本地只缓存会话与几个同步集合。
+   同源部署时 JIWAN_API_BASE 为空字符串或当前 origin，相对路径请求即可。
+   只有在跨端口开发（例如静态站 :5500 + Node API :8787）才需要写成绝对地址。 */
 (function (J) {
   if (!J) return;
 
-  const BASE = (typeof window.JIWAN_API_BASE === 'string' && window.JIWAN_API_BASE)
-    || (function () { try { return localStorage.getItem('jiwan-api-base') || ''; } catch (e) { return ''; } })();
+  function resolveBase() {
+    if (typeof window.JIWAN_API_BASE === 'string') return String(window.JIWAN_API_BASE).replace(/\/$/, '');
+    try {
+      const stored = localStorage.getItem('jiwan-api-base');
+      if (stored) return String(stored).replace(/\/$/, '');
+    } catch (e) {}
+    return '';
+  }
+  const BASE = resolveBase();
+
+  function readCookie(name) {
+    try {
+      const parts = String(document.cookie || '').split(';');
+      for (let i = 0; i < parts.length; i++) {
+        const p = parts[i];
+        const cut = p.indexOf('=');
+        if (cut < 0) continue;
+        if (p.slice(0, cut).trim() === name) {
+          try { return decodeURIComponent(p.slice(cut + 1).trim()); }
+          catch (e) { return p.slice(cut + 1).trim(); }
+        }
+      }
+    } catch (e) {}
+    return '';
+  }
 
   const K = {
     session: 'jiwan-session',
@@ -74,7 +98,6 @@
   let indexPromise = null;
   let people = [];
   function ensureIndex() {
-    if (!BASE) return Promise.reject(Object.assign(new Error('未配置 JIWAN_API_BASE'), { code: 'no_base' }));
     if (!indexPromise) {
       indexPromise = fetch(BASE + '/games/index', { credentials: 'include' })
         .then(res => res.json())
@@ -109,10 +132,16 @@
        返回体里没有 post/game/user。这里直接判 not_found，免得调用方拿到错形状的对象。 */
     if (/\/$/.test(path) || /\/\//.test(path)) return fail('not_found', 'missing id');
     await ensureIndex().catch(() => {});
+    const headers = {};
+    if (body) headers['Content-Type'] = 'application/json';
+    if (method !== 'GET' && method !== 'HEAD') {
+      const csrf = readCookie('jiwan_csrf');
+      if (csrf) headers['X-CSRF-Token'] = csrf;
+    }
     const res = await fetch(BASE + path, {
       method,
       credentials: 'include',
-      headers: body ? { 'Content-Type': 'application/json' } : undefined,
+      headers,
       body: body ? JSON.stringify(body) : undefined
     });
     const data = await res.json().catch(() => ({}));
@@ -242,7 +271,6 @@
   function wrap(name) {
     const [method, build] = TABLE[name];
     return function (arg) {
-      if (!BASE) return fail('no_base', '未配置 JIWAN_API_BASE');
       const path = build(arg);
       const q = (method === 'GET' && arg && typeof arg === 'object')
         ? path + '?' + new URLSearchParams(
@@ -260,7 +288,7 @@
 
   /* 启动：有本地会话就向服务端校正一次（Cookie 才是权威） */
   function reconcileSession() {
-    if (!BASE || !session()) return;
+    if (!session()) return;
     ensureIndex().catch(() => {});
     req('GET', '/me').then(function (data) {
       if (data && Object.prototype.hasOwnProperty.call(data, 'user')) setSession(data.user || null);
