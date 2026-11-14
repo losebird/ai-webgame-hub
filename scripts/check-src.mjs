@@ -3,6 +3,8 @@
    用法：
      node scripts/check-src.mjs                       # 读 server/data/jiwan.db
      node scripts/check-src.mjs --base https://jiwan.space   # 读线上 /games/index
+   站内相对地址（如 /vendor/2048/）视为同源可嵌。页面里若有指向别的域名的 location 跳转或
+   meta refresh（2048 的 gh-pages 就会跳 play2048.co），会追到跳转目标再判一次。
    只读，不改库。输出不一致的条目；有不一致时退出码 1，方便放进部署前检查。 */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -41,7 +43,20 @@ function ancestorsAllow(value) {
   });
 }
 
-async function probe(src) {
+/* 页面脚本 / meta refresh 里跳去的别域地址（iframe 里也会照跳，所以要按目标判） */
+function softRedirect(raw, from) {
+  const html = raw.replace(/<!--[\s\S]*?-->/g, '');
+  const m = html.match(/location(?:\.href\s*=|\.replace\(|\.assign\(|\s*=)\s*["'](https?:\/\/[^"']+)["']/i)
+    || html.match(/http-equiv=["']?refresh["']?[^>]*url=([^"'>\s]+)/i);
+  if (!m) return '';
+  try {
+    const to = new URL(m[1], from);
+    return to.host !== new URL(from).host ? to.href : '';
+  } catch (e) { return ''; }
+}
+
+async function probe(src, hops = 0) {
+  if (src.startsWith('/')) return { status: 0, embeddable: true, why: 'same-origin (self-hosted)' };
   if (/^http:/i.test(src)) return { status: 0, embeddable: false, why: 'http only (mixed content)' };
   try {
     const r = await fetch(src, { redirect: 'follow', headers: { 'user-agent': UA }, signal: AbortSignal.timeout(20000) });
@@ -51,6 +66,11 @@ async function probe(src) {
     if (r.status >= 400) return { status: r.status, embeddable: null, why: 'http ' + r.status };
     if (fa) return { status: r.status, embeddable: ancestorsAllow(fa), why: fa };
     if (xfo === 'deny' || xfo === 'sameorigin') return { status: r.status, embeddable: false, why: 'x-frame-options ' + xfo };
+    const to = hops < 2 && /html/i.test(r.headers.get('content-type') || '') ? softRedirect(await r.text(), r.url) : '';
+    if (to) {
+      const p = await probe(to, hops + 1);
+      return { ...p, why: 'soft-redirects to ' + to + ' → ' + p.why };
+    }
     return { status: r.status, embeddable: true, why: 'no frame restriction' };
   } catch (e) {
     return { status: 0, embeddable: null, why: 'fetch failed: ' + (e.cause?.code || e.message) };
