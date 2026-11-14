@@ -1,0 +1,20 @@
+# 即玩：同源 Worker（静态资源 + API）+ D1
+# database_id 是占位符。本地 wrangler dev --local 不需要真实账号或 id。
+# 将来正式部署前，用 `wrangler d1 create jiwan` 换上真实 id。
+name = "jiwan"
+main = "worker/index.js"
+compatibility_date = "2026-11-14"
+workers_dev = true
+
+[assets]
+directory = "./public"
+binding = "ASSETS"
+html_handling = "none"
+# 不要把 /admin.html 重写成 /admin，否则会撞上 API 的 /admin 并返回 401 JSON。
+run_worker_first = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jiwan"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
