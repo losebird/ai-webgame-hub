@@ -1,5 +1,5 @@
 {
-  "at": "2026-11-14T09:15:55.553Z",
+  "at": "2026-11-14T11:38:40.963Z",
   "timings": [
     {
       "name": "GET /games/index",
@@ -20,13 +20,13 @@
       "samples": [
         7,
         7,
-        7,
         8,
-        8
+        8,
+        9
       ],
       "min": 7,
-      "median": 7,
-      "max": 8,
+      "median": 8,
+      "max": 9,
       "last": {}
     },
     {
@@ -34,27 +34,27 @@
       "samples": [
         11,
         11,
-        12,
+        11,
         12,
         12
       ],
       "min": 11,
-      "median": 12,
+      "median": 11,
       "max": 12,
       "last": {}
     },
     {
       "name": "POST /plays",
       "samples": [
+        11,
         12,
         12,
-        13,
-        16,
-        68
+        12,
+        13
       ],
-      "min": 12,
-      "median": 13,
-      "max": 68
+      "min": 11,
+      "median": 12,
+      "max": 13
     }
   ],
   "over": [

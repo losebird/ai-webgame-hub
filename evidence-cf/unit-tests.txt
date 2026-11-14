@@ -75,7 +75,7 @@
   ok  后台给游戏指派来源（可选项 + 校验 + 工坊包不可改）
 
 ALL PASS 57
-(node:551848) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:643669) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ======== client (seed, empty BASE) ========
@@ -94,7 +94,7 @@ ALL PASS 57
   ok  空 id 的详情请求在本地判 not_found（不打接口，不返回集合体）
 
 ALL PASS 12
-(node:551896) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:643708) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ======== security (seed) ========
@@ -111,7 +111,7 @@ ALL PASS 12
   ok  伪造官方域名后缀的 Origin 被拒
 
 ALL PASS 8
-(node:551914) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:643728) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ======== data (jiwan) ========
@@ -119,9 +119,10 @@ ALL PASS 8
   ok  生产库 admin/林澄 为 PBKDF2 且旧口令 jiwan 不能通过
 
 [数据] jiwan.db 导入后的差异关系
-  ok  目录 73 部，已上架工坊包并入可见列表
+  ok  目录 83 部，已上架工坊包并入可见列表
   ok  潮汐回廊与灯塔守夜人已过审上架
   ok  试玩次数与源库一致（evensong=11，13 条 plays）
+  ok  匿名 /games/index 与 /home 可短缓存，带会话的 /home 不缓存
 
 [安全] Origin / CSRF / HttpOnly
   ok  伪造 Origin 的写操作被拒
@@ -132,13 +133,13 @@ ALL PASS 8
   ok  旧口令 jiwan 不能登录 admin 或林澄
   ok  伪造官方域名后缀的 Origin 被拒
 
-ALL PASS 11
-(node:551994) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+ALL PASS 12
+(node:643827) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 
 ======== journey + timings (jiwan) ========
 [主路径] jiwan.db
-  ok  打开首页索引：73 个游戏可见
+  ok  打开首页索引：83 个游戏可见
   ok  中英文切换不回归（title_en 存在且 lang=en 生效）
   ok  详情可打开，游玩计数会变化
   ok  注册并登录，刷新后 Cookie 仍有效
@@ -148,14 +149,14 @@ ALL PASS 11
 
 [耗时] 各打 5 次，读 X-Jiwan-Elapsed-Ms（本地墙钟，含 D1 I/O，不是生产 CPU）
   GET /games/index: min=7ms median=8ms max=9ms samples=[7,8,8,8,9]
-  GET /rankings: min=7ms median=7ms max=8ms samples=[7,7,7,8,8]
-  POST /auth/login: min=11ms median=12ms max=12ms samples=[11,11,12,12,12]
-  POST /plays: min=12ms median=13ms max=68ms samples=[12,12,13,16,68]
+  GET /rankings: min=7ms median=8ms max=9ms samples=[7,7,8,8,9]
+  POST /auth/login: min=11ms median=11ms max=12ms samples=[11,11,11,12,12]
+  POST /plays: min=11ms median=12ms max=13ms samples=[11,12,12,12,13]
   NOTE 以下接口本地墙钟中位数超过 10ms（需对照是否只是 I/O，还是 CPU 打满）：
    - POST /auth/login
    - POST /plays
 
 ALL PASS 7
-(node:552010) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:644085) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
 

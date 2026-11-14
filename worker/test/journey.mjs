@@ -38,11 +38,11 @@ async function main() {
 
   console.log('\n[主路径] jiwan.db');
 
-  await check('打开首页索引：73 个游戏可见', async () => {
+  await check('打开首页索引：83 个游戏可见', async () => {
     const r = await guest('GET', '/games/index');
     assert.equal(r.status, 200);
-    assert.ok(r.data.items.length >= 73, '可见游戏应至少 73，实际 ' + r.data.items.length);
-    assert.equal(r.data.items.filter((g) => !String(g.id).startsWith('pack-mw')).length >= 73, true);
+    assert.ok(r.data.items.length >= 83, '可见游戏应至少 83，实际 ' + r.data.items.length);
+    assert.equal(r.data.items.filter((g) => !String(g.id).startsWith('pack-mw')).length >= 83, true);
     const home = await guest('GET', '/home');
     assert.equal(home.status, 200);
     assert.ok((home.data.featured || []).length + (home.data.hot || []).length > 0);
@@ -106,7 +106,7 @@ async function main() {
     assert.ok(review.jar.jiwan_sid, '登录后应持有 jiwan_sid');
     const stats = await review('GET', '/admin/stats');
     assert.equal(stats.status, 200, 'stats ' + stats.status + ' ' + JSON.stringify(stats.data) + ' cookies=' + JSON.stringify(review.jar));
-    assert.ok(stats.data.games.total >= 73);
+    assert.ok(stats.data.games.total >= 83);
     let html, lastErr;
     for (const path of ['/admin.html', '/']) {
       try { html = await fetch(base + path); lastErr = null; if (html && html.ok) break; }
