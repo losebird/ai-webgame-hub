@@ -1,32 +1,32 @@
 {
-  "at": "2026-11-14T06:10:45.717Z",
+  "at": "2026-11-14T07:37:28.187Z",
   "timings": [
     {
       "name": "GET /games/index",
       "samples": [
-        6,
         7,
         7,
         7,
-        9
+        7,
+        8
       ],
-      "min": 6,
+      "min": 7,
       "median": 7,
-      "max": 9,
+      "max": 8,
       "last": {}
     },
     {
       "name": "GET /rankings",
       "samples": [
         6,
+        6,
+        6,
         7,
-        7,
-        7,
-        7
+        9
       ],
       "min": 6,
-      "median": 7,
-      "max": 7,
+      "median": 6,
+      "max": 9,
       "last": {}
     },
     {
@@ -34,31 +34,28 @@
       "samples": [
         10,
         10,
-        11,
+        10,
         11,
         11
       ],
       "min": 10,
-      "median": 11,
+      "median": 10,
       "max": 11,
       "last": {}
     },
     {
       "name": "POST /plays",
       "samples": [
-        12,
-        12,
-        12,
-        13,
-        13
+        9,
+        10,
+        10,
+        11,
+        12
       ],
-      "min": 12,
-      "median": 12,
-      "max": 13
+      "min": 9,
+      "median": 10,
+      "max": 12
     }
   ],
-  "over": [
-    "POST /auth/login",
-    "POST /plays"
-  ]
+  "over": []
 }

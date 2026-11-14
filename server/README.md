@@ -43,7 +43,7 @@ cd server && npm test       # 45 + 11 项验收（在 seed.db 的临时快照上
   - `maker`：谁生成的（目前只有 `Fable 5.2`）。
   - `source`：来源（`fable52.games` / `X` / `Claude Gaming` / `腾讯（IP）` / `字节 CDN`）。
   前端 `authorLabel(g)` 的显示规则：有 `author` 显示作者；否则 `maker + ' 生成'`；再否则 `来源 + source`；都没有显示「未署名」。未署名条目**不会**给出作者主页链接。
-- 种子账号：`admin / jiwan`（显示名「站务」，`role=admin`）、`林澄 / jiwan`（`role=reviewer`）、`何予 / jiwan`；有署名的作者默认密码都是 `jiwan`。平台名（`fable52.games`）不再是账号。
+- 种子账号仍包括站务 `admin`（显示名「站务」，`role=admin`）、审核员 `林澄`（`role=reviewer`）以及作者账号（如 `何予`）。特权账号的上线初始口令不在仓库里；其余种子用户写入了不可用哈希，不能再用旧的公开口令登录。平台名（`fable52.games`）不是账号。
 - 角色三档，`admin ⊃ reviewer ⊃ user`：
 
   | role | 能做什么 |
@@ -77,7 +77,7 @@ cd server && npm test       # 45 + 11 项验收（在 seed.db 的临时快照上
 
 ## 已知限制
 
-- 密码是 `sha256('jiwan:'+pass)`，演示级；正式环境换 argon2 + 邮件验证，并删掉 `/auth/reset`。
+- 密码是每用户独立盐的 PBKDF2-SHA256（与 Workers 版同一格式）。无验证的 `/auth/reset` 已关闭；已登录改密走 `/me/password`，站务重置走管理接口。新密码至少 10 位。
 - 排行升降、相关推荐仍是启发式权重（`store.rankWeight`），只喂了真实播放数。
 - `index.html` 心形首帧读的是 `api.likes()` 同步集合，登录后第一次进首页可能晚一帧。
 - 后台改了别人的角色后，对方浏览器里的 `jiwan-session.role` 是旧值，导航入口要刷新一次才更新（接口鉴权永远以服务端为准）。

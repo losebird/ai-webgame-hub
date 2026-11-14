@@ -18,3 +18,15 @@ binding = "DB"
 database_name = "jiwan"
 database_id = "00000000-0000-0000-0000-000000000000"
 migrations_dir = "migrations"
+
+# 正式域名尚未购买、Cloudflare zone 也未绑定。
+# 不要启用下面的 routes：未绑定 zone 时 `wrangler deploy` 会失败。
+# 本轮不要执行 wrangler login / deploy。workers_dev = true 先保留作退路。
+# 购买并接入 Cloudflare 后，把 database_id 换成真实值，取消注释这两段路由，再部署：
+# [[routes]]
+# pattern = "jiwan.space/*"
+# zone_name = "jiwan.space"
+# [[routes]]
+# pattern = "*.jiwan.space/*"
+# zone_name = "jiwan.space"
+

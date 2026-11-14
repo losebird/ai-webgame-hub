@@ -4,7 +4,7 @@
 
 当前默认分支上的 Node 版（`server/`，本机 `http` + `node:sqlite`）仍可对照运行，但验收与将来部署以 Workers 为准。
 
-演示账号默认密码是文档里已有的 `jiwan`（含站务 `admin` / 审核员 `林澄`）。**密码算法是演示级** `sha256("jiwan:" + pass)`，不是正式环境方案；上线前应换成更强的哈希，并收紧 `/auth/reset`。不要把明文密码写进新文件。
+密码存储为每用户独立盐的 PBKDF2-SHA256（格式 `pbkdf2$sha256$<iters>$<salt>$<hash>`，当前 10000 次迭代）。旧的演示哈希 `sha256("jiwan:" + pass)` 已无法验证。无验证的 `/auth/reset` 已关闭；已登录用户走 `/me/password`，站务重置走管理接口。新注册密码至少 10 位。初始特权口令不在仓库或文档里，由部署者另行保管并尽快自行修改。
 
 ## 本地启动（不需要 Cloudflare 账号）
 
@@ -40,14 +40,15 @@ npm test
 
 ## 将来正式部署（本轮不要执行）
 
-需要你先提供 Cloudflare 账号，并决定：用 `*.workers.dev` 还是以后再绑自己的域名（例如候选过的 `jiwan.space`）；线上初始数据用 `jiwan.db` 还是 `seed.db`。
+正式域名定为 `jiwan.space`（含 `*.jiwan.space`）。域名尚未购买，Cloudflare 账号也尚未登录，因此 **不要** 在本轮执行 `wrangler login`、`wrangler deploy`，也不要对 remote D1 做任何操作。`wrangler.toml` 里的路由块先以注释形式写好，以免未绑定 zone 时部署失败；`workers_dev = true` 暂时保留作退路。线上初始数据用清理过会话的 `data/sql/jiwan.sql`（来自 `server/data/jiwan.db`）。
 
-1. 安装并登录 Wrangler（`wrangler login`，需你本人操作）。
-2. 创建 D1：`npx wrangler d1 create jiwan`，把返回的 `database_id` 填进 `wrangler.toml`，替换占位符 `00000000-0000-0000-0000-000000000000`。
-3. 执行迁移：`npx wrangler d1 migrations apply jiwan --remote`。
-4. 导入数据：`npx wrangler d1 execute jiwan --remote --file=data/sql/jiwan.sql`（或 `data/sql/seed.sql`）。
-5. 部署：`npx wrangler deploy`。静态资源和 API 会在同一个 Worker 域名下。
-6. 若要绑自定义域名，在 Cloudflare 控制台给这个 Worker 加上路由，并完成 DNS。免费套餐即可，不必上付费产品。
+1. 购买 `jiwan.space` 并接入 Cloudflare（需你本人操作）。
+2. 安装并登录 Wrangler（`wrangler login`，需你本人操作）。
+3. 创建 D1：`npx wrangler d1 create jiwan`，把返回的 `database_id` 填进 `wrangler.toml`，替换占位符 `00000000-0000-0000-0000-000000000000`。项目名保持 `jiwan`。
+4. 执行迁移：`npx wrangler d1 migrations apply jiwan --remote`。
+5. 导入线上初始数据：`npx wrangler d1 execute jiwan --remote --file=data/sql/jiwan.sql`。
+6. 在 `wrangler.toml` 里取消注释 `jiwan.space/*` 与 `*.jiwan.space/*` 两段路由，确认 `zone_name = "jiwan.space"`。
+7. 部署：`npx wrangler deploy`。静态资源和 API 会在同一个 Worker 域名下。完成 DNS，使 `jiwan.space`、`www.jiwan.space` 与需要的子域指向该 Worker。免费套餐即可，不必上付费产品。
 
 免费套餐硬限制（以[官方定价](https://developers.cloudflare.com/workers/platform/pricing/)为准）：Workers 每天 10 万次请求、**每次最多 10ms CPU**；D1 每天 500 万行读、10 万行写、总共 5GB、最多 10 个库。超出当天额度会失败，不会自动扣费。查询已加索引；偏重接口的本地耗时见 `REPORT-cf.md` 与 `evidence-cf/`。
 
