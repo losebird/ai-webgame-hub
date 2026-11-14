@@ -144,6 +144,32 @@ async function jiwanDataTests(base, persist) {
       const g = await anon('GET', '/games/evensong');
       assert.equal(g.data.game.plays, 11);
     });
+    await check('匿名 /games/index 与 /home 可短缓存，带会话的 /home 不缓存', async () => {
+      const idx = await anon('GET', '/games/index');
+      const home = await anon('GET', '/home');
+      const re = /public/i;
+      assert.match(idx.headers.get('cache-control') || '', re);
+      assert.match(idx.headers.get('cache-control') || '', /s-maxage=120/);
+      assert.match(home.headers.get('cache-control') || '', re);
+      const user = createClient(base);
+      const login = await user('POST', '/auth/login', { name: '林澄', pass: TEST_PASS });
+      assert.equal(login.status, 200);
+      const mine = await user('GET', '/home');
+      assert.equal(mine.status, 200);
+      assert.match(mine.headers.get('cache-control') || '', /no-store/);
+      const font = await fetch(base + '/assets/fonts/NotoSerifSC-500.woff2');
+      assert.equal(font.status, 200);
+      assert.match(font.headers.get('cache-control') || '', /max-age=604800/);
+      const css = await fetch(base + '/assets/jiwan-press.css');
+      assert.equal(css.status, 200);
+      assert.match(css.headers.get('cache-control') || '', /max-age=86400/);
+      const page = await fetch(base + '/index.html');
+      assert.equal(page.status, 200);
+      assert.match(page.headers.get('cache-control') || '', /no-store/);
+      const html = await page.text();
+      assert.equal(html.includes('fonts.googleapis.com') || html.includes('fonts.gstatic.com'), false);
+      assert.ok(html.includes('assets/fonts/fonts.css'));
+    });
   } finally {
     db.close();
   }

@@ -52,12 +52,32 @@ function corsHeaders(request) {
   };
 }
 
-function jsonResponse(status, data, extra) {
+function jsonResponse(status, data, extra, cacheControl) {
   const body = JSON.stringify(data == null ? {} : data);
   const headers = extra instanceof Headers ? new Headers(extra) : new Headers(extra || {});
   headers.set("Content-Type", "application/json; charset=utf-8");
-  headers.set("Cache-Control", "no-store");
+  headers.set("Cache-Control", cacheControl || "no-store");
   return new Response(body, { status, headers });
+}
+
+/* 匿名目录可短缓存；带 jiwan_sid 的请求一律 no-store。
+   不 Vary: Cookie，避免 CSRF cookie 把 CDN 缓存打成每人一份。
+   已登录走另一分支，不会吃到这份公开缓存。查询串（lang 等）本身就是缓存键。 */
+function isAnonCatalogGet(method, pathname, sid) {
+  if (method !== "GET" || sid) return false;
+  return pathname === "/games/index" || pathname === "/home";
+}
+
+const ANON_CATALOG_CACHE = "public, max-age=60, s-maxage=120, stale-while-revalidate=600";
+
+function assetCacheControl(pathname, type) {
+  if ((type || "").includes("text/html")) return "no-store";
+  const p = String(pathname || "").toLowerCase();
+  if (/\.(woff2?|ttf|otf|webp|png|jpe?g|gif|svg|ico)$/.test(p) || p.includes("/fonts/") || p.includes("/posters/")) {
+    return "public, max-age=604800";
+  }
+  if (/\.(js|mjs|css)$/.test(p)) return "public, max-age=86400";
+  return "public, max-age=3600";
 }
 
 function withTiming(res, started) {
@@ -129,6 +149,7 @@ async function serveAsset(request, env, url, cookies) {
     headers.set("Content-Length", String(new TextEncoder().encode(html).length));
     return new Response(html, { status: res.status, headers });
   }
+  headers.set("Cache-Control", assetCacheControl(url.pathname, type));
   return new Response(res.body, { status: res.status, statusText: res.statusText, headers });
 }
 
@@ -234,8 +255,10 @@ async function handleApi(request, env, url, cookies) {
   try {
     const data = await api.handle(ctx);
     if (ctx.setSid !== null) setSessionCookie(outHeaders, url, ctx.setSid);
-    const res = jsonResponse(200, data, outHeaders);
-    return res;
+    const cache = (isAnonCatalogGet(request.method, url.pathname, sid) && ctx.setSid === null)
+      ? ANON_CATALOG_CACHE
+      : "";
+    return jsonResponse(200, data, outHeaders, cache);
   } catch (err) {
     if (err instanceof HttpError) {
       return jsonResponse(err.status, { code: err.code, message: err.message }, outHeaders);

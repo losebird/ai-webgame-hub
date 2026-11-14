@@ -52,7 +52,10 @@ const server = http.createServer((req, res) => {
       });
       return;
     }
-    res.writeHead(200, { 'Content-Type': type, 'Content-Length': st.size });
+    let cache = 'public, max-age=3600';
+    if (/\.(woff2?|ttf|otf|webp|png|jpe?g|gif|svg|ico)$/i.test(ext) || file.includes('/fonts/') || file.includes('/posters/')) cache = 'public, max-age=604800';
+    else if (/\.(js|mjs|css)$/i.test(ext)) cache = 'public, max-age=86400';
+    res.writeHead(200, { 'Content-Type': type, 'Cache-Control': cache, 'Content-Length': st.size });
     fs.createReadStream(file).pipe(res);
   });
 });
