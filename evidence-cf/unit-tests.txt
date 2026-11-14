@@ -1,0 +1,149 @@
+======== smoke (seed) ========
+[1] 协议与鉴权
+  ok  未知路由 404 + code=not_found
+  ok  未登录 GET /notifs 401 auth
+  ok  OPTIONS 预检带 credentials 与回显 Origin
+  ok  错密码 401 bad_credentials
+
+[2] 林澄（审核员）
+  ok  登录成功且 role=reviewer
+  ok  GET /me 走 Cookie 返回同一人
+  ok  能看举报表
+  ok  何予看举报表 403 forbidden
+
+[3] 收藏 / 关注 / 通知分桶
+  ok  何予发布帖子
+  ok  林澄点赞何予的帖 → 只有何予未读 +1
+  ok  何予关注林澄 → 林澄收到 follow，何予自己无
+  ok  不能关注自己 422 invalid:self
+  ok  收藏按账号分桶（何予收藏了 harbor，林澄没有）
+  ok  他人主页 favs 不返回（仅主人可见）
+  ok  未读计数按人隔离（markNotifsRead 只清自己）
+
+[4] 自己的内容：发 / 改 / 删
+  ok  何予改自己的帖
+  ok  林澄改何予的帖 403 owner
+  ok  标题 4–48 字校验 422 invalid:title
+  ok  何予给自己帖评论并改删评论
+  ok  何予评价游戏 → 一人一评 → 删评
+  ok  分数越界 / 评论过短 422
+
+[5] 审核动作
+  ok  林澄藏帖 → 普通用户 404，作者仍可打开
+  ok  藏帖通知写给帖主（何予收到 postHidden）
+  ok  何予藏帖 403
+  ok  林澄下架 bayhaven → 匿名 404，审核员 200
+  ok  下架后不在目录与排行里
+  ok  举报 → 审核员看到 title/gone → 标记已处理
+  ok  举报理由 <2 字 422
+
+[6] 工坊审核
+  ok  何予队列 403；林澄队列含他的 pending 包
+  ok  过审 → listed 且并入可发现列表 → 通知 packOn
+  ok  下架该工坊包 → 变 unlisted + 通知 gameDown
+  ok  拒稿写原因 + packOff 通知
+  ok  审核员不能审自己的包 403 self
+  ok  作者 resubmit 拒稿包 → 回到 pending
+  ok  指派给工坊的目录游戏：工坊/首页可见、归属作者、数据保留
+  ok  作者下架指派包 → 离开工坊但目录保留；重新过审后回来
+
+[7] 接着玩 / 播放计数
+  ok  首页 resume 跟账号历史走
+  ok  recordPlay 累加并写个人历史
+  ok  播放不存在的游戏 404
+  ok  游客游玩记录登录后认领
+
+[8] 搜索 / 排行 / 注册
+  ok  搜索返回 games/posts/users 与 suggest
+  ok  排行 tab/period 生效
+  ok  注册 2–16 名、重复冲突、能登录
+  ok  目录里出现过的作者都能用 jiwan 登录
+  ok  改密码：旧密码错 401，改完新密码可登录
+  ok  logout 清 Cookie 后 /me 为 null
+  ok  feed=follow 只看关注的人（何予关注林澄后能看到林澄的帖）
+
+[9] 后台（admin）
+  ok  管理员账号能登录且 role=admin
+  ok  后台权限：匿名 401，普通用户 403，审核员能读统计读不到用户表
+  ok  统计与库对得上
+  ok  举报闭环：管理员看到 → 隐帖 → 标处理 → 匿名 404 → 恢复
+  ok  角色调整：升审核员 → 能进后台；降回 → 403
+  ok  禁用：会话立刻失效、再登录被拒，解禁后恢复
+  ok  管理员不能改自己，也不能把最后一个管理员降级
+  ok  管理员重置密码后新密码可用（再改回）
+  ok  游戏下架 / 恢复：普通用户 404，审核员可见
+  ok  后台给游戏指派来源（可选项 + 校验 + 工坊包不可改）
+
+ALL PASS 57
+(node:489491) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+======== client (seed, empty BASE) ========
+[客户端] 同源、未配置 JIWAN_API_BASE
+  ok  未登录时 meSync() 为 null
+  ok  未配置 JIWAN_API_BASE 也能请求 API
+  ok  login 成功后把 user 写进 jiwan-session
+  ok  同一浏览器里换页（新页面实例）导航立刻认得出人
+  ok  getNotifs 之后未读计数同步到本地
+  ok  likePost 之后本地点赞集合被镜像（心形不会掉）
+  ok  启动时用 GET /me 校正角色（本地角色被改坏也能修回）
+  ok  logout 清掉 jiwan-session
+  ok  本地残留的旧会话在无 Cookie 时被清掉
+  ok  客户端错误码透传（错密码 err.code=bad_credentials）
+  ok  后端模式下 getGame / getHome 字段齐全（页面不空）
+  ok  空 id 的详情请求在本地判 not_found（不打接口，不返回集合体）
+
+ALL PASS 12
+(node:489523) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+======== security (seed) ========
+[安全] Origin / CSRF / HttpOnly
+  ok  伪造 Origin 的写操作被拒
+  ok  缺 CSRF 的写操作被拒
+  ok  会话 Cookie 含 HttpOnly，CSRF Cookie 不含
+  ok  HTML 注入空的 JIWAN_API_BASE
+
+ALL PASS 4
+(node:489541) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+======== data (jiwan) ========
+[数据] jiwan.db 导入后的差异关系
+  ok  目录 73 部，已上架工坊包并入可见列表
+  ok  潮汐回廊与灯塔守夜人已过审上架
+  ok  试玩次数与源库一致（evensong=11，13 条 plays）
+
+[安全] Origin / CSRF / HttpOnly
+  ok  伪造 Origin 的写操作被拒
+  ok  缺 CSRF 的写操作被拒
+  ok  会话 Cookie 含 HttpOnly，CSRF Cookie 不含
+  ok  HTML 注入空的 JIWAN_API_BASE
+
+ALL PASS 7
+(node:489722) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+======== journey + timings (jiwan) ========
+[主路径] jiwan.db
+  ok  打开首页索引：73 个游戏可见
+  ok  中英文切换不回归（title_en 存在且 lang=en 生效）
+  ok  详情可打开，游玩计数会变化
+  ok  注册并登录，刷新后 Cookie 仍有效
+  ok  点赞或收藏成功
+  ok  发帖或评价成功
+  ok  审核员演示账号能进后台
+
+[耗时] 各打 5 次，读 X-Jiwan-Elapsed-Ms（本地墙钟，含 D1 I/O，不是生产 CPU）
+  GET /games/index: min=6ms median=7ms max=9ms samples=[6,7,7,7,9]
+  GET /rankings: min=6ms median=7ms max=7ms samples=[6,7,7,7,7]
+  POST /auth/login: min=10ms median=11ms max=11ms samples=[10,10,11,11,11]
+  POST /plays: min=12ms median=12ms max=13ms samples=[12,12,12,13,13]
+  NOTE 以下接口本地墙钟中位数超过 10ms（需对照是否只是 I/O，还是 CPU 打满）：
+   - POST /auth/login
+   - POST /plays
+
+ALL PASS 7
+(node:489803) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
