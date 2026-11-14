@@ -699,9 +699,19 @@ function reportKinds(){
     { value: 'other', label: t('report.other') }
   ];
 }
-function posterTag(g, cls){
+/* 卡片/列表走 posters/thumbs/*.webp；详情和大图传 {full:true} 仍用原图。原图保留在仓库里。 */
+function posterSrc(g, kind){
+  const src = (g && g.poster) || '';
+  if (!src || kind === 'full') return src;
+  const m = String(src).match(/^(.*\/posters\/)([^/]+)\.[a-z0-9]+$/i);
+  return m ? `${m[1]}thumbs/${m[2]}.webp` : src;
+}
+function posterTag(g, cls, opts){
   if(!g.poster) return '';
-  return `<img class="${cls||'poster'}" src="${g.poster}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}">`;
+  const full = !!(opts && opts.full);
+  const eager = !!(opts && opts.eager);
+  const src = posterSrc(g, full ? 'full' : 'thumb');
+  return `<img class="${cls||'poster'}" src="${src}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
 }
 function fableLabel(g){
   /* 用户投稿不宣称制作工具：过审上架的包统一标成「用户上架」。 */
@@ -727,17 +737,17 @@ function originChip(g){
   if (g.origin === 'x') return t('origin.x');
   return t('origin.shot');
 }
-function coverHTML(g,kicker){
+function coverHTML(g,kicker,opts){
   const skip = kicker===false;
   const kick = skip ? '' : (kicker || fableLabel(g));
   const kickEl = kick ? `<span class="cover-kicker">${kick}</span>` : '';
   const modeEl = skip ? '' : `<span class="cover-mode" data-mode="${playMode(g)}">${modeLabel(g)}</span>`;
-  if(g.poster) return `<div class="cover has-poster" style="${coverStyle(g)}">${kickEl}${modeEl}${posterTag(g)}</div>`;
+  if(g.poster) return `<div class="cover has-poster" style="${coverStyle(g)}">${kickEl}${modeEl}${posterTag(g, 'poster', opts)}</div>`;
   return `<div class="cover" style="${coverStyle(g)}">${kickEl}${modeEl}${skip?'':`<strong>${gameTitle(g)}</strong>`}</div>`;
 }
-function iconHTML(g){ return `<div class="icon">${coverHTML(g,false)}</div>`; }
-function miniHTML(g){
-  if(g.poster) return `<div class="mini-art has-poster">${posterTag(g)}</div>`;
+function iconHTML(g,opts){ return `<div class="icon">${coverHTML(g,false,opts)}</div>`; }
+function miniHTML(g,opts){
+  if(g.poster) return `<div class="mini-art has-poster">${posterTag(g, undefined, opts)}</div>`;
   return `<div class="mini-art" style="${coverStyle(g)}"></div>`;
 }
 function gameHref(id){ return `game-detail.html?id=${encodeURIComponent(id)}`; }
@@ -1121,7 +1131,7 @@ window.JIWAN = {
   RANK_TABS, RANK_PERIODS, RANK_TAB_NAME, RANK_PERIOD_NAME,
   RANK_ARROW_UP, RANK_ARROW_DOWN,
   $, $$, byId, allGames, setIndex, setRankPrev, authorsList, parsePlayers, livePlayers, formatPlayers, rankIndexMap, rankMoveHTML,
-  toast, coverStyle, scoreText, playerLine, bindLivePlayers, openReasonForm, reportKinds, posterTag, fableLabel, originChip, coverHTML, iconHTML, miniHTML,
+  toast, coverStyle, scoreText, playerLine, bindLivePlayers, openReasonForm, reportKinds, posterSrc, posterTag, fableLabel, originChip, coverHTML, iconHTML, miniHTML,
   gameHref, playHref, playSrc, playMode, modeLabel, srcHost, playCtaHTML, hitMatch,
   highlight, pagerHTML, failHTML, loadingHTML, avatarHTML,
   esc, currentPage, loginHref, userHref, authorHref, authorLabel, postHref, tagHref, accountNavHTML,
