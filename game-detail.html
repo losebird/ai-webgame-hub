@@ -52,7 +52,7 @@
     (function () {
       const J = window.JIWAN;
       if (!J) return;
-      const { coverHTML, playCtaHTML, modeLabel, playMode, scoreText, playerLine, originChip, gameHref, playHref, playSrc, mountChrome, toast, t, tagLabel, reviewLabel, applyI18n, gameTitle, gameBlurb, gameAbout, esc, loginHref, postHref, userHref, authorHref, tagHref, bindLivePlayers, openReasonForm, reportKinds, authorLabel, backHTML} = J;
+      const { coverHTML, mediaSrc, posterSrc, preloadImages, playCtaHTML, modeLabel, playMode, scoreText, playerLine, originChip, gameHref, playHref, playSrc, mountChrome, toast, t, tagLabel, reviewLabel, applyI18n, gameTitle, gameBlurb, gameAbout, esc, loginHref, postHref, userHref, authorHref, tagHref, bindLivePlayers, openReasonForm, reportKinds, authorLabel, backHTML} = J;
       const api = J.api;
       mountChrome('home');
       const params = new URLSearchParams(location.search);
@@ -137,7 +137,7 @@
         const gallery = (g.shots || []).map((s, i) => ({ s, i, size: (g.shotSize && g.shotSize[i]) || [g.pw, g.ph] })).filter(x => !g.poster || x.s !== g.poster);
         const shotHTML = gallery.map((x, n) => {
           if (/^assets\//.test(x.s)) {
-            return `<figure class="shot has-photo"><img src="${x.s}" alt="${t('detail.shotAlt',{title:gameTitle(g),n:n+1})}" width="${x.size[0]}" height="${x.size[1]}" loading="lazy" decoding="async"></figure>`;
+            return `<figure class="shot has-photo">${J.posterImg(mediaSrc(x.s, 'detail'), {cls:'', alt:t('detail.shotAlt',{title:gameTitle(g),n:n+1}), width:x.size[0], height:x.size[1]})}</figure>`;
           }
           return `<div class="shot" style="--hue:${g.hue + x.i * 18}">${x.s}</div>`;
         }).join('');
@@ -152,7 +152,7 @@
         document.getElementById('detail-root').innerHTML = `
           ${backHTML({ odId: 'detail-back', wide: true, skip: ['detail', 'play'] })}
           <div class="detail-head" data-od-id="detail-head">
-            <div class="detail-cover" data-od-id="detail-cover">${coverHTML(g, false, {full:true, eager:true})}</div>
+            <div class="detail-cover" data-od-id="detail-cover">${coverHTML(g, false, {kind:'detail', eager:true})}</div>
             <div class="detail-copy">
               <p class="meta">${authorHref(g) ? `<a href="${authorHref(g)}" data-od-id="detail-author">${esc(authorLabel(g))}</a>` : esc(authorLabel(g))} · ${g.year} · <span class="live-count" data-live-players="${g.id}">${playerLine(g)}</span></p>
               <h1 class="title" data-od-id="detail-title">${gameTitle(g)}</h1>
@@ -263,6 +263,7 @@
             else toast(t('detail.revNeed'));
           }
         };
+        if (g.poster) preloadImages([posterSrc(g, 'detail')]);
         applyI18n();
       }
       function shareUrl() {

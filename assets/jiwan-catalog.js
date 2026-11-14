@@ -699,20 +699,102 @@ function reportKinds(){
     { value: 'other', label: t('report.other') }
   ];
 }
-/* 卡片/列表走 posters/thumbs/*.webp；详情和大图传 {full:true} 仍用原图。原图保留在仓库里。 */
-function posterSrc(g, kind){
-  const src = (g && g.poster) || '';
-  if (!src || kind === 'full') return src;
+/* 分层图（原图都留在 posters/ 根目录，不删除）：
+   icon   列表/排行/搜索小图标 → posters/icons/*.webp（长边约 180）
+   thumb  卡片和首页推荐     → posters/thumbs/*.webp（长边约 480）
+   detail 详情主图和剧照     → posters/detail/*.webp（长边约 1200）
+   full   仅在需要原件时用，页面默认不再请求原 JPG/PNG。 */
+function posterDir(kind){
+  if (kind === 'icon') return 'icons';
+  if (kind === 'detail') return 'detail';
+  return 'thumbs';
+}
+function mediaSrc(src, kind){
+  if (!src) return '';
+  if (kind === 'full') return src;
   const m = String(src).match(/^(.*\/posters\/)([^/]+)\.[a-z0-9]+$/i);
-  return m ? `${m[1]}thumbs/${m[2]}.webp` : src;
+  return m ? `${m[1]}${posterDir(kind || 'thumb')}/${m[2]}.webp` : src;
+}
+function posterSrc(g, kind){
+  return mediaSrc(g && g.poster, kind || 'thumb');
+}
+function posterImg(src, attrs){
+  const o = attrs || {};
+  const cls = o.cls || 'poster';
+  const alt = o.alt || '';
+  const style = o.pos ? ` style="object-position:${o.pos}"` : '';
+  const wh = (o.width && o.height) ? ` width="${o.width}" height="${o.height}"` : '';
+  if (o.eager) {
+    const pri = o.high !== false ? ' fetchpriority="high"' : '';
+    return `<img class="${cls}" src="${src}" alt="${alt}"${wh}${style} loading="eager" decoding="async"${pri}>`;
+  }
+  /* 不写 src，等 IntersectionObserver（rootMargin 约 180px）靠近视口再填。
+     原生 loading=lazy 的预加载边距太大，首屏下面二三十张会一起下。 */
+  return `<img class="${cls}" alt="${alt}"${wh}${style} loading="lazy" decoding="async" data-src="${src}">`;
 }
 function posterTag(g, cls, opts){
   if(!g.poster) return '';
-  const full = !!(opts && opts.full);
+  const kind = (opts && opts.kind) || ((opts && opts.full) ? 'detail' : 'thumb');
   const eager = !!(opts && opts.eager);
-  const src = posterSrc(g, full ? 'full' : 'thumb');
-  return `<img class="${cls||'poster'}" src="${src}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}" loading="${eager ? 'eager' : 'lazy'}" decoding="async">`;
+  return posterImg(posterSrc(g, kind), {
+    cls: cls || 'poster', alt: gameTitle(g), width: g.pw, height: g.ph, pos: g.pos || 'center', eager
+  });
 }
+function preloadImages(urls){
+  (urls || []).forEach((href) => {
+    if (!href || document.querySelector('link[rel="preload"][as="image"][href="' + href + '"]')) return;
+    const l = document.createElement('link');
+    l.rel = 'preload';
+    l.as = 'image';
+    l.href = href;
+    document.head.appendChild(l);
+  });
+}
+/* 靠近视口才赋 src。新建的 data-src 图由 MutationObserver 自动盯上。 */
+const POSTER_LAZY_MARGIN = '180px 0px';
+const posterLazySeen = new WeakSet();
+let posterLazyIO = null;
+function posterLazyObserve(img){
+  if (!img || !img.getAttribute('data-src') || posterLazySeen.has(img)) return;
+  posterLazySeen.add(img);
+  if (!('IntersectionObserver' in window)) {
+    img.src = img.getAttribute('data-src');
+    img.removeAttribute('data-src');
+    return;
+  }
+  if (!posterLazyIO) {
+    posterLazyIO = new IntersectionObserver((entries) => {
+      entries.forEach((e) => {
+        if (!e.isIntersecting) return;
+        const el = e.target;
+        const src = el.getAttribute('data-src');
+        if (src) { el.src = src; el.removeAttribute('data-src'); }
+        posterLazyIO.unobserve(el);
+      });
+    }, { root: null, rootMargin: POSTER_LAZY_MARGIN, threshold: 0.01 });
+  }
+  posterLazyIO.observe(img);
+}
+function bindPosterLazy(root){
+  const scope = root && root.querySelectorAll ? root : document;
+  if (scope.getAttribute && scope.getAttribute('data-src') && scope.tagName === 'IMG') posterLazyObserve(scope);
+  (scope.querySelectorAll ? scope.querySelectorAll('img[data-src]') : []).forEach(posterLazyObserve);
+}
+function watchPosterLazy(){
+  bindPosterLazy(document);
+  if (!('MutationObserver' in window) || !document.documentElement) return;
+  const mo = new MutationObserver((muts) => {
+    muts.forEach((m) => {
+      m.addedNodes.forEach((n) => {
+        if (n.nodeType !== 1) return;
+        if (n.tagName === 'IMG' && n.getAttribute('data-src')) posterLazyObserve(n);
+        else if (n.querySelectorAll) bindPosterLazy(n);
+      });
+    });
+  });
+  mo.observe(document.documentElement, { childList: true, subtree: true });
+}
+
 function fableLabel(g){
   /* 用户投稿不宣称制作工具：过审上架的包统一标成「用户上架」。 */
   if (g.packStatus === 'listed') return t('label.userListed');
@@ -745,9 +827,9 @@ function coverHTML(g,kicker,opts){
   if(g.poster) return `<div class="cover has-poster" style="${coverStyle(g)}">${kickEl}${modeEl}${posterTag(g, 'poster', opts)}</div>`;
   return `<div class="cover" style="${coverStyle(g)}">${kickEl}${modeEl}${skip?'':`<strong>${gameTitle(g)}</strong>`}</div>`;
 }
-function iconHTML(g,opts){ return `<div class="icon">${coverHTML(g,false,opts)}</div>`; }
+function iconHTML(g,opts){ return `<div class="icon">${coverHTML(g,false,Object.assign({kind:'icon'}, opts))}</div>`; }
 function miniHTML(g,opts){
-  if(g.poster) return `<div class="mini-art has-poster">${posterTag(g, undefined, opts)}</div>`;
+  if(g.poster) return `<div class="mini-art has-poster">${posterTag(g, undefined, Object.assign({kind:'icon'}, opts))}</div>`;
   return `<div class="mini-art" style="${coverStyle(g)}"></div>`;
 }
 function gameHref(id){ return `game-detail.html?id=${encodeURIComponent(id)}`; }
@@ -890,6 +972,13 @@ function backTarget(opts){
   else if (org) { href = org.url; key = org.key || originKeyOf(org.url); }
   else { href = 'index.html'; key = 'home'; }
   return { href: href, key: key, exact: !!href && refPage === href };
+}
+/* 来路是本站列表或详情时，退出/返回优先 history.back()，好走 bfcache。 */
+function referrerAllowsBack(){
+  const refPage = pageFromHref(document.referrer);
+  if (!refPage) return false;
+  const file = pageFile(refPage);
+  return !!LIST_PAGES[file] || file === 'game-detail.html';
 }
 function backLabel(key, short){
   const k = (short ? 'back.short.' : 'back.') + (key || 'home');
@@ -1079,7 +1168,7 @@ function bindSearch(openGame){
     if(!s){ pop.classList.remove('is-open'); pop.innerHTML=''; return; }
     const hits = allGames().filter(g => !g.takedown && hitMatch(g, s)).slice(0,6);
     pop.innerHTML = hits.length
-      ? hits.map(g=>`<button class="search-hit" role="option" data-open="${g.id}" type="button"><div class="icon mini">${coverHTML(g,false)}</div><span><strong>${gameTitle(g)}</strong><br><span class="meta">${g.author} · ${tagsLine(g, 4)}</span></span></button>`).join('')
+      ? hits.map(g=>`<button class="search-hit" role="option" data-open="${g.id}" type="button"><div class="icon mini">${coverHTML(g,false,{kind:'icon'})}</div><span><strong>${gameTitle(g)}</strong><br><span class="meta">${g.author} · ${tagsLine(g, 4)}</span></span></button>`).join('')
       : `<div class="empty" style="padding:12px">${t('search.empty')}</div>`;
     pop.classList.add('is-open');
   }
@@ -1131,12 +1220,12 @@ window.JIWAN = {
   RANK_TABS, RANK_PERIODS, RANK_TAB_NAME, RANK_PERIOD_NAME,
   RANK_ARROW_UP, RANK_ARROW_DOWN,
   $, $$, byId, allGames, setIndex, setRankPrev, authorsList, parsePlayers, livePlayers, formatPlayers, rankIndexMap, rankMoveHTML,
-  toast, coverStyle, scoreText, playerLine, bindLivePlayers, openReasonForm, reportKinds, posterSrc, posterTag, fableLabel, originChip, coverHTML, iconHTML, miniHTML,
+  toast, coverStyle, scoreText, playerLine, bindLivePlayers, openReasonForm, reportKinds, mediaSrc, posterSrc, posterTag, posterImg, preloadImages, bindPosterLazy, fableLabel, originChip, coverHTML, iconHTML, miniHTML,
   gameHref, playHref, playSrc, playMode, modeLabel, srcHost, playCtaHTML, hitMatch,
   highlight, pagerHTML, failHTML, loadingHTML, avatarHTML,
   esc, currentPage, loginHref, userHref, authorHref, authorLabel, postHref, tagHref, accountNavHTML,
   isAuthPage, sanitizeNext, rememberReturn, peekReturn, takeReturn, resolveNext,
-  trackOrigin, peekOrigin, backTarget, backHTML, bindOrigin,
+  trackOrigin, peekOrigin, backTarget, referrerAllowsBack, backHTML, bindOrigin,
   hasWorkshopEntry, markWorkshopEntry, clearWorkshopEntry,
   navHTML, footHTML, mountChrome,
   t, getLang, setLang, applyI18n, tagLabel, tagsLine, reviewLabel, sortLabel, langSwitchHTML,
@@ -1157,14 +1246,16 @@ document.addEventListener('click', function(e){
   if(e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
   const href = link.getAttribute('href');
   if(!href) return;
-  if(link.getAttribute('data-back-exact') === '1'){
-    try {
-      if(document.referrer && pageFromHref(document.referrer) === href){
-        e.preventDefault();
-        history.back();
-      }
-    } catch (err) {}
-  }
+  try {
+    const prefer = link.getAttribute('data-back-prefer') === '1' && referrerAllowsBack();
+    const exact = link.getAttribute('data-back-exact') === '1' && document.referrer && pageFromHref(document.referrer) === href;
+    if (prefer || exact) {
+      e.preventDefault();
+      history.back();
+    }
+  } catch (err) {}
 });
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', watchPosterLazy);
+else watchPosterLazy();
 if (document.getElementById('jiwan-nav')) applyI18n();
 

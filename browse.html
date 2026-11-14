@@ -215,7 +215,7 @@
             ? `<span class="browse-rank"><b>${String(offset + i + 1).padStart(2,'0')}</b>${rankMoveHTML(offset + i + 1, rankIndexMap()[g.id], prevName)}</span>`
             : '';
           return `<a class="browse-card" href="${gameHref(g.id)}" data-od-id="browse-card-${g.id}">
-            <div class="thumb">${rank}${coverHTML(g)}</div>
+            <div class="thumb">${rank}${coverHTML(g, undefined, {eager: i < 3})}</div>
             <p>${gameTitle(g)}</p>
             <div class="meta"><span class="score">${scoreText(g)}</span> · ${tagLabel(g.tags[0])}</div>
           </a>`;
