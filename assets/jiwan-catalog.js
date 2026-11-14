@@ -68,13 +68,13 @@ const I18N = {
     'fable.all':'全部来源','fable.workshop':'仅 Fable 5.2','fable.curated':'不含工坊',
     'cta.play':'立即游玩','cta.unplayable':'暂不可玩','cta.more':'更多','cta.seeGame':'看游戏','cta.follow':'关注','cta.following':'已关注','cta.share':'分享',
     'home.hot':'大家都在玩','home.rank':'排行榜','home.kept':'口碑常驻','home.workshop':'工坊','home.new':'本周新作','home.community':'玩家社区',
-    'home.continue':'接着玩','home.continueNote':'最近打开的试玩舱。',
+    'home.continue':'接着玩','home.continueNote':'最近打开的游戏。',
     'home.feat':'编辑推荐','home.empty':'暂时没有游戏。工坊作品会在作者上架 Fable 5.2 网页包后出现。',
     'home.keptNote':'高分还在榜上，打开就能玩。','home.workshopNote':'作者过审上架、打开就能玩。',
     'home.featPrev':'上一张封面','home.featNext':'下一张封面','home.featDots':'封面进度',
     'title.home':'即玩空间 · 发现网页游戏','title.browse':'即玩空间 · 发现网页游戏','title.rank':'即玩空间 · 排行榜',
     'title.community':'即玩空间 · 社区','title.workshop':'即玩空间 · 工坊','title.profile':'即玩空间 · 我的',
-    'title.search':'即玩空间 · 搜索','title.play':'试玩舱 · 即玩空间','title.index':'即玩空间 · 网页游戏分发原型',
+    'title.search':'即玩空间 · 搜索','title.play':'游戏 · 即玩空间','title.index':'即玩空间 · 网页游戏分发原型',
     'title.login':'即玩空间 · 登录','title.register':'即玩空间 · 注册','title.notify':'即玩空间 · 通知',
     'title.settings':'即玩空间 · 账号设置','title.reset':'即玩空间 · 重设密码',
     'title.user':'即玩空间 · 作者','title.post':'即玩空间 · 帖子',
@@ -93,7 +93,7 @@ const I18N = {
     'detail.back':'← 返回首页','detail.about':'这款游戏','detail.shots':'画面','detail.shotsFake':'设计海报，非实机截图',
     'back.home':'返回首页','back.browse':'返回发现','back.rank':'返回排行榜','back.search':'返回搜索结果',
     'back.community':'返回社区','back.workshop':'返回工坊','back.profile':'返回我的主页','back.notify':'返回消息','back.admin':'返回管理台',
-    'back.detail':'返回游戏详情','back.play':'返回试玩舱','back.post':'返回帖子','back.user':'返回个人主页',
+    'back.detail':'返回游戏详情','back.play':'返回游戏','back.post':'返回帖子','back.user':'返回个人主页',
     'back.short.home':'首页','back.short.browse':'发现','back.short.rank':'排行榜','back.short.search':'搜索',
     'back.short.community':'社区','back.short.workshop':'工坊','back.short.profile':'我的主页',
     'back.short.detail':'详情','back.short.post':'帖子','back.short.user':'主页',
@@ -122,10 +122,13 @@ const I18N = {
     'auth.bio':'简介','auth.avatar':'头像','auth.save':'保存资料','auth.saved':'资料已记下',
     'auth.settingsTitle':'账号设置','auth.avatarHint':'点这里选一张图。只写在这台设备上。',
     'auth.oldPass':'当前密码','auth.changePass':'记下新密码','auth.passChanged':'密码已改','auth.passWrong':'当前密码不对',
-    'play.unavailable':'这款游戏暂时不能在舱里打开。作者还没有托管可播放的网页包。',
+    'play.unavailable':'仅介绍：暂时没找到作者公开的可玩地址，这款游戏在即玩里玩不了。',
     'play.openDetail':'查看详情',
-    'play.embedFail':'对方站点不让嵌进这一页。去原页打开。',
-    'play.embedHint':'若舱里是白屏，去原页打开。',
+    'play.embedFail':'原页没能在这里打开（可能被对方拦下或加载超时）。去原页玩。',
+    'play.embedHint':'若这里是白屏，去原页玩。',
+    'play.linkOnly':'原作托管在 {host}，无法嵌进即玩。点下面的按钮在新窗口玩。',
+    'mode.embed':'站内可玩','mode.link':'去原页玩 ↗','mode.sample':'站内示例','mode.info':'仅介绍',
+    'cta.playHere':'开始玩','cta.playOriginal':'去原页玩 ↗','cta.playSample':'玩站内示例','cta.infoOnly':'仅介绍 · 暂无可玩地址',
     'workshop.statusPending':'审核中','workshop.statusListed':'已上架','workshop.statusRejected':'被拒','workshop.statusDraft':'草稿',
     'workshop.markListed':'上架','workshop.markRejected':'拒绝',
     'workshop.needLogin':'登录后才能上架作品。','workshop.listedOk':'已记到架上',
@@ -138,7 +141,7 @@ const I18N = {
     'workshop.unlistedOk':'已从架上拿下','workshop.resubmitOk':'已重新提交',
     'workshop.unlist':'下架','workshop.edit':'改这一条','workshop.resubmit':'重新提交',
     'workshop.rejectWhy':'拒绝原因','workshop.reasonPh':'例如：封面看不清',
-    'workshop.formPlay':'试玩地址','workshop.playHint':'填托管页地址后，试玩舱才能打开。没有地址会显示「暂不可玩」。',
+    'workshop.formPlay':'试玩地址','workshop.playHint':'填托管页地址后，游戏页才能打开原作。没有地址会标「仅介绍」。',
     'workshop.playPh':'https://','workshop.statusUnlisted':'已下架','workshop.editing':'正在改这一条',
     'workshop.cancelEdit':'取消编辑','workshop.saveEdit':'保存修改','workshop.needPlayOrPack':'请填试玩地址，或选择网页包',
     'post.kicker':'帖子','post.write':'发帖','post.title':'标题','post.body':'正文','post.game':'关联游戏',
@@ -160,10 +163,12 @@ const I18N = {
     'index.notify':'通知','index.notifyCopy':'点赞、关注、工坊审核状态。',
     'share.title':'分享这款游戏','share.copy':'复制链接','share.close':'关闭','share.copied':'链接已复制','share.copyFail':'请手动复制链接',
     'rev.all':'全部','rev.good':'好评','rev.bad':'吐槽','rev.author':'作者',
-    'play.exit':'退出','play.cabin':'试玩舱','play.mute':'静音','play.muted':'已静音','play.full':'全屏','play.share':'分享',
-    'play.skip':'跳到试玩舱','play.note':'试玩舱 · {title}。用来感受操作，不是作者托管的完整原作。',
-    'play.noteLive':'正在打开作者托管的原页 · {title}。被拦了就点「原页打开」。',
-    'play.openSrc':'原页打开','play.live':'原页',
+    'play.exit':'退出','play.cabin':'游戏','play.mute':'静音','play.muted':'已静音','play.full':'全屏','play.share':'分享',
+    'play.skip':'跳到游戏区','play.note':'站内示例 · {title}。即玩自己做的简短示例，不是完整作品。',
+    'play.noteLive':'正在打开作者托管的原页 · {title}。打不开就点「去原页玩 ↗」。',
+    'play.noteLink':'{title} 只能在原页玩。',
+    'play.noteInfo':'{title} 暂无可玩地址，仅介绍。',
+    'play.openSrc':'去原页玩 ↗','play.live':'原页',
     'play.demo':'{title} 试玩','play.newGame':'新开一局','play.keys':'方向键或 WASD',
     'play.size':'体积 {n}','play.ioHint':'移动指针，吞掉小的，躲开大的',
     'play.ioDead':'被更大的圆吞掉了，点画面重开','play.notEnough':'还不够',
@@ -182,16 +187,16 @@ const I18N = {
     'play.dark.bar.0':'记下记号，守夜','play.dark.bar.1':'准备出门',
     'play.dark.open':'门外不是走廊，是一片空地。远处有另一堆火。',
     'play.dark.open.0':'向那堆火走','play.dark.open.1':'退回房间',
-    'play.dark.endCold':'试玩舱到这里。完整内容在原作或工坊包里。',
-    'play.dark.endKeep':'你守到天亮。试玩舱结束。',
-    'play.dark.endOut':'空地上风很大。试玩舱到此。',
+    'play.dark.endCold':'示例到这里。完整内容在原作或工坊包里。',
+    'play.dark.endKeep':'你守到天亮。示例结束。',
+    'play.dark.endOut':'空地上风很大。示例到此。',
     'play.pwd.start':'写一个密码。规则会在你写完之后才出现。',
     'play.pwd.start.0':'先写四个字母','play.pwd.start.1':'先写今天的日期',
     'play.pwd.letters':'新规则：必须包含一个数字。刚才的四个字母还在。',
     'play.pwd.letters.0':'末尾加 2','play.pwd.letters.1':'全删重写',
     'play.pwd.date':'新规则：不可以是一段连续日期。今天被否决了。',
     'play.pwd.date.0':'改成乱序数字','play.pwd.date.1':'改成四个字母',
-    'play.pwd.num':'新规则：数字加起来必须是 10。试玩舱到此为止。',
+    'play.pwd.num':'新规则：数字加起来必须是 10。示例到此为止。',
     'search.kicker':'混合结果','search.title':'搜索','search.games':'游戏','search.posts':'帖子',
     'search.ledeEmpty':'在顶栏输入名字、作者或标签，回车到这一页。下面先放一列正在热玩的游戏。',
     'search.ledeHits':'游戏 {g} 款，帖子 {p} 条，作者 {a} 位。','search.countGames':'{n} 款','search.countPosts':'{n} 条',
@@ -223,14 +228,14 @@ const I18N = {
     'profile.kicker':'工坊作者','profile.lede':'关注、点赞和工坊草稿按账号写在本机接口。',
     'profile.statPlay':'在玩','profile.statRev':'评价','profile.statPub':'发布',
     'profile.tabPlay':'在玩','profile.tabFav':'关注','profile.tabReview':'评价','profile.tabMade':'发布的游戏','profile.tabPosts':'我的帖','profile.posts':'帖子',
-    'profile.emptyPlay':'打开试玩舱后，会出现在这里。','profile.emptyPlayOther':'还没有打开过试玩舱。','profile.emptyFav':'还没有关注的游戏。去详情页点关注。','profile.emptyMade':'还没有发布过游戏。',
+    'profile.emptyPlay':'打开游戏后，会出现在这里。','profile.emptyPlayOther':'还没有打开过游戏。','profile.emptyFav':'还没有关注的游戏。去详情页点关注。','profile.emptyMade':'还没有发布过游戏。',
     'profile.emptyPosts':'还没有发过帖。','profile.emptyPostsOther':'还没有发过帖。','profile.emptyPeople':'还没有关注作者。去社区点关注。',
     'profile.emptyReviewsOther':'还没有写下评价。','profile.people':'关注的作者','profile.favGames':'关注的游戏',
     'profile.followers':'关注者','profile.emptyFollowers':'还没有人关注。',
-    'profile.playNote':'按最近打开的试玩舱排列。',
+    'profile.playNote':'按最近打开的游戏排列。',
     'profile.madeNote':'夜航港是店面工坊示例。新作品从工坊页提交，不会真正托管。',
     'crumb.me':'我的','index.kicker':'即玩空间','index.title':'网页游戏分发原型',
-    'index.lede':'发现、排行、社区、工坊用同一套纸面杂志店面。架上收录 fable52.games、Claude Gaming 和 X 上的公开网页游戏。详情封面统一 16:9，试玩在独立舱里打开。',
+    'index.lede':'发现、排行、社区、工坊用同一套纸面杂志店面。架上收录 fable52.games、Claude Gaming 和 X 上的公开网页游戏。详情封面统一 16:9，游戏在独立的游戏页里打开。',
     'index.homeCopy':'编辑推荐轮播、热玩、排行、口碑、工坊和新作。',
     'index.browseCopy':'按类型、时长、Fable 工坊筛选，也能接排行榜的日周月。',
     'index.rankCopy':'热玩、新作、口碑。切日周月时名次带升降箭头。',
@@ -239,8 +244,8 @@ const I18N = {
     'index.profileCopy':'登录后查看在玩、评价、发布。',
     'index.searchCopy':'游戏和帖子混合结果。顶栏回车进入。',
     'index.detailCopy':'16:9 封面、评分、画面、评价。有托管地址才显示立即游玩。',
-    'index.playCopy':'有托管地址就打开原页。没有地址则显示暂不可玩。',
-    'index.detail':'游戏详情','index.play':'试玩舱','index.me':'我的'
+    'index.playCopy':'能嵌入的原作在站内打开；不让嵌入的给「去原页玩 ↗」；没有地址的标「仅介绍」。',
+    'index.detail':'游戏详情','index.play':'游戏页','index.me':'我的'
   },
   en: {
     'nav.home':'Home','nav.discover':'Discover','nav.rank':'Charts','nav.community':'Community','nav.workshop':'Workshop',
@@ -263,13 +268,13 @@ const I18N = {
     'fable.all':'All sources','fable.workshop':'Fable 5.2 only','fable.curated':'No workshop',
     'cta.play':'Play now','cta.unplayable':'Not playable yet','cta.more':'More','cta.seeGame':'Open game','cta.follow':'Follow','cta.following':'Following','cta.share':'Share',
     'home.hot':'Everyone’s playing','home.rank':'Charts','home.kept':'Staples','home.workshop':'Workshop','home.new':'New this week','home.community':'Players',
-    'home.continue':'Continue','home.continueNote':'The last cabins you opened.',
+    'home.continue':'Continue','home.continueNote':'The last games you opened.',
     'home.feat':'Editors’ pick','home.empty':'Nothing here yet. Workshop games appear after an author lists a Fable 5.2 web pack.',
     'home.keptNote':'High scores that stay on the shelf. Open and play.','home.workshopNote':'Approved by the workshop, ready in the browser.',
     'home.featPrev':'Previous cover','home.featNext':'Next cover','home.featDots':'Cover progress',
     'title.home':'Jiwan Space · Discover web games','title.browse':'Jiwan Space · Discover','title.rank':'Jiwan Space · Charts',
     'title.community':'Jiwan Space · Community','title.workshop':'Jiwan Space · Workshop','title.profile':'Jiwan Space · Profile',
-    'title.search':'Jiwan Space · Search','title.play':'Play cabin · Jiwan Space','title.index':'Jiwan Space · Web-game storefront',
+    'title.search':'Jiwan Space · Search','title.play':'Game · Jiwan Space','title.index':'Jiwan Space · Web-game storefront',
     'title.login':'Jiwan Space · Sign in','title.register':'Jiwan Space · Register','title.notify':'Jiwan Space · Alerts',
     'title.settings':'Jiwan Space · Account','title.reset':'Jiwan Space · Reset password',
     'title.user':'Jiwan Space · Author','title.post':'Jiwan Space · Post',
@@ -288,7 +293,7 @@ const I18N = {
     'detail.back':'← Back home','detail.about':'This game','detail.shots':'Shots','detail.shotsFake':'Designed poster, not a screenshot',
     'back.home':'Back home','back.browse':'Back to Discover','back.rank':'Back to the charts','back.search':'Back to results',
     'back.community':'Back to community','back.workshop':'Back to workshop','back.profile':'Back to my page','back.notify':'Back to messages','back.admin':'Back to admin',
-    'back.detail':'Back to the game','back.play':'Back to the cabin','back.post':'Back to the post','back.user':'Back to the profile',
+    'back.detail':'Back to the game','back.play':'Back to the game','back.post':'Back to the post','back.user':'Back to the profile',
     'back.short.home':'Home','back.short.browse':'Discover','back.short.rank':'Charts','back.short.search':'Results',
     'back.short.community':'Community','back.short.workshop':'Workshop','back.short.profile':'My page',
     'back.short.detail':'Game','back.short.post':'Post','back.short.user':'Profile',
@@ -318,10 +323,13 @@ const I18N = {
     'auth.bio':'Bio','auth.avatar':'Avatar','auth.save':'Save profile','auth.saved':'Profile saved',
     'auth.settingsTitle':'Account settings','auth.avatarHint':'Pick an image. It stays on this device.',
     'auth.oldPass':'Current password','auth.changePass':'Save new password','auth.passChanged':'Password changed','auth.passWrong':'Current password is wrong',
-    'play.unavailable':'This game cannot open in the cabin yet. The author has not hosted a playable page.',
+    'play.unavailable':'Info only: no public playable page found yet, so this game cannot be played on Jiwan.',
     'play.openDetail':'Open the game page',
-    'play.embedFail':'The host blocks embedding. Open the original page.',
-    'play.embedHint':'If the cabin is blank, open the original page.',
+    'play.embedFail':'The original did not open here (blocked by the host or timed out). Play on the original page.',
+    'play.embedHint':'If this stays blank, play on the original page.',
+    'play.linkOnly':'The original lives at {host} and cannot be embedded here. Use the button to play it in a new tab.',
+    'mode.embed':'Play here','mode.link':'Play on original ↗','mode.sample':'On-site sample','mode.info':'Info only',
+    'cta.playHere':'Play','cta.playOriginal':'Play on original ↗','cta.playSample':'Play the on-site sample','cta.infoOnly':'Info only · no playable page',
     'workshop.statusPending':'In review','workshop.statusListed':'Listed','workshop.statusRejected':'Rejected','workshop.statusDraft':'Draft',
     'workshop.markListed':'List','workshop.markRejected':'Reject',
     'workshop.needLogin':'Sign in to list a pack.','workshop.listedOk':'Marked as listed',
@@ -334,7 +342,7 @@ const I18N = {
     'workshop.unlistedOk':'Taken off the shelf','workshop.resubmitOk':'Submitted again',
     'workshop.unlist':'Unlist','workshop.edit':'Edit this pack','workshop.resubmit':'Submit again',
     'workshop.rejectWhy':'Rejection reason','workshop.reasonPh':'e.g. cover is unreadable',
-    'workshop.formPlay':'Play URL','workshop.playHint':'A hosted page URL is what the cabin opens. Without it the cabin says it is not playable.',
+    'workshop.formPlay':'Play URL','workshop.playHint':'A hosted page URL is what the game page opens. Without it the game is marked Info only.',
     'workshop.playPh':'https://','workshop.statusUnlisted':'Unlisted','workshop.editing':'Editing this pack',
     'workshop.cancelEdit':'Cancel edit','workshop.saveEdit':'Save changes','workshop.needPlayOrPack':'Add a play URL or a web pack',
     'post.kicker':'Post','post.write':'New post','post.title':'Title','post.body':'Body','post.game':'Linked game',
@@ -356,10 +364,12 @@ const I18N = {
     'index.notify':'Alerts','index.notifyCopy':'Likes, follows, workshop review status.',
     'share.title':'Share this game','share.copy':'Copy link','share.close':'Close','share.copied':'Link copied','share.copyFail':'Copy the link yourself',
     'rev.all':'All','rev.good':'Praise','rev.bad':'Rants','rev.author':'Author',
-    'play.exit':'Exit','play.cabin':'Play cabin','play.mute':'Mute','play.muted':'Muted','play.full':'Full screen','play.share':'Share',
-    'play.skip':'Skip to cabin','play.note':'Play cabin · {title}. Built to feel the controls, not a hosted original.',
-    'play.noteLive':'Opening the author’s hosted page · {title}. If it is blocked, use Open original.',
-    'play.openSrc':'Open original','play.live':'Original',
+    'play.exit':'Exit','play.cabin':'Game','play.mute':'Mute','play.muted':'Muted','play.full':'Full screen','play.share':'Share',
+    'play.skip':'Skip to the game','play.note':'On-site sample · {title}. A short sample built on Jiwan, not a full game.',
+    'play.noteLive':'Opening the author’s hosted page · {title}. If it does not load, use Play on original ↗.',
+    'play.noteLink':'{title} can only be played on its original page.',
+    'play.noteInfo':'{title} has no playable page yet. Info only.',
+    'play.openSrc':'Play on original ↗','play.live':'Original',
     'play.demo':'{title} demo','play.newGame':'New game','play.keys':'Arrow keys or WASD',
     'play.size':'Size {n}','play.ioHint':'Move the pointer. Swallow the small ones, dodge the large.',
     'play.ioDead':'A larger circle ate you. Click the stage to restart.','play.notEnough':'Not enough yet',
@@ -378,7 +388,7 @@ const I18N = {
     'play.dark.bar.0':'Note it and keep watch','play.dark.bar.1':'Get ready to leave',
     'play.dark.open':'Outside is a clearing, not a hall. Another fire far off.',
     'play.dark.open.0':'Walk toward that fire','play.dark.open.1':'Back to the room',
-    'play.dark.endCold':'The cabin ends here. The full piece is in the original or the workshop pack.',
+    'play.dark.endCold':'The sample ends here. The full piece is in the original or the workshop pack.',
     'play.dark.endKeep':'You watch until dawn. Cabin over.',
     'play.dark.endOut':'The wind is hard in the clearing. Cabin ends here.',
     'play.pwd.start':'Write a password. The rule shows up after you finish.',
@@ -387,7 +397,7 @@ const I18N = {
     'play.pwd.letters.0':'Add 2 at the end','play.pwd.letters.1':'Wipe and start over',
     'play.pwd.date':'New rule: it cannot be a consecutive date. Today is rejected.',
     'play.pwd.date.0':'Switch to scrambled digits','play.pwd.date.1':'Switch to four letters',
-    'play.pwd.num':'New rule: the digits must add to 10. The cabin stops here.',
+    'play.pwd.num':'New rule: the digits must add to 10. The sample stops here.',
     'search.kicker':'Mixed results','search.title':'Search','search.games':'Games','search.posts':'Posts',
     'search.ledeEmpty':'Type a name, author, or tag in the bar and press Enter. Below is a first column of games people are playing.',
     'search.ledeHits':'{g} games, {p} posts, {a} authors.','search.countGames':'{n} games','search.countPosts':'{n} posts',
@@ -419,14 +429,14 @@ const I18N = {
     'profile.kicker':'Workshop author','profile.lede':'Follows, likes, and workshop drafts stay per account on this device.',
     'profile.statPlay':'Playing','profile.statRev':'Reviews','profile.statPub':'Listed',
     'profile.tabPlay':'Playing','profile.tabFav':'Following','profile.tabReview':'Reviews','profile.tabMade':'Games listed','profile.tabPosts':'My posts','profile.posts':'Posts',
-    'profile.emptyPlay':'Open the play cabin and it will show up here.','profile.emptyPlayOther':'No play cabin history yet.','profile.emptyFav':'Nothing followed yet. Follow a game from its page.','profile.emptyMade':'No games listed yet.',
+    'profile.emptyPlay':'Open a game and it will show up here.','profile.emptyPlayOther':'No games opened yet.','profile.emptyFav':'Nothing followed yet. Follow a game from its page.','profile.emptyMade':'No games listed yet.',
     'profile.emptyPosts':'No posts yet.','profile.emptyPostsOther':'No posts yet.','profile.emptyPeople':'No authors followed. Follow someone in Community.',
     'profile.emptyReviewsOther':'No reviews written yet.','profile.people':'Authors followed','profile.favGames':'Games followed',
     'profile.followers':'Followers','profile.emptyFollowers':'No one follows this author yet.',
-    'profile.playNote':'Ordered by the last cabin you opened.',
+    'profile.playNote':'Ordered by the last game you opened.',
     'profile.madeNote':'Night Port is a storefront workshop sample. New titles submitted from Workshop are not really hosted.',
     'crumb.me':'Me','index.kicker':'Jiwan Space','index.title':'Web-game storefront prototype',
-    'index.lede':'Home, charts, community, and workshop share one print-magazine storefront. The shelf holds public web games from fable52.games, Claude Gaming, and X. Detail covers are 16:9; play opens in its own cabin.',
+    'index.lede':'Home, charts, community, and workshop share one print-magazine storefront. The shelf holds public web games from fable52.games, Claude Gaming, and X. Detail covers are 16:9; games open on their own game page.',
     'index.homeCopy':'Editors’ carousel, hot, charts, staples, workshop, and new.',
     'index.browseCopy':'Filter by genre, length, and Fable workshop. Charts can hand off day / week / month.',
     'index.rankCopy':'Hot, new, rated. Switching periods shows up / down arrows.',
@@ -435,8 +445,8 @@ const I18N = {
     'index.profileCopy':'Sign in to see playing, reviews, and listed games.',
     'index.searchCopy':'Mixed game and post results. Enter from the top bar.',
     'index.detailCopy':'16:9 cover, score, shots, reviews. Play now only when a host URL exists.',
-    'index.playCopy':'Opens the hosted original when a play URL exists. Otherwise the cabin says it is not playable.',
-    'index.detail':'Game page','index.play':'Play cabin','index.me':'Me'
+    'index.playCopy':'Embeddable originals open here; the rest get Play on original ↗; games with no URL are marked Info only.',
+    'index.detail':'Game page','index.play':'Game page','index.me':'Me'
   }
 };
 const TAG_I18N = {
@@ -694,7 +704,6 @@ function posterTag(g, cls){
 function fableLabel(g){
   /* 用户投稿不宣称制作工具：过审上架的包统一标成「用户上架」。 */
   if (g.packStatus === 'listed') return t('label.userListed');
-  if (g.src) return t('label.live');
   if (g.demo) return t('label.workshopDemo');
   if (g.fable) return t('label.fable');
   if (g.origin === 'x') return t('label.xNew');
@@ -715,8 +724,9 @@ function coverHTML(g,kicker){
   const skip = kicker===false;
   const kick = skip ? '' : (kicker || fableLabel(g));
   const kickEl = kick ? `<span class="cover-kicker">${kick}</span>` : '';
-  if(g.poster) return `<div class="cover has-poster" style="${coverStyle(g)}">${kickEl}${posterTag(g)}</div>`;
-  return `<div class="cover" style="${coverStyle(g)}">${kickEl}${skip?'':`<strong>${gameTitle(g)}</strong>`}</div>`;
+  const modeEl = skip ? '' : `<span class="cover-mode" data-mode="${playMode(g)}">${modeLabel(g)}</span>`;
+  if(g.poster) return `<div class="cover has-poster" style="${coverStyle(g)}">${kickEl}${modeEl}${posterTag(g)}</div>`;
+  return `<div class="cover" style="${coverStyle(g)}">${kickEl}${modeEl}${skip?'':`<strong>${gameTitle(g)}</strong>`}</div>`;
 }
 function iconHTML(g){ return `<div class="icon">${coverHTML(g,false)}</div>`; }
 function miniHTML(g){
@@ -726,6 +736,26 @@ function miniHTML(g){
 function gameHref(id){ return `game-detail.html?id=${encodeURIComponent(id)}`; }
 function playHref(id){ return `play.html?id=${encodeURIComponent(id)}`; }
 function playSrc(g){ return (g && (g.src || g.playUrl)) || ''; }
+/* 每款游戏只有一种打开方式，详情页、卡片、游戏页都从这里取：
+   embed 站内 iframe 打开原作；link 原作禁止嵌入，只给「去原页玩 ↗」；
+   sample 即玩自己做的工坊示例；info 找不到可玩地址，只做介绍。 */
+function playMode(g){
+  if (!g) return 'info';
+  if (playSrc(g)) return g.embed === false ? 'link' : 'embed';
+  return g.demo ? 'sample' : 'info';
+}
+function modeLabel(g){ return t('mode.' + playMode(g)); }
+function srcHost(g){
+  try { return new URL(playSrc(g)).host.replace(/^www\./, ''); } catch (e) { return ''; }
+}
+function playCtaHTML(g, odId){
+  const mode = playMode(g);
+  const od = odId ? ` data-od-id="${odId}"` : '';
+  if (mode === 'embed') return `<a class="btn btn-primary" href="${playHref(g.id)}" data-mode="embed"${od}>${t('cta.playHere')}</a>`;
+  if (mode === 'link') return `<a class="btn btn-primary" href="${esc(playSrc(g))}" target="_blank" rel="noopener noreferrer" data-mode="link"${od}>${t('cta.playOriginal')}</a>`;
+  if (mode === 'sample') return `<a class="btn btn-primary" href="${playHref(g.id)}" data-mode="sample"${od}>${t('cta.playSample')}</a>`;
+  return `<span class="btn is-disabled" aria-disabled="true" data-mode="info"${od}>${t('cta.infoOnly')}</span>`;
+}
 function esc(s){
   return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
@@ -1083,7 +1113,7 @@ window.JIWAN = {
   RANK_ARROW_UP, RANK_ARROW_DOWN,
   $, $$, byId, allGames, setIndex, setRankPrev, authorsList, parsePlayers, livePlayers, formatPlayers, rankIndexMap, rankMoveHTML,
   toast, coverStyle, scoreText, playerLine, bindLivePlayers, openReasonForm, reportKinds, posterTag, fableLabel, originChip, coverHTML, iconHTML, miniHTML,
-  gameHref, playHref, playSrc, hitMatch,
+  gameHref, playHref, playSrc, playMode, modeLabel, srcHost, playCtaHTML, hitMatch,
   highlight, pagerHTML, failHTML, loadingHTML, avatarHTML,
   esc, currentPage, loginHref, userHref, authorHref, authorLabel, postHref, tagHref, accountNavHTML,
   isAuthPage, sanitizeNext, rememberReturn, peekReturn, takeReturn, resolveNext,

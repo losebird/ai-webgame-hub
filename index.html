@@ -536,7 +536,7 @@
             <h2 data-i18n="home.continue">接着玩</h2>
             <a class="more-link" href="profile.html?tab=play" data-od-id="more-continue" data-i18n="nav.me">我的</a>
           </div>
-          <p class="mast-note-lead" data-i18n="home.continueNote">最近打开的试玩舱。</p>
+          <p class="mast-note-lead" data-i18n="home.continueNote">最近打开的游戏。</p>
           <div class="rail" id="continue-list"></div>
         </section>
         <div class="home-grid">
@@ -601,7 +601,7 @@
     const J = JIWAN;
     const { ICONS, RANK_TABS, RANK_PERIODS, RANK_TAB_NAME, RANK_PERIOD_NAME,
       rankIndexMap, rankMoveHTML, coverHTML, iconHTML, scoreText, playerLine, bindLivePlayers,
-      tagsLine, tagLabel, gameHref, playHref, playSrc, t, applyI18n, gameTitle, gameBanner, postHref, esc, authorLabel} = J;
+      tagsLine, tagLabel, gameHref, playHref, playSrc, modeLabel, t, applyI18n, gameTitle, gameBanner, postHref, esc, authorLabel} = J;
     const api = J.api;
     const $ = (s, r=document) => r.querySelector(s);
     const $$ = (s, r=document) => [...r.querySelectorAll(s)];
@@ -621,12 +621,7 @@
     const FEAT_MS = 4800;
     let featTimer = null;
     let featDeadline = 0;
-    function featBadge(g){
-      if (g.src) return t('label.live');
-      if (g.demo) return t('label.workshopDemo');
-      if (g.fable) return t('label.fable');
-      return t('home.feat');
-    }
+    function featBadge(g){ return modeLabel(g); }
     function featCardHTML(g, focus){
       const art = g.poster
         ? `<div class="feat-art has-poster"><img class="feat-poster" src="${g.poster}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}"></div>`

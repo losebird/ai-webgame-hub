@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>试玩舱 · 即玩空间</title>
+  <title>游戏 · 即玩空间</title>
   <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,24 +12,24 @@
   <link rel="stylesheet" href="assets/jiwan-press.css">
 </head>
 <body class="play-page">
-  <a class="skip" href="#play-stage" data-i18n="play.skip">跳到试玩舱</a>
+  <a class="skip" href="#play-stage" data-i18n="play.skip">跳到游戏区</a>
   <section id="view-play" class="is-on" data-od-id="view-play">
     <div class="play-bar" data-od-id="play-shell">
       <a class="back back-dark" id="play-back" href="index.html" data-back data-back-exact="0" data-od-id="play-back" rel="prev"><span class="back-ar" aria-hidden="true">←</span><span data-back-label data-back-key="home" data-back-short="1">首页</span></a>
       <a class="btn btn-on-dark" id="play-exit" href="game-detail.html?id=mothlight" data-od-id="play-exit" data-i18n="play.exit">退出</a>
       <div class="play-title" id="play-title">MOTHLIGHT // Vesper-9</div>
-      <span class="meta" data-i18n="play.cabin">试玩舱</span>
+      <span class="meta"></span>
       <div class="play-tools">
         <span class="play-spacer" aria-hidden="true"></span>
         <div class="lang-switch" data-od-id="lang-switch-play" role="group" data-i18n-aria="nav.lang" aria-label="语言"><button class="lang-btn is-on" type="button" data-lang="zh" data-od-id="lang-zh-play" aria-pressed="true">中</button><span class="lang-sep" aria-hidden="true">/</span><button class="lang-btn" type="button" data-lang="en" data-od-id="lang-en-play" aria-pressed="false">EN</button></div>
         <button class="btn btn-on-dark" id="play-mute" type="button" aria-label="静音">静音</button>
-        <a class="btn btn-on-dark" id="play-src" href="#" target="_blank" rel="noopener noreferrer" hidden data-od-id="play-open-src" data-i18n="play.openSrc">原页打开</a>
+        <a class="btn btn-on-dark" id="play-src" href="#" target="_blank" rel="noopener noreferrer" hidden data-od-id="play-open-src" data-i18n="play.openSrc">去原页玩 ↗</a>
         <button class="btn btn-on-dark" id="play-full" type="button" aria-label="全屏" data-i18n="play.full" data-i18n-aria="play.full">全屏</button>
         <button class="btn btn-on-dark" id="play-share" type="button" aria-label="分享" data-i18n="play.share" data-i18n-aria="play.share">分享</button>
       </div>
     </div>
     <div class="play-stage" id="play-stage" data-od-id="play-stage"></div>
-    <p class="play-note" id="play-note">这是即玩站内试玩舱，用来感受操作，不是作者托管的完整原作。</p>
+    <p class="play-note" id="play-note"></p>
   </section>
   <div class="modal-back" id="share-modal" role="dialog" aria-labelledby="share-title">
     <div class="sheet">
@@ -48,7 +48,7 @@
     (async function () {
       const J = window.JIWAN;
       if (!J) return;
-      const { byId, gameHref, playSrc, toast, t, applyI18n, gameTitle } = J;
+      const { byId, gameHref, playSrc, playMode, srcHost, coverHTML, esc, toast, t, applyI18n, gameTitle } = J;
       const api = J.api;
       const $ = (s, r = document) => r.querySelector(s);
       function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
@@ -81,11 +81,14 @@
       }
       let muted = lsGet('jiwan-muted', '') === '1';
       let playCtl = null;
+      const mode = playMode(g);
       function paintChrome(){
-        const live = !!playSrc(g);
-        document.title = t('play.cabin') + ' · ' + gameTitle(g) + ' · ' + t('brand.name');
+        const live = mode === 'embed' || mode === 'link';
+        const noteKey = { embed: 'play.noteLive', link: 'play.noteLink', sample: 'play.note', info: 'play.noteInfo' }[mode];
+        const metaKey = { embed: 'mode.embed', link: 'mode.link', sample: 'mode.sample', info: 'mode.info' }[mode];
+        document.title = t(metaKey) + ' · ' + gameTitle(g) + ' · ' + t('brand.name');
         $('#play-title').textContent = gameTitle(g);
-        $('#play-note').textContent = t(live ? 'play.noteLive' : 'play.note', {title: gameTitle(g)});
+        $('#play-note').textContent = t(noteKey, {title: gameTitle(g)});
         applyI18n();
         $('#play-mute').hidden = true;
         $('#play-mute').textContent = muted ? t('play.muted') : t('play.mute');
@@ -99,7 +102,7 @@
           }
         }
         const cabinMeta = document.querySelector('.play-bar .meta');
-        if (cabinMeta) cabinMeta.textContent = live ? t('play.live') : t('play.cabin');
+        if (cabinMeta) cabinMeta.textContent = t(metaKey);
         if (playCtl && playCtl.paint) playCtl.paint();
       }
       $('#play-exit').href = gameHref(g.id);
@@ -345,6 +348,8 @@
         hint.innerHTML = `<p>${t('play.embedHint')}</p><p><a class="btn btn-on-dark" href="${src}" target="_blank" rel="noopener noreferrer">${t('play.openSrc')}</a> <button class="btn btn-on-dark" type="button" data-dismiss-hint>${t('share.close')}</button></p>`;
         root.appendChild(hint);
         let failed = false;
+        let loaded = false;
+        let hintTimer = 0;
         function isBlank() {
           try {
             const href = frame.contentWindow && frame.contentWindow.location.href;
@@ -362,18 +367,38 @@
           fail.querySelector('p').textContent = t('play.embedFail');
           hint.querySelector('p').textContent = t('play.embedHint');
         }
-        frame.addEventListener('load', () => { if (isBlank()) showFail(); });
+        /* 被 XFO / frame-ancestors 拦下时浏览器给的是跨源错误页，读不到内容，所以三条路都要兜：
+           load 后仍是 about:blank → 失败；error → 失败；12 秒还没 load → 超时叠层。
+           load 成功后再给一条可关的角标提示，白屏时用户自己能去原页。 */
+        frame.addEventListener('load', () => {
+          loaded = true;
+          if (isBlank()) return showFail();
+          hintTimer = setTimeout(() => { if (!failed) hint.hidden = false; }, 2800);
+        });
         frame.addEventListener('error', showFail);
-        const timer = setTimeout(() => {
-          if (isBlank()) showFail();
-          else if (!failed) hint.hidden = false;
-        }, 2800);
+        const timer = setTimeout(() => { if (!loaded) showFail(); }, 12000);
         hint.addEventListener('click', e => {
           if (e.target.closest('[data-dismiss-hint]')) hint.hidden = true;
         });
         return {
-          stop: () => { clearTimeout(timer); root.innerHTML = ''; root.classList.remove('is-live'); },
+          stop: () => { clearTimeout(timer); clearTimeout(hintTimer); root.innerHTML = ''; root.classList.remove('is-live'); },
           paint: paintFail
+        };
+      }
+      /* 原作禁止嵌入：不建 iframe，直接给封面和「去原页玩 ↗」大按钮 */
+      function playLink(root, game) {
+        const src = playSrc(game);
+        root.classList.remove('is-live');
+        root.innerHTML = `<div class="sheet-dark play-empty play-link" data-od-id="play-link"><div class="play-link-cover">${coverHTML(game, false)}</div><p data-link-note>${t('play.linkOnly', {host: esc(srcHost(game))})}</p><p><a class="btn btn-primary btn-lg" href="${esc(src)}" target="_blank" rel="noopener noreferrer" data-od-id="play-link-go">${t('cta.playOriginal')}</a></p></div>`;
+        const go = root.querySelector('[data-od-id="play-link-go"]');
+        if (go && api && api.recordPlay) go.addEventListener('click', () => api.recordPlay(game.id), { once: true });
+        return {
+          stop: () => { root.innerHTML = ''; },
+          paint: () => {
+            const n = root.querySelector('[data-link-note]');
+            if (n) n.textContent = t('play.linkOnly', {host: srcHost(game)});
+            if (go) go.textContent = t('cta.playOriginal');
+          }
         };
       }
       function playUnavailable(root, game) {
@@ -383,9 +408,14 @@
       }
       const root = $('#play-stage');
       root.innerHTML = '';
-      if (api && api.recordPlay) api.recordPlay(g.id);
-      if (playSrc(g)) {
+      root.setAttribute('data-mode', mode);
+      if ((mode === 'embed' || mode === 'sample') && api && api.recordPlay) api.recordPlay(g.id);
+      if (mode === 'embed') {
         playCtl = playLive(root, g);
+      } else if (mode === 'link') {
+        playCtl = playLink(root, g);
+      } else if (mode === 'info') {
+        playCtl = playUnavailable(root, g);
       } else if (g.play === 'io') {
         playCtl = playIO(root);
       } else if (g.play === 'merge') {

@@ -2306,3 +2306,30 @@ mark {
   gap: 14px;
 }
 .user-face img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* 打开方式角标：每张封面右上角说清楚是站内可玩、去原页、站内示例还是仅介绍 */
+.cover-mode {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 1;
+  padding: 4px 7px;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  background: oklch(20% 0.02 70 / 0.82);
+  color: oklch(97% 0.01 95);
+  pointer-events: none;
+}
+.cover-mode[data-mode="embed"] { background: oklch(42% 0.11 150 / 0.9); }
+.cover-mode[data-mode="link"] { background: oklch(45% 0.12 250 / 0.9); }
+.cover-mode[data-mode="sample"] { background: oklch(48% 0.1 70 / 0.9); }
+.cover-mode[data-mode="info"] { background: oklch(32% 0.01 95 / 0.88); }
+.icon .cover-mode, .search-hit .cover-mode { display: none; }
+.btn.is-disabled { opacity: 0.6; cursor: not-allowed; pointer-events: none; }
+.play-link { text-align: center; }
+.play-link .play-link-cover { position: relative; aspect-ratio: 16 / 9; margin: 0 0 18px; overflow: hidden; }
+.play-link .play-link-cover .cover { position: absolute; inset: 0; }
+.btn-lg { min-height: 52px; padding-inline: 28px; font-size: 1.05rem; }

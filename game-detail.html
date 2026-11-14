@@ -54,7 +54,7 @@
     (function () {
       const J = window.JIWAN;
       if (!J) return;
-      const { coverHTML, scoreText, playerLine, originChip, gameHref, playHref, playSrc, mountChrome, toast, t, tagLabel, reviewLabel, applyI18n, gameTitle, gameBlurb, gameAbout, esc, loginHref, postHref, userHref, authorHref, tagHref, bindLivePlayers, openReasonForm, reportKinds, authorLabel, backHTML} = J;
+      const { coverHTML, playCtaHTML, modeLabel, playMode, scoreText, playerLine, originChip, gameHref, playHref, playSrc, mountChrome, toast, t, tagLabel, reviewLabel, applyI18n, gameTitle, gameBlurb, gameAbout, esc, loginHref, postHref, userHref, authorHref, tagHref, bindLivePlayers, openReasonForm, reportKinds, authorLabel, backHTML} = J;
       const api = J.api;
       mountChrome('home');
       const params = new URLSearchParams(location.search);
@@ -149,7 +149,7 @@
         const rating = g.score == null
           ? `<div class="rating-num" style="font-size:28px">${t('meta.new')}</div><div class="meta" style="margin:6px 0 10px">${t('detail.collecting',{n:reviewsAll.length})}</div><p class="meta">${t('detail.coverNote')}</p>`
           : `<div class="rating-num">${scoreText(g)}</div><div class="meta" style="margin:6px 0 10px">${t('detail.scale',{n:reviewsAll.length})}</div>${['1-2','3-4','5-6','7-8','9-10'].map((lab,i)=>{ const d = (g.dist || [0,0,0,0,0])[i] || 0; return `<div class="bar"><span>${lab}</span><div class="bar-track"><i style="width:${d}%"></i></div><span>${d}</span></div>`; }).join('')}`;
-        const chips = `${g.tags.map(tag => `<a class="chip" href="${tagHref(tag)}" data-od-id="detail-tag-${esc(tag)}">${tagLabel(tag)}</a>`).join('')}<span class="chip">${t('detail.webOpen')}</span>${g.demo ? '<span class="chip">'+t('label.workshopDemo')+'</span>' : g.fable ? '<span class="chip">'+t('label.fable')+'</span>' : ''}${g.poster ? '<span class="chip">' + originChip(g) + '</span>' : ''}`;
+        const chips = `${g.tags.map(tag => `<a class="chip" href="${tagHref(tag)}" data-od-id="detail-tag-${esc(tag)}">${tagLabel(tag)}</a>`).join('')}<span class="chip chip-mode" data-mode="${playMode(g)}">${modeLabel(g)}</span>${g.demo ? '<span class="chip">'+t('label.workshopDemo')+'</span>' : g.fable ? '<span class="chip">'+t('label.fable')+'</span>' : ''}${g.poster ? '<span class="chip">' + originChip(g) + '</span>' : ''}`;
         document.title = gameTitle(g) + ' · ' + t('brand.name');
         document.getElementById('detail-root').innerHTML = `
           ${backHTML({ odId: 'detail-back', wide: true, skip: ['detail', 'play'] })}
@@ -161,7 +161,7 @@
               <p class="blurb" style="color:var(--muted);margin:0">${gameBlurb(g)}</p>
               <div class="chips">${chips}</div>
               <div class="detail-actions">
-                <a class="btn btn-primary" href="${playHref(g.id)}" data-od-id="cta-play-detail">${t('cta.play')}</a>
+                ${playCtaHTML(g, 'cta-play-detail')}
                 <button class="btn" id="btn-fav" type="button">${fav ? t('cta.following') : t('cta.follow')}</button>
                 <button class="btn" id="btn-share" type="button">${t('cta.share')}</button>
                 <button class="btn" id="btn-report-game" type="button" data-od-id="cta-report-game">${t('detail.report')}</button>
