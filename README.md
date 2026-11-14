@@ -38,17 +38,11 @@ npx wrangler dev --local --persist-to /tmp/jiwan-seed
 npm test
 ```
 
-## 将来正式部署（本轮不要执行）
+## 正式部署
 
-正式域名定为 `jiwan.space`（含 `*.jiwan.space`）。域名尚未购买，Cloudflare 账号也尚未登录，因此 **不要** 在本轮执行 `wrangler login`、`wrangler deploy`，也不要对 remote D1 做任何操作。`wrangler.toml` 里的路由块先以注释形式写好，以免未绑定 zone 时部署失败；`workers_dev = true` 暂时保留作退路。线上初始数据用清理过会话的 `data/sql/jiwan.sql`（来自 `server/data/jiwan.db`）。
+正式域名是 `jiwan.space`（含 `*.jiwan.space`）。Worker 已部署在免费套餐上，预览地址：<https://jiwan.playjiwan.workers.dev>。`wrangler.toml` 已写入线上 D1 `jiwan` 的 `database_id`；自定义域路由仍先注释，等 Cloudflare zone 生效（需把阿里云域名服务器改为 Cloudflare 提供的两台）后再取消注释并重新 `npx wrangler deploy`。`workers_dev = true` 暂留作退路。
 
-1. 购买 `jiwan.space` 并接入 Cloudflare（需你本人操作）。
-2. 安装并登录 Wrangler（`wrangler login`，需你本人操作）。
-3. 创建 D1：`npx wrangler d1 create jiwan`，把返回的 `database_id` 填进 `wrangler.toml`，替换占位符 `00000000-0000-0000-0000-000000000000`。项目名保持 `jiwan`。
-4. 执行迁移：`npx wrangler d1 migrations apply jiwan --remote`。
-5. 导入线上初始数据：`npx wrangler d1 execute jiwan --remote --file=data/sql/jiwan.sql`。
-6. 在 `wrangler.toml` 里取消注释 `jiwan.space/*` 与 `*.jiwan.space/*` 两段路由，确认 `zone_name = "jiwan.space"`。
-7. 部署：`npx wrangler deploy`。静态资源和 API 会在同一个 Worker 域名下。完成 DNS，使 `jiwan.space`、`www.jiwan.space` 与需要的子域指向该 Worker。免费套餐即可，不必上付费产品。
+线上初始数据来自清理过会话的 `data/sql/jiwan.sql`（导出自 `server/data/jiwan.db`）。对 remote D1 执行该文件前，必须去掉 dump 里的 `PRAGMA` / `BEGIN TRANSACTION` / `COMMIT`（远程执行不接受事务语句）；迁移用 `npx wrangler d1 migrations apply jiwan --remote`。环境里若已有不匹配的 `CLOUDFLARE_API_TOKEN`，登录与部署请用 `env -u CLOUDFLARE_API_TOKEN -u CLOUDFLARE_API_KEY` 以免盖掉 OAuth 会话。
 
 免费套餐硬限制（以[官方定价](https://developers.cloudflare.com/workers/platform/pricing/)为准）：Workers 每天 10 万次请求、**每次最多 10ms CPU**；D1 每天 500 万行读、10 万行写、总共 5GB、最多 10 个库。超出当天额度会失败，不会自动扣费。查询已加索引；偏重接口的本地耗时见 `REPORT-cf.md` 与 `evidence-cf/`。
 
