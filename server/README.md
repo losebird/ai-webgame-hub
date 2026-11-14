@@ -1,5 +1,7 @@
 # 即玩空间后端
 
+正式部署与本地验收请看仓库根目录的 README.md（Cloudflare Workers + D1，同源）。下面是 Node 对照版。
+
 零依赖：`node:http` + `node:sqlite`（Node ≥ 22.5）。
 
 **数据只有一份，在 SQLite 里。** 静态目录（`assets/jiwan-catalog.js` 里的 GAMES/POSTS/AUTHORS/TOPICS/英文表）已经清空，运行时不再读取任何静态数据文件；前端也不再带 mock。
