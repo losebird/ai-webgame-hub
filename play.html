@@ -59,6 +59,7 @@
         const b = J.backTarget();
         el.href = b.href;
         el.setAttribute('data-back-exact', b.exact ? '1' : '0');
+        if (J.referrerAllowsBack && J.referrerAllowsBack()) el.setAttribute('data-back-prefer', '1');
         el.title = t('back.' + b.key);
         const lab = el.querySelector('[data-back-label]');
         if (lab) { lab.setAttribute('data-back-key', b.key); lab.setAttribute('data-back-short', '1'); }
@@ -104,7 +105,14 @@
         if (cabinMeta) cabinMeta.textContent = t(metaKey);
         if (playCtl && playCtl.paint) playCtl.paint();
       }
-      $('#play-exit').href = gameHref(g.id);
+      const exit = $('#play-exit');
+      exit.href = gameHref(g.id);
+      exit.setAttribute('data-back', '');
+      if (J.referrerAllowsBack && J.referrerAllowsBack()) {
+        exit.setAttribute('data-back-prefer', '1');
+        const b = J.backTarget ? J.backTarget({ wide: true, skip: ['play'] }) : null;
+        if (b && b.href) exit.href = b.href;
+      }
       let audio = null;
       function blip(freq) {
         if (muted) return;
