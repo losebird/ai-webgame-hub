@@ -6,9 +6,7 @@
   <title>即玩空间 · 发现网页游戏</title>
   <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/jiwan-press.css">
   <style>
     /* 首页网格：热玩对排行，口碑常驻对工坊，同一行起点齐平 */
@@ -600,7 +598,7 @@
     if (window.JIWAN) (function(){
     const J = JIWAN;
     const { ICONS, RANK_TABS, RANK_PERIODS, RANK_TAB_NAME, RANK_PERIOD_NAME,
-      rankIndexMap, rankMoveHTML, coverHTML, iconHTML, scoreText, playerLine, bindLivePlayers,
+      rankIndexMap, rankMoveHTML, coverHTML, iconHTML, posterSrc, scoreText, playerLine, bindLivePlayers,
       tagsLine, tagLabel, gameHref, playHref, playSrc, modeLabel, t, applyI18n, gameTitle, gameBanner, postHref, esc, authorLabel} = J;
     const api = J.api;
     const $ = (s, r=document) => r.querySelector(s);
@@ -624,14 +622,14 @@
     function featBadge(g){ return modeLabel(g); }
     function featCardHTML(g, focus){
       const art = g.poster
-        ? `<div class="feat-art has-poster"><img class="feat-poster" src="${g.poster}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}"></div>`
+        ? `<div class="feat-art has-poster"><img class="feat-poster" src="${posterSrc(g)}" alt="${gameTitle(g)}" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}" loading="eager" decoding="async"></div>`
         : `<div class="feat-art" data-kind="${g.play}" style="--hue:${g.hue};--chroma:${g.chroma}"></div>`;
       const slogan = gameBanner(g);
       const score = g.score
         ? `<div class="feat-score"><b>${Number(g.score).toFixed(1)}</b></div>`
         : '';
       const icon = g.poster
-        ? `<span class="feat-icon"><img src="${g.poster}" alt="" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}"></span>`
+        ? `<span class="feat-icon"><img src="${posterSrc(g)}" alt="" width="${g.pw}" height="${g.ph}" style="object-position:${g.pos||'center'}" loading="lazy" decoding="async"></span>`
         : `<span class="feat-icon" style="--hue:${g.hue};--chroma:${g.chroma}"></span>`;
       const title = gameTitle(g);
       /* 三张封面都直接进详情页；翻页只由箭头、圆点和滑动负责，点图不再滚动 */

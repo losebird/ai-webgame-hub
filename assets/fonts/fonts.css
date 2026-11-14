@@ -20,3 +20,26 @@
   font-display: swap;
   unicode-range: U+0020-007E;
 }
+
+/* Noto Serif SC（SIL OFL，许可见 NotoSerifSC-OFL.txt）：按站点用字子集化的 500/600/700，自托管以免走 Google Fonts。 */
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("NotoSerifSC-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("NotoSerifSC-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Noto Serif SC";
+  src: url("NotoSerifSC-700.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}

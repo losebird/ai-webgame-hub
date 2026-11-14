@@ -6,9 +6,7 @@
   <title>游戏 · 即玩空间</title>
   <meta name="description" content="即玩空间：发现、试玩和讨论网页小游戏，工坊收录玩家上传的作品。">
   <link rel="icon" type="image/svg+xml" href="assets/favicon.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;600;700&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/fonts/fonts.css">
   <link rel="stylesheet" href="assets/jiwan-press.css">
 </head>
 <body class="play-page">
@@ -398,7 +396,7 @@
       function playLink(root, game) {
         const src = playSrc(game);
         root.classList.remove('is-live');
-        root.innerHTML = `<div class="sheet-dark play-empty play-link" data-od-id="play-link"><div class="play-link-cover">${coverHTML(game, false)}</div><p data-link-note>${t('play.linkOnly', {host: esc(srcHost(game))})}</p><p><a class="btn btn-primary btn-lg" href="${esc(src)}" target="_blank" rel="noopener noreferrer" data-od-id="play-link-go">${t('cta.playOriginal')}</a></p></div>`;
+        root.innerHTML = `<div class="sheet-dark play-empty play-link" data-od-id="play-link"><div class="play-link-cover">${coverHTML(game, false, {eager:true})}</div><p data-link-note>${t('play.linkOnly', {host: esc(srcHost(game))})}</p><p><a class="btn btn-primary btn-lg" href="${esc(src)}" target="_blank" rel="noopener noreferrer" data-od-id="play-link-go">${t('cta.playOriginal')}</a></p></div>`;
         const go = root.querySelector('[data-od-id="play-link-go"]');
         if (go && api && api.recordPlay) go.addEventListener('click', () => api.recordPlay(game.id), { once: true });
         return {
