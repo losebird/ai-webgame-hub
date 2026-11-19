@@ -120,11 +120,11 @@ async function jiwanDataTests(base, persist) {
   const db = openQuery(persist);
   const anon = createClient(base);
   try {
-    await check('目录 101 部，已上架工坊包并入可见列表', async () => {
+    await check('目录 106 部，已上架工坊包并入可见列表', async () => {
       const r = await anon('GET', '/games/index');
       assert.equal(r.status, 200);
-      assert.equal(db.get('SELECT COUNT(*) AS n FROM games').n, 101);
-      assert.ok(r.data.total >= 101, '可见数应至少覆盖 101 部目录');
+      assert.equal(db.get('SELECT COUNT(*) AS n FROM games').n, 106);
+      assert.ok(r.data.total >= 106, '可见数应至少覆盖 106 部目录');
       assert.ok(r.data.items.some((g) => g.id === 'pack-seed-tide'), '应包含已过审的潮汐回廊');
       assert.ok(r.data.items.some((g) => g.id === 'pack-mwfbgncbfpoc'), '应包含灯塔守夜人');
     });
