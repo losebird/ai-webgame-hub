@@ -1,6 +1,6 @@
 ======== journey + timings (jiwan) ========
 [主路径] jiwan.db
-  ok  打开首页索引：116 个游戏可见
+  ok  打开首页索引：121 个游戏可见
   ok  中英文切换不回归（title_en 存在且 lang=en 生效）
   ok  详情可打开，游玩计数会变化
   ok  注册并登录，刷新后 Cookie 仍有效
@@ -9,15 +9,15 @@
   ok  审核员账号能进后台
 
 [耗时] 各打 5 次，读 X-Jiwan-Elapsed-Ms（本地墙钟，含 D1 I/O，不是生产 CPU）
-  GET /games/index: min=9ms median=11ms max=12ms samples=[9,10,11,11,12]
-  GET /rankings: min=8ms median=8ms max=9ms samples=[8,8,8,9,9]
-  POST /auth/login: min=13ms median=13ms max=16ms samples=[13,13,13,13,16]
-  POST /plays: min=13ms median=14ms max=16ms samples=[13,14,14,14,16]
+  GET /games/index: min=10ms median=11ms max=17ms samples=[10,11,11,12,17]
+  GET /rankings: min=8ms median=9ms max=11ms samples=[8,9,9,10,11]
+  POST /auth/login: min=14ms median=15ms max=15ms samples=[14,15,15,15,15]
+  POST /plays: min=14ms median=14ms max=15ms samples=[14,14,14,14,15]
   NOTE 以下接口本地墙钟中位数超过 10ms（需对照是否只是 I/O，还是 CPU 打满）：
    - GET /games/index
    - POST /auth/login
    - POST /plays
 
 ALL PASS 7
-(node:63088) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(node:167810) ExperimentalWarning: SQLite is an experimental feature and might change at any time
 (Use `node --trace-warnings ...` to show where the warning was created)
